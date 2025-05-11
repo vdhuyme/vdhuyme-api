@@ -1,0 +1,25 @@
+[2025-05-10 00:17:35] ERROR: GET / - NotFound Exception
+[2025-05-10 00:17:35] ERROR: GET / - NotFound Exception
+[2025-05-10 00:17:35] ERROR: GET / - NotFound Exception
+[2025-05-10 00:17:35] ERROR: GET / - NotFound Exception
+[2025-05-11 15:55:33] ERROR: GET / - NotFound Exception
+[2025-05-11 15:55:33] ERROR: GET / - NotFound Exception
+[2025-05-11 15:55:39] ERROR: GET /public-post - NotFound Exception
+[2025-05-11 15:55:39] ERROR: GET /public-post - NotFound Exception
+[2025-05-11 16:17:21] ERROR: POST /license - Token has expired
+[2025-05-11 16:17:21] ERROR: POST /license - Token has expired
+[2025-05-11 16:17:33] ERROR: POST /login - NotFound Exception
+[2025-05-11 16:17:33] ERROR: POST /login - NotFound Exception
+[2025-05-11 16:17:43] ERROR: POST /auth/login - invalid expiresIn option for string payload
+[2025-05-11 16:18:36] ERROR: POST /auth/login - invalid expiresIn option for string payload
+[2025-05-11 16:18:48] ERROR: POST /auth/login - invalid expiresIn option for string payload
+[2025-05-11 16:25:59] ERROR: POST /license - expiresAt.getTime is not a function
+[2025-05-11 16:32:56] ERROR: POST /license - Cannot read properties of undefined (reading 'push')
+[2025-05-11 16:44:37] ERROR: GET /license?token=234234 - Invalid token
+[2025-05-11 16:44:37] ERROR: GET /license?token=234234 - Invalid token
+[2025-05-11 16:51:14] ERROR: GET /license?token=e - Token is not registered
+[2025-05-11 16:51:14] ERROR: GET /license?token=e - Token is not registered
+[2025-05-11 17:01:10] ERROR: GET /license?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsaWNlbnNlZFRvIjoiTm9sYW4iLCJhY3RpdmF0ZWRBdCI6IjIwMjQtMDUtMTFUMDk6MjQ6MTQuNTU1WiIsImV4cGlyZXNBdCI6IjIwMjQtMTItMTFUMDk6MjQ6MTQuNTU1WiIsImlhdCI6MTc0Njk1NzEwNSwiZXhwIjoxNzY1NDQ2NzA1fQ.2LeEp8-O9RucQkVlA15wfUu-LJJwxqwUyL3r705HTnM - License has expired
+[2025-05-11 17:01:10] ERROR: GET /license?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsaWNlbnNlZFRvIjoiTm9sYW4iLCJhY3RpdmF0ZWRBdCI6IjIwMjQtMDUtMTFUMDk6MjQ6MTQuNTU1WiIsImV4cGlyZXNBdCI6IjIwMjQtMTItMTFUMDk6MjQ6MTQuNTU1WiIsImlhdCI6MTc0Njk1NzEwNSwiZXhwIjoxNzY1NDQ2NzA1fQ.2LeEp8-O9RucQkVlA15wfUu-LJJwxqwUyL3r705HTnM - License has expired
+[2025-05-11 17:01:50] ERROR: GET /license?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsaWNlbnNlZFRvIjoiTm9sYW4iLCJhY3RpdmF0ZWRBdCI6IjIwMjYtMDUtMTFUMDk6MjQ6MTQuNTU1WiIsImV4cGlyZXNBdCI6IjIwMjYtMTItMTFUMDk6MjQ6MTQuNTU1WiIsImlhdCI6MTc0Njk1NzY5OSwiZXhwIjoxNzY1NDQ3Mjk5fQ.wqKVpvqISJoQhlPE2hF_Kfr6oKP9Tk9XPqTbPew_tfo - License is not active yet
+[2025-05-11 17:01:50] ERROR: GET /license?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsaWNlbnNlZFRvIjoiTm9sYW4iLCJhY3RpdmF0ZWRBdCI6IjIwMjYtMDUtMTFUMDk6MjQ6MTQuNTU1WiIsImV4cGlyZXNBdCI6IjIwMjYtMTItMTFUMDk6MjQ6MTQuNTU1WiIsImlhdCI6MTc0Njk1NzY5OSwiZXhwIjoxNzY1NDQ3Mjk5fQ.wqKVpvqISJoQhlPE2hF_Kfr6oKP9Tk9XPqTbPew_tfo - License is not active yet
