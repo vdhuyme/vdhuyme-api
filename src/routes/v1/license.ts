@@ -13,6 +13,11 @@ import BadRequestException from '@exceptions/bad.request.exception'
 
 const router = express.Router()
 
+router.get('/', auth(), async (req: Request, res: Response) => {
+  const licenses = db.data.licenses
+  res.status(OK).json({ licenses })
+})
+
 router.post('/', auth(), validate(createLicenseRequest), async (req: Request, res: Response) => {
   const { licensedTo, activatedAt, expiresAt } = req.body
 
@@ -38,6 +43,17 @@ router.post('/', auth(), validate(createLicenseRequest), async (req: Request, re
   await db.write()
 
   res.status(OK).json({ token })
+})
+
+router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  const license = db.data.licenses.find((license) => license.id === id)
+  if (!license) {
+    return next(new BadRequestException(`Not found license: ${id}`))
+  }
+  db.data.licenses = db.data.licenses.filter((license) => license.id !== id)
+  await db.write()
+  res.status(OK).json({ message: 'success' })
 })
 
 router.get(
@@ -75,16 +91,5 @@ router.get(
     }
   }
 )
-
-router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.params
-  const license = db.data.licenses.find((license) => license.id === id)
-  if (!license) {
-    return next(new BadRequestException(`Not found license: ${id}`))
-  }
-  db.data.licenses = db.data.licenses.filter((license) => license.id !== id)
-  await db.write()
-  res.status(OK).json({ message: 'success' })
-})
 
 export default router
