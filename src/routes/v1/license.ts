@@ -9,6 +9,7 @@ import jsonwebtoken from '@config/jsonwebtoken'
 import { db, License } from '@config/database'
 import { id } from '@utils/id'
 import { timestamp } from '@utils/timestamp'
+import BadRequestException from '@exceptions/bad.request.exception'
 
 const router = express.Router()
 
@@ -74,5 +75,16 @@ router.get(
     }
   }
 )
+
+router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  const license = db.data.licenses.find((license) => license.id === id)
+  if (!license) {
+    return next(new BadRequestException(`Not found license: ${id}`))
+  }
+  db.data.licenses = db.data.licenses.filter((license) => license.id !== id)
+  await db.write()
+  res.status(OK).json({ message: 'success' })
+})
 
 export default router
