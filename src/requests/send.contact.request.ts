@@ -1,6 +1,6 @@
 import { body, ValidationChain } from 'express-validator'
 
-export const sendMailRequest: ValidationChain[] = [
+export const sendContactRequest: ValidationChain[] = [
   body('name')
     .trim()
     .notEmpty()
