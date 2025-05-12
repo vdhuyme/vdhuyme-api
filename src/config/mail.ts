@@ -3,17 +3,25 @@ import path from 'path'
 import fs from 'fs'
 import ejs from 'ejs'
 
-export interface MailContext {
+export interface MailData {
+  cc?: string
+  bcc?: string
   from?: string
   to: string
   subject: string
-  data: { [key: string]: string | number | boolean }
+  data: MailContext
+}
+
+export interface MailContext {
+  [key: string]: string | number | boolean | object
 }
 
 export default class Mail {
+  public data: MailData
   private transporter: Transporter
 
-  constructor() {
+  constructor(data: MailData) {
+    this.data = data
     this.transporter = nodemailer.createTransport({
       service: process.env.MAIL_SERVICE,
       auth: {
@@ -23,11 +31,11 @@ export default class Mail {
     })
   }
 
-  public envelop(context: MailContext): Pick<SendMailOptions, 'from' | 'to' | 'subject'> {
+  public envelop(): Pick<SendMailOptions, 'from' | 'to' | 'subject'> {
     return {
-      from: context?.from || process.env.MAIL_FROM_ADDRESS,
-      to: context.to,
-      subject: context.subject
+      from: this.data?.from || process.env.MAIL_FROM_ADDRESS,
+      to: this.data.to,
+      subject: this.data.subject
     }
   }
 
@@ -43,7 +51,7 @@ export default class Mail {
 
   public async send(template: string, context: MailContext): Promise<void> {
     const mailOptions: SendMailOptions = {
-      ...this.envelop(context),
+      ...this.envelop(),
       html: await this.content(template, context),
       attachments: this.attachments()
     }
