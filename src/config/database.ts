@@ -25,14 +25,25 @@ export interface License {
   updatedAt: string
 }
 
+export interface Contact {
+  id: string
+  name: string
+  email: string
+  message: string
+  createdAt: string
+  updatedAt: string
+}
+
 interface DatabaseSchemas {
   posts: Post[]
   licenses: License[]
+  contacts: Contact[]
 }
 
 const defaultData: DatabaseSchemas = {
   posts: [],
-  licenses: []
+  licenses: [],
+  contacts: []
 }
 
 const file = path.join(__dirname, '../../database.json')

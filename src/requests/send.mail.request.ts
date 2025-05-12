@@ -1,10 +1,7 @@
-import { body, param, ValidationChain } from 'express-validator'
+import { body, ValidationChain } from 'express-validator'
 
 export const sendMailRequest: ValidationChain[] = [
-  param('template').isIn(['contact']).withMessage('Template is in: contact'),
-
   body('name')
-    .if(param('template').equals('contact'))
     .trim()
     .notEmpty()
     .withMessage('Name is required')
@@ -12,7 +9,6 @@ export const sendMailRequest: ValidationChain[] = [
     .withMessage('Name must be between 2 and 50 characters'),
 
   body('email')
-    .if(param('template').equals('contact'))
     .trim()
     .notEmpty()
     .withMessage('Email is required')
@@ -21,7 +17,6 @@ export const sendMailRequest: ValidationChain[] = [
     .normalizeEmail(),
 
   body('message')
-    .if(param('template').equals('contact'))
     .trim()
     .notEmpty()
     .withMessage('Message is required')

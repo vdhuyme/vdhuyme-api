@@ -1,13 +1,15 @@
 import 'dotenv/config'
 import { database } from '@config/database'
-import express from 'express'
+import express, { Application } from 'express'
 import { errorHandler } from '@middlewares/error.handler'
 import router from '@routes/v1'
 import cors from 'cors'
 import { notFound } from '@middlewares/not.found'
+import view from '@config/view'
 
-const app = express()
+const app: Application = express()
 database()
+view(app)
 app.use(cors())
 app.use(express.json())
 app.use(router)

@@ -3,7 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Contact Mail</title>
   </head>
-  <body></body>
+  <body>
+    <div class="container">
+      <h2>New Contact Message</h2>
+
+      <div class="section">
+        <div class="label">Name:</div>
+        <div><%= name %></div>
+      </div>
+
+      <div class="section">
+        <div class="label">Email:</div>
+        <div><%= email %></div>
+      </div>
+
+      <div class="section">
+        <div class="label">Message:</div>
+        <div><%= message %></div>
+      </div>
+    </div>
+  </body>
 </html>
