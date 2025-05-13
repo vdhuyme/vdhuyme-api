@@ -8,9 +8,9 @@ import publicPost from '@routes/v1/public.post'
 const router = express.Router()
 
 router.use('/auth', auth)
-router.use('/contact', contact)
-router.use('/license', license)
-router.use('/post', post)
-router.use('/public-post', publicPost)
+router.use('/contacts', contact)
+router.use('/licenses', license)
+router.use('/posts', post)
+router.use('/public-posts', publicPost)
 
 export default router

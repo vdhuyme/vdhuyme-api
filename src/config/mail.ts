@@ -15,7 +15,7 @@ export interface MailContent {
 export interface MailData {
   cc?: string
   bcc?: string
-  from: string
+  from?: string
   to?: string
   subject?: string
 }
@@ -42,7 +42,7 @@ export default abstract class Mail {
 
   protected envelop(): Pick<SendMailOptions, 'from' | 'to' | 'subject'> {
     return {
-      from: this.data?.from || this.mailFromAddress,
+      from: this.data.from || this.mailFromAddress,
       to: this.data.to,
       subject: this.data.subject
     }

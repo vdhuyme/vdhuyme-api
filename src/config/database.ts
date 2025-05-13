@@ -21,6 +21,7 @@ export interface License {
   activatedAt: string
   expiresAt?: string
   token: string
+  status: string
   createdAt: string
   updatedAt: string
 }
@@ -30,6 +31,7 @@ export interface Contact {
   name: string
   email: string
   message: string
+  status: string
   createdAt: string
   updatedAt: string
 }
@@ -52,7 +54,7 @@ const db = new Low<DatabaseSchemas>(adapter, defaultData)
 
 const database = async (): Promise<void> => {
   await db.read()
-  db.data ||= defaultData
+  db.data = { ...defaultData, ...db.data }
   await db.write()
 }
 

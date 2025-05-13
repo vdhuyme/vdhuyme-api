@@ -9,16 +9,18 @@ export interface ContactMailData extends MailData {
 
 export default class ContactMail extends Mail {
   public data: ContactMailData
+  private toAddress: string
 
   constructor(data: ContactMailData) {
     super(data)
     this.data = data
+    this.toAddress = process.env.MAIL_USER as string
   }
 
   public envelop(): Pick<SendMailOptions, 'from' | 'to' | 'subject'> {
     return {
       from: this.data.email,
-      to: this.data.to,
+      to: this.toAddress,
       subject: this.data.subject || 'Contact Email'
     }
   }
@@ -26,7 +28,11 @@ export default class ContactMail extends Mail {
   protected content(): MailContent {
     return {
       template: 'contact.mail',
-      with: { data: this.data }
+      with: {
+        name: this.data.name,
+        email: this.data.email,
+        message: this.data.message
+      }
     }
   }
 }

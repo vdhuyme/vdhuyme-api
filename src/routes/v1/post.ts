@@ -31,7 +31,7 @@ router.post('/', auth(), validate(createPostRequest), async (req: Request, res: 
   res.status(CREATED).json({ message: 'success' })
 })
 
-router.get('/', auth(), async (req: Request, res: Response) => {
+router.get('/', auth(), (req: Request, res: Response) => {
   const posts = db.data.posts
   res.status(OK).json({ posts })
 })
@@ -48,7 +48,7 @@ router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunc
 })
 
 router.patch(
-  '/posts/:id',
+  '/:id',
   auth(),
   validate(updatePostStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
