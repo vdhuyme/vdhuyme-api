@@ -21,6 +21,17 @@ export interface License {
   activatedAt: string
   expiresAt?: string
   token: string
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Contact {
+  id: string
+  name: string
+  email: string
+  message: string
+  status: string
   createdAt: string
   updatedAt: string
 }
@@ -28,11 +39,13 @@ export interface License {
 interface DatabaseSchemas {
   posts: Post[]
   licenses: License[]
+  contacts: Contact[]
 }
 
 const defaultData: DatabaseSchemas = {
   posts: [],
-  licenses: []
+  licenses: [],
+  contacts: []
 }
 
 const file = path.join(__dirname, '../../database.json')
@@ -41,7 +54,7 @@ const db = new Low<DatabaseSchemas>(adapter, defaultData)
 
 const database = async (): Promise<void> => {
   await db.read()
-  db.data ||= defaultData
+  db.data = { ...defaultData, ...db.data }
   await db.write()
 }
 

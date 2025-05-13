@@ -10,10 +10,12 @@ import { db, License } from '@config/database'
 import { id } from '@utils/id'
 import { timestamp } from '@utils/timestamp'
 import BadRequestException from '@exceptions/bad.request.exception'
+import BaseStatusEnum from '@enums/base.status.enum'
+import { updateLicenseStatusRequest } from '@requests/update.license.status.request'
 
 const router = express.Router()
 
-router.get('/', auth(), async (req: Request, res: Response) => {
+router.get('/', auth(), (req: Request, res: Response) => {
   const licenses = db.data.licenses
   res.status(OK).json({ licenses })
 })
@@ -35,6 +37,7 @@ router.post('/', auth(), validate(createLicenseRequest), async (req: Request, re
     activatedAt,
     expiresAt,
     token,
+    status: BaseStatusEnum.APPROVED,
     createdAt: timestamp(),
     updatedAt: timestamp()
   }
@@ -56,15 +59,36 @@ router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunc
   res.status(OK).json({ message: 'success' })
 })
 
-router.get(
-  '/',
-  validate(getLicenseRequest),
+router.patch(
+  '/:id',
+  auth(),
+  validate(updateLicenseStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req.query
+    const { id } = req.params
+    const { status } = req.body
+    const license = db.data.licenses.find((contact) => contact.id === id)
+    if (!license) {
+      return next(new BadRequestException(`Not found license: ${id}`))
+    }
 
-    const found = db.data.licenses.find((license) => license.token === token)
+    license.status = status
+    license.updatedAt = timestamp()
+    await db.write()
+    res.status(OK).json({ message: 'success' })
+  }
+)
+
+router.post(
+  '/validate',
+  validate(getLicenseRequest),
+  (req: Request, res: Response, next: NextFunction) => {
+    const { token } = req.body
+
+    const found = db.data.licenses.find(
+      (license) => license.token === token && license.status === BaseStatusEnum.APPROVED
+    )
     if (!found) {
-      next(new UnauthorizedException('Token is not registered'))
+      next(new UnauthorizedException('Token is not registered or not valid'))
     }
 
     try {

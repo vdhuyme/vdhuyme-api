@@ -7,18 +7,14 @@ import jsonwebtoken from '@config/jsonwebtoken'
 
 const router = express.Router()
 
-router.post(
-  '/login',
-  validate(loginRequest),
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password } = req.body
-    const { SUPER_USER, SUPER_USER_PWD } = process.env
-    if (email !== SUPER_USER || password !== SUPER_USER_PWD) {
-      next(new UnauthorizedException())
-    }
-    const token = jsonwebtoken.generate({ email })
-    res.status(OK).json({ token })
+router.post('/login', validate(loginRequest), (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body
+  const { SUPER_USER, SUPER_USER_PWD } = process.env
+  if (email !== SUPER_USER || password !== SUPER_USER_PWD) {
+    next(new UnauthorizedException())
   }
-)
+  const token = jsonwebtoken.generate({ email })
+  res.status(OK).json({ token })
+})
 
 export default router

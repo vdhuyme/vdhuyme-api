@@ -19,7 +19,9 @@
       "@routes/*": ["routes/*"],
       "@utils/*": ["utils/*"],
       "@storage/*": ["storage/*"],
-      "@enums/*": ["enums/*"]
+      "@enums/*": ["enums/*"],
+      "@mail/*": ["mail/*"],
+      "@views/*": ["views/*"]
     }
   },
   "include": ["src"],

@@ -1,7 +1,7 @@
-import { query, ValidationChain } from 'express-validator'
+import { body, ValidationChain } from 'express-validator'
 
 const getLicenseRequest: ValidationChain[] = [
-  query('token')
+  body('token')
     .notEmpty()
     .withMessage('Token is required')
     .isString()

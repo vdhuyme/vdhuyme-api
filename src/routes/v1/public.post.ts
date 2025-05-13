@@ -5,7 +5,7 @@ import BaseStatusEnum from '@enums/base.status.enum'
 
 const router = express.Router()
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
   const posts = db.data.posts.filter((p) => p.status === BaseStatusEnum.PUBLISHED)
   res.status(OK).json({ posts })
 })
