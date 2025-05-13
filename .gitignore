@@ -8,7 +8,7 @@ package-lock.json
 dist/
 build/
 
-database.json
+src/data/database.db
 
 src/storage/logs/*
 !src/storage/logs/.gitkeep
