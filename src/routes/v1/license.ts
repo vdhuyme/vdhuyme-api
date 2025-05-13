@@ -12,6 +12,7 @@ import { timestamp } from '@utils/timestamp'
 import BadRequestException from '@exceptions/bad.request.exception'
 import BaseStatusEnum from '@enums/base.status.enum'
 import { updateLicenseStatusRequest } from '@requests/update.license.status.request'
+import { isAfter, isBefore, parseISO } from 'date-fns'
 
 const router = express.Router()
 
@@ -87,30 +88,32 @@ router.post(
     const found = db.data.licenses.find(
       (license) => license.token === token && license.status === BaseStatusEnum.APPROVED
     )
+
     if (!found) {
-      next(new UnauthorizedException('Token is not registered or not valid'))
+      return next(new UnauthorizedException('Token is not registered or not valid'))
+    }
+
+    const now = new Date()
+    const activatedAt = parseISO(found.activatedAt)
+    const expiresAt = parseISO(found.expiresAt)
+
+    if (isBefore(now, activatedAt)) {
+      return next(new UnauthorizedException('License is not active yet'))
+    }
+
+    if (isAfter(now, expiresAt)) {
+      return next(new UnauthorizedException('License has expired'))
     }
 
     try {
       jsonwebtoken.verify(token as string)
-      const now = new Date()
-      const activatedAt = new Date(found?.activatedAt as string)
-      const expiresAt = new Date(found?.expiresAt as string)
-
-      if (now < activatedAt) {
-        return next(new UnauthorizedException('License is not active yet'))
-      }
-
-      if (now > expiresAt) {
-        return next(new UnauthorizedException('License has expired'))
-      }
       res.status(OK).json({ message: 'Valid license' })
     } catch (error: any) {
       const messages = {
         JsonWebTokenError: 'Invalid token',
         TokenExpiredError: 'License has expired'
       }
-      const message = messages[error?.name as keyof typeof messages] || 'Invalid license'
+      const message = messages[error?.name as keyof typeof messages] || 'InvalidLicense'
       return next(new UnauthorizedException(message))
     }
   }

@@ -14,7 +14,7 @@ declare global {
 export const auth = () => async (req: Request, res: Response, next: NextFunction) => {
   const token: string = req.headers?.authorization?.split(' ')[1] || ''
   if (!token) {
-    next(new UnauthorizedException())
+    return next(new UnauthorizedException('Missing token'))
   }
 
   try {
@@ -26,7 +26,7 @@ export const auth = () => async (req: Request, res: Response, next: NextFunction
       TokenExpiredError: 'Token has expired'
     }
     const message = messages[error?.name as keyof typeof messages] || 'Authentication error'
-    throw new UnauthorizedException(message)
+    return next(new UnauthorizedException(message))
   }
 
   next()

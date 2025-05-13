@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.9",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
@@ -27,7 +28,8 @@
     "lowdb": "^7.0.1",
     "nodemailer": "^7.0.3",
     "uuid": "^11.1.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.18",

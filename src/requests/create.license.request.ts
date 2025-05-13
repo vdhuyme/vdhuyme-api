@@ -1,3 +1,4 @@
+import { isAfter, isValid, parseISO } from 'date-fns'
 import { body, ValidationChain } from 'express-validator'
 
 export const createLicenseRequest: ValidationChain[] = [
@@ -10,18 +11,25 @@ export const createLicenseRequest: ValidationChain[] = [
   body('activatedAt')
     .notEmpty()
     .withMessage('Activation date is required')
+    .bail()
     .isISO8601()
-    .withMessage('Activation date must be a valid ISO 8601 date')
-    .trim(),
+    .withMessage('Activation date must be a valid ISO 8601 date'),
   body('expiresAt')
     .notEmpty()
     .withMessage('Expiration date is required')
-    .isISO8601()
-    .withMessage('Expiration date must be a valid ISO 8601 date')
+    .bail()
     .custom((value, { req }) => {
-      if (value && value <= req.body.activatedAt) {
+      const expiresAt = parseISO(value)
+      const activatedAt = parseISO(req.body.activatedAt)
+
+      if (!isValid(expiresAt) || !isValid(activatedAt)) {
+        throw new Error('Dates must be valid ISO8601 strings')
+      }
+
+      if (!isAfter(expiresAt, activatedAt)) {
         throw new Error('Expiration date must be after activation date')
       }
+
       return true
     })
     .trim()

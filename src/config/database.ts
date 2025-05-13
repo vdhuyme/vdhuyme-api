@@ -19,7 +19,7 @@ export interface License {
   id: string
   licensedTo: string
   activatedAt: string
-  expiresAt?: string
+  expiresAt: string
   token: string
   status: string
   createdAt: string
