@@ -18,7 +18,7 @@ const config: Record<NodeEnvironment, DataSourceOptions> = {
   production: {
     type: 'sqlite',
     database: `${basePath}/storage/data/production.sqlite`,
-    synchronize: true,
+    synchronize: false,
     logging: true,
     entities: [`${basePath}/entities/**/*{.ts,.js}`],
     migrations: [`${basePath}/migrations/**/*{.ts,.js}`]
