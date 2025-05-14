@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import logger from '@config/logging'
 import { DataSource, DataSourceOptions } from 'typeorm'
 import { NodeEnvironment } from 'types'
@@ -18,7 +19,7 @@ const config: Record<NodeEnvironment, DataSourceOptions> = {
   production: {
     type: 'sqlite',
     database: `${basePath}/storage/data/production.sqlite`,
-    synchronize: false,
+    synchronize: true,
     logging: true,
     entities: [`${basePath}/entities/**/*{.ts,.js}`],
     migrations: [`${basePath}/migrations/**/*{.ts,.js}`]

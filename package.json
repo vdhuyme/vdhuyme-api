@@ -11,7 +11,7 @@
     "migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
     "migration:up": "npm run typeorm -- migration:run -d src/data-source.ts",
     "migration:undo": "npm run typeorm -- migration:revert -d src/data-source.ts",
-    "seed:up": "ts-node -r tsconfig-paths/register ./node_modules/@jorgebodega/typeorm-seeding/dist/cli.js seed -d src/data-source.ts src/seeders/**/*.ts",
+    "seed:up": "ts-node -r tsconfig-paths/register ./node_modules/@jorgebodega/typeorm-seeding/dist/cli.js seed -d src/data-source.ts src/seeders/**/*{.ts,.js}",
     "prettier:fix": "prettier --write ."
   },
   "keywords": [
