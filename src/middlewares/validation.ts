@@ -5,7 +5,7 @@ import ValidationException from '@exceptions/validation.exception'
 
 export const validate = (dto: any): RequestHandler => {
   return async (req, res, next) => {
-    const instance = plainToInstance(dto, req.body)
+    const instance = plainToInstance(dto, req.body ?? {})
     const errors = await classValidate(instance)
     if (errors.length) {
       return next(new ValidationException(errors))

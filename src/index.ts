@@ -8,6 +8,8 @@ import { notFound } from '@middlewares/not.found'
 import view from '@config/view'
 import logger from '@config/logging'
 import { database } from 'data-source'
+import helmet from 'helmet'
+import compression from 'compression'
 
 const app: Application = express()
 
@@ -15,7 +17,10 @@ async function bootstrap() {
   await database()
   view(app)
   app.use(cors())
+  app.use(helmet())
+  app.use(compression())
   app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
   app.use('/v1', router)
   app.use(notFound)
   app.use(errorHandler)

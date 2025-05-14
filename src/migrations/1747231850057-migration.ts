@@ -1,11 +1,11 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-export class Migration1747150379050 implements MigrationInterface {
-  name = 'Migration1747150379050'
+export class Migration1747231850057 implements MigrationInterface {
+  name = 'Migration1747231850057'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "email" varchar NOT NULL, "password" varchar NOT NULL, "status" varchar(50) NOT NULL, "created_at" datetime NOT NULL DEFAULT (datetime('now')), "updated_at" datetime NOT NULL DEFAULT (datetime('now')))`
+      `CREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "email" varchar NOT NULL, "password" varchar NOT NULL, "status" varchar(50) NOT NULL, "created_at" datetime NOT NULL DEFAULT (datetime('now')), "updated_at" datetime NOT NULL DEFAULT (datetime('now')), CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"))`
     )
     await queryRunner.query(
       `CREATE TABLE "licenses" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "licensed_to" varchar NOT NULL, "activated_at" date NOT NULL, "expires_at" date NOT NULL, "token" text NOT NULL, "status" varchar(50) NOT NULL, "created_at" datetime NOT NULL DEFAULT (datetime('now')), "updated_at" datetime NOT NULL DEFAULT (datetime('now')))`

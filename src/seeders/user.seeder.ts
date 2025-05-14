@@ -15,16 +15,15 @@ export default class UserSeeder extends Seeder {
         throw new Error('Missing email or password in environment variables')
       }
 
-      const user = new User()
-      user.id = 1
-      user.name = 'Vo Duc Huy'
-      user.email = email
-      user.password = bcrypt.hashSync(password, 10)
-      user.status = BaseStatusEnum.ACTIVATED
-      user.created_at = new Date()
-      user.updated_at = new Date()
-
-      await ds.getRepository<User>(User).save(user)
+      await ds.getRepository<User>(User).insert({
+        id: 1,
+        name: 'Vo Duc Huy',
+        email: email,
+        password: bcrypt.hashSync(password, 10),
+        status: BaseStatusEnum.ACTIVATED,
+        created_at: new Date(),
+        updated_at: new Date()
+      })
     } catch (error) {
       throw error
     }
