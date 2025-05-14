@@ -2,7 +2,7 @@ import logger from '@config/logging'
 import { DataSource, DataSourceOptions } from 'typeorm'
 import { NodeEnvironment } from 'types'
 
-const env = (process.env.NODE_ENV || 'development') as NodeEnvironment
+const env = (process.env.NODE_ENVIRONMENT || 'development') as NodeEnvironment
 
 const basePath = __dirname
 
