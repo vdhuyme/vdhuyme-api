@@ -1,18 +1,12 @@
-import { body, ValidationChain } from 'express-validator'
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator'
 
-export const loginRequest: ValidationChain[] = [
-  body('email')
-    .notEmpty()
-    .withMessage('Email is required')
-    .isEmail()
-    .withMessage('Invalid email format')
-    .trim()
-    .normalizeEmail(),
-  body('password')
-    .notEmpty()
-    .withMessage('Password is required')
-    .isString()
-    .withMessage('Password must be a string')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long')
-]
+export default class LoginRequest {
+  @IsNotEmpty({ message: 'Email is required' })
+  @IsEmail({}, { message: 'Invalid email format' })
+  email!: string
+
+  @IsNotEmpty({ message: 'Password is required' })
+  @IsString({ message: 'Password must be a string' })
+  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  password!: string
+}

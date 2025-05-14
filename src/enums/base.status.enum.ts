@@ -4,7 +4,9 @@ enum BaseStatusEnum {
   ARCHIVED = 'archived',
   REJECTED = 'rejected',
   APPROVED = 'approved',
-  HANDLED = 'handled'
+  HANDLED = 'handled',
+  ACTIVATED = 'activated',
+  BLOCKED = 'blocked'
 }
 
 export default BaseStatusEnum

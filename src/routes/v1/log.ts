@@ -25,19 +25,14 @@ router.get('/', auth(), (req: Request, res: Response, next: NextFunction) => {
   const { date, type } = req.query as { date?: string; type?: 'combined' | 'error' }
 
   const logDir: string = storage.storagePath('logs')
-
   const selectedDate = date || new Date().toISOString().slice(0, 10)
   const selectedType = type || 'combined'
-
   const logFileName = `${selectedType}-${selectedDate}.json`
   const logFilePath = path.join(logDir, logFileName)
-
   if (!fs.existsSync(logFilePath)) {
     return next(new BadRequestException(`Not found ${logFileName} file`))
   }
-
   const fileContent = fs.readFileSync(logFilePath, 'utf-8')
-
   const logs = parseJsonLines(fileContent)
 
   res.status(OK).json({

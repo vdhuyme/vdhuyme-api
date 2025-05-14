@@ -1,36 +1,19 @@
-import { isAfter, isValid, parseISO } from 'date-fns'
-import { body, ValidationChain } from 'express-validator'
+import { IsISO8601, IsNotEmpty, IsString, Validate } from 'class-validator'
+import { IsAfterConstraint } from '@validators/is-after.constraint'
 
-export const createLicenseRequest: ValidationChain[] = [
-  body('licensedTo')
-    .notEmpty()
-    .withMessage('Licensed to is required')
-    .isString()
-    .withMessage('Licensed to must be a string')
-    .trim(),
-  body('activatedAt')
-    .notEmpty()
-    .withMessage('Activation date is required')
-    .bail()
-    .isISO8601()
-    .withMessage('Activation date must be a valid ISO 8601 date'),
-  body('expiresAt')
-    .notEmpty()
-    .withMessage('Expiration date is required')
-    .bail()
-    .custom((value, { req }) => {
-      const expiresAt = parseISO(value)
-      const activatedAt = parseISO(req.body.activatedAt)
+export default class CreateLicenseRequest {
+  @IsNotEmpty({ message: 'Licensed to is required' })
+  @IsString({ message: 'Licensed to must be a string' })
+  licensedTo!: string
 
-      if (!isValid(expiresAt) || !isValid(activatedAt)) {
-        throw new Error('Dates must be valid ISO8601 strings')
-      }
+  @IsNotEmpty({ message: 'Activation date is required' })
+  @IsISO8601({}, { message: 'Activation date must be a valid ISO 8601 date' })
+  activatedAt!: string
 
-      if (!isAfter(expiresAt, activatedAt)) {
-        throw new Error('Expiration date must be after activation date')
-      }
-
-      return true
-    })
-    .trim()
-]
+  @IsNotEmpty({ message: 'Expiration date is required' })
+  @IsISO8601({}, { message: 'Expiration date must be a valid ISO 8601 date' })
+  @Validate(IsAfterConstraint, ['activatedAt'], {
+    message: 'Expiration date must be after activation date'
+  })
+  expiresAt!: string
+}

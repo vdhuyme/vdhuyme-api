@@ -1,10 +1,7 @@
+import { IsEnum } from 'class-validator'
 import BaseStatusEnum from '@enums/base.status.enum'
-import { body, ValidationChain } from 'express-validator'
 
-export const updateLicenseStatusRequest: ValidationChain[] = [
-  body('status')
-    .notEmpty()
-    .withMessage('Status is required')
-    .isIn(Object.values(BaseStatusEnum))
-    .withMessage('Invalid status')
-]
+export default class UpdateLicenseStatusRequest {
+  @IsEnum(BaseStatusEnum, { message: 'Invalid status' })
+  status!: BaseStatusEnum
+}

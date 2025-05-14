@@ -5,6 +5,16 @@ import HttpException from '@exceptions/http.exception'
 import logger from '@config/logging'
 
 export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
+  const data = {
+    method: req.method,
+    url: req.originalUrl,
+    params: req.params,
+    query: req.query,
+    body: req.body,
+    error: err.message,
+    stack: err.stack
+  }
+
   switch (true) {
     case err instanceof ValidationException:
       res.status((err as ValidationException).status).json({
@@ -15,7 +25,10 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
       break
 
     case err instanceof HttpException:
-      logger.error(`${req.method} ${req.originalUrl} - ${err.message}`)
+      logger.error('HTTP Exception', {
+        ...data,
+        status: err.status
+      })
 
       res.status((err as HttpException).status).json({
         status: err.status,
@@ -23,7 +36,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
       })
 
     default:
-      logger.error(`${req.method} ${req.originalUrl} - ${err.message}`)
+      logger.error('Unhandled Error', data)
 
       res.status(INTERNAL_SERVER_ERROR).json({
         message: 'Internal Server Error',

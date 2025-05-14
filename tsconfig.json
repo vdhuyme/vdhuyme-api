@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
     "target": "ES2020",
     "module": "CommonJS",
     "strict": true,
@@ -21,9 +24,14 @@
       "@storage/*": ["storage/*"],
       "@enums/*": ["enums/*"],
       "@mail/*": ["mail/*"],
-      "@views/*": ["views/*"]
+      "@views/*": ["views/*"],
+      "@entities/*": ["entities/*"],
+      "@migrations/*": ["migrations/*"],
+      "@seeders/*": ["seeders/*"],
+      "@types/*": ["migrations/*"],
+      "@validators/*": ["validators/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

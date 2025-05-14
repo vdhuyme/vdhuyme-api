@@ -1,11 +1,7 @@
-import { body, ValidationChain } from 'express-validator'
+import { IsNotEmpty, IsString } from 'class-validator'
 
-const getLicenseRequest: ValidationChain[] = [
-  body('token')
-    .notEmpty()
-    .withMessage('Token is required')
-    .isString()
-    .withMessage('Token must be a string')
-]
-
-export { getLicenseRequest }
+export default class GetLicenseRequest {
+  @IsNotEmpty({ message: 'Token is required' })
+  @IsString({ message: 'Token must be a string' })
+  token!: string
+}

@@ -1,67 +1,70 @@
-import { db, Post } from '@config/database'
+import { Post } from '@entities/post'
 import BaseStatusEnum from '@enums/base.status.enum'
 import BadRequestException from '@exceptions/bad.request.exception'
 import { auth } from '@middlewares/authenticated'
 import { validate } from '@middlewares/validation'
-import { createPostRequest } from '@requests/create.post.request'
-import { updatePostRequest } from '@requests/update.post.request'
-import { updatePostStatusRequest } from '@requests/update.post.status.request'
+import CreatePostRequest from '@requests/create.post.request'
+import UpdatePostRequest from '@requests/update.post.request'
+import UpdatePostStatusRequest from '@requests/update.post.status.request'
 import { CREATED, OK } from '@utils/http.status.code'
-import { id } from '@utils/id'
-import { timestamp } from '@utils/timestamp'
+import { db } from 'data-source'
 import express, { NextFunction, Request, Response } from 'express'
 
 const router = express.Router()
 
-router.post('/', auth(), validate(createPostRequest), async (req: Request, res: Response) => {
-  const { title, content, description, images, thumbnail } = req.body
-  const post: Post = {
-    id: id(),
+router.post('/', auth(), validate(CreatePostRequest), async (req: Request, res: Response) => {
+  const { title, content, description, images, thumbnail } = req.body as CreatePostRequest
+
+  const postRepository = db.getRepository<Post>(Post)
+  const post = postRepository.create({
     title,
     description,
     content,
     images,
     thumbnail,
-    status: BaseStatusEnum.PUBLISHED,
-    createdAt: timestamp(),
-    updatedAt: timestamp()
-  }
-  db.data.posts.push(post)
-  await db.write()
+    status: BaseStatusEnum.PUBLISHED
+  })
+
+  await postRepository.save(post)
   res.status(CREATED).json({ message: 'success' })
 })
 
-router.get('/', auth(), (req: Request, res: Response) => {
-  const posts = db.data.posts
+router.get('/', auth(), async (req: Request, res: Response) => {
+  const postRepository = db.getRepository<Post>(Post)
+  const posts = await postRepository.find({ order: { created_at: 'DESC' } })
+
   res.status(OK).json({ posts })
 })
 
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.params
-  const post = db.data.posts.find((post) => post.id === id)
+  const id = Number(req.params.id)
+
+  const postRepository = db.getRepository<Post>(Post)
+  const post = await postRepository.findOne({ where: { id } })
   if (!post) {
     return next(new BadRequestException(`Not found post: ${id}`))
   }
-  db.data.posts = db.data.posts.filter((post) => post.id !== id)
-  await db.write()
+
+  await postRepository.remove(post)
   res.status(OK).json({ message: 'success' })
 })
 
 router.patch(
   '/:id',
   auth(),
-  validate(updatePostStatusRequest),
+  validate(UpdatePostStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
-    const { status } = req.body
-    const post = db.data.posts.find((post) => post.id === id)
+    const id = Number(req.params.id)
+    const { status } = req.body as UpdatePostStatusRequest
+
+    const postRepository = db.getRepository(Post)
+    const post = await postRepository.findOne({ where: { id } })
     if (!post) {
       return next(new BadRequestException(`Not found post: ${id}`))
     }
-
     post.status = status
-    post.updatedAt = timestamp()
-    await db.write()
+    await postRepository.save(post)
+
     res.status(OK).json({ message: 'success' })
   }
 )
@@ -69,21 +72,23 @@ router.patch(
 router.put(
   '/:id',
   auth(),
-  validate(updatePostRequest),
+  validate(UpdatePostRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
-    const { title, content, description, status } = req.body
-    const post = db.data.posts.find((post) => post.id === id)
+    const id = Number(req.params.id)
+    const { title, description, thumbnail, images, content } = req.body as UpdatePostRequest
+
+    const postRepository = db.getRepository(Post)
+    const post = await postRepository.findOne({ where: { id } })
     if (!post) {
       return next(new BadRequestException(`Not found post: ${id}`))
     }
-
     post.title = title
     post.content = content
     post.description = description
-    post.status = status
-    post.updatedAt = timestamp()
-    await db.write()
+    post.thumbnail = thumbnail
+    post.images = images
+    await postRepository.save(post)
+
     res.status(OK).json({ message: 'success' })
   }
 )

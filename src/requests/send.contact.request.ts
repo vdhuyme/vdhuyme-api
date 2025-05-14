@@ -1,25 +1,15 @@
-import { body, ValidationChain } from 'express-validator'
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
 
-export const sendContactRequest: ValidationChain[] = [
-  body('name')
-    .trim()
-    .notEmpty()
-    .withMessage('Name is required')
-    .isLength({ min: 2, max: 50 })
-    .withMessage('Name must be between 2 and 50 characters'),
+export default class SendContactRequest {
+  @IsNotEmpty()
+  @IsString()
+  name: string
 
-  body('email')
-    .trim()
-    .notEmpty()
-    .withMessage('Email is required')
-    .isEmail()
-    .withMessage('Must be a valid email address')
-    .normalizeEmail(),
+  @IsNotEmpty()
+  @IsEmail()
+  email: string
 
-  body('message')
-    .trim()
-    .notEmpty()
-    .withMessage('Message is required')
-    .isLength({ min: 10, max: 1000 })
-    .withMessage('Message must be between 10 and 1000 characters')
-]
+  @IsNotEmpty()
+  @IsString()
+  message: string
+}
