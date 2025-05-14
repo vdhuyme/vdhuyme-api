@@ -28,7 +28,8 @@
       "@entities/*": ["entities/*"],
       "@migrations/*": ["migrations/*"],
       "@seeders/*": ["seeders/*"],
-      "@types/*": ["migrations/*"]
+      "@types/*": ["migrations/*"],
+      "@validators/*": ["validators/*"]
     }
   },
   "include": ["src/**/*.ts"],

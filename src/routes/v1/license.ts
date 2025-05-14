@@ -1,17 +1,17 @@
 import express, { NextFunction, Request, Response } from 'express'
 import { OK } from '@utils/http.status.code'
-import { getLicenseRequest } from '@requests/get.license.request'
 import { validate } from '@middlewares/validation'
 import { auth } from '@middlewares/authenticated'
-import { createLicenseRequest } from '@requests/create.license.request'
+import CreateLicenseRequest from '@requests/create.license.request'
 import UnauthorizedException from '@exceptions/unauthorized.exception'
 import jsonwebtoken from '@config/jsonwebtoken'
 import BadRequestException from '@exceptions/bad.request.exception'
 import BaseStatusEnum from '@enums/base.status.enum'
-import { updateLicenseStatusRequest } from '@requests/update.license.status.request'
 import { isAfter, isBefore, parseISO } from 'date-fns'
 import { db } from 'data-source'
 import { License } from '@entities/license'
+import GetLicenseRequest from '@requests/get.license.request'
+import UpdateLicenseStatusRequest from '@requests/update.license.status.request'
 
 const router = express.Router()
 
@@ -21,8 +21,8 @@ router.get('/', auth(), async (_req: Request, res: Response) => {
   res.status(OK).json({ licenses })
 })
 
-router.post('/', auth(), validate(createLicenseRequest), async (req: Request, res: Response) => {
-  const { licensedTo, activatedAt, expiresAt } = req.body
+router.post('/', auth(), validate(CreateLicenseRequest), async (req: Request, res: Response) => {
+  const { licensedTo, activatedAt, expiresAt } = req.body as CreateLicenseRequest
 
   const activatedDate = new Date(activatedAt)
   const expiresDate = new Date(expiresAt)
@@ -60,10 +60,10 @@ router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunc
 router.patch(
   '/:id',
   auth(),
-  validate(updateLicenseStatusRequest),
+  validate(UpdateLicenseStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
-    const { status } = req.body
+    const { status } = req.body as UpdateLicenseStatusRequest
 
     const licenseRepository = db.getRepository(License)
     const license = await licenseRepository.findOneBy({ id })
@@ -80,9 +80,9 @@ router.patch(
 
 router.post(
   '/validate',
-  validate(getLicenseRequest),
+  validate(GetLicenseRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req.body
+    const { token } = req.body as GetLicenseRequest
 
     const licenseRepository = db.getRepository(License)
     const found = await licenseRepository.findOneBy({

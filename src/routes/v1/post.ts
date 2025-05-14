@@ -3,17 +3,17 @@ import BaseStatusEnum from '@enums/base.status.enum'
 import BadRequestException from '@exceptions/bad.request.exception'
 import { auth } from '@middlewares/authenticated'
 import { validate } from '@middlewares/validation'
-import { createPostRequest } from '@requests/create.post.request'
-import { updatePostRequest } from '@requests/update.post.request'
-import { updatePostStatusRequest } from '@requests/update.post.status.request'
+import CreatePostRequest from '@requests/create.post.request'
+import UpdatePostRequest from '@requests/update.post.request'
+import UpdatePostStatusRequest from '@requests/update.post.status.request'
 import { CREATED, OK } from '@utils/http.status.code'
 import { db } from 'data-source'
 import express, { NextFunction, Request, Response } from 'express'
 
 const router = express.Router()
 
-router.post('/', auth(), validate(createPostRequest), async (req: Request, res: Response) => {
-  const { title, content, description, images, thumbnail } = req.body
+router.post('/', auth(), validate(CreatePostRequest), async (req: Request, res: Response) => {
+  const { title, content, description, images, thumbnail } = req.body as CreatePostRequest
 
   const postRepository = db.getRepository<Post>(Post)
   const post = postRepository.create({
@@ -52,10 +52,10 @@ router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunc
 router.patch(
   '/:id',
   auth(),
-  validate(updatePostStatusRequest),
+  validate(UpdatePostStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
-    const { status } = req.body
+    const { status } = req.body as UpdatePostStatusRequest
 
     const postRepository = db.getRepository(Post)
     const post = await postRepository.findOne({ where: { id } })
@@ -72,10 +72,10 @@ router.patch(
 router.put(
   '/:id',
   auth(),
-  validate(updatePostRequest),
+  validate(UpdatePostRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
-    const { title, description, thumbnail, images, content } = req.body
+    const { title, description, thumbnail, images, content } = req.body as UpdatePostRequest
 
     const postRepository = db.getRepository(Post)
     const post = await postRepository.findOne({ where: { id } })

@@ -4,8 +4,8 @@ import BadRequestException from '@exceptions/bad.request.exception'
 import ContactMail from '@mail/contact.mail'
 import { auth } from '@middlewares/authenticated'
 import { validate } from '@middlewares/validation'
-import { sendContactRequest } from '@requests/send.contact.request'
-import { updateContactStatusRequest } from '@requests/update.contact.status.request'
+import SendContactRequest from '@requests/send.contact.request'
+import UpdateContactStatusRequest from '@requests/update.contact.status.request'
 import { OK } from '@utils/http.status.code'
 import { db } from 'data-source'
 import express, { NextFunction, Request, Response } from 'express'
@@ -21,10 +21,10 @@ router.get('/', auth(), async (req: Request, res: Response) => {
 router.patch(
   '/:id',
   auth(),
-  validate(updateContactStatusRequest),
+  validate(UpdateContactStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
-    const { status } = req.body
+    const { status } = req.body as UpdateContactStatusRequest
 
     const contactRepository = db.getRepository<Contact>(Contact)
     const contact = await contactRepository.findOneBy({ id })
@@ -38,8 +38,8 @@ router.patch(
   }
 )
 
-router.post('/', validate(sendContactRequest), async (req: Request, res: Response) => {
-  const { email, name, message } = req.body
+router.post('/', validate(SendContactRequest), async (req: Request, res: Response) => {
+  const { email, name, message } = req.body as SendContactRequest
 
   const contactRepository = db.getRepository<Contact>(Contact)
   const contact = contactRepository.create({
