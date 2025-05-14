@@ -4,14 +4,15 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "dev": "ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
-    "prettier": "prettier --write .",
     "start": "node dist/index.js",
+    "production": "npm run build && npm start",
+    "dev": "ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
     "typeorm": "node -r ts-node/register -r tsconfig-paths/register ./typeorm-cli.js",
     "migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
     "migration:up": "npm run typeorm -- migration:run -d src/data-source.ts",
     "migration:undo": "npm run typeorm -- migration:revert -d src/data-source.ts",
-    "seed:up": "ts-node ./node_modules/@jorgebodega/typeorm-seeding/dist/cli.js seed -d src/data-source.ts src/seeders/**/*.ts"
+    "seed:up": "ts-node -r tsconfig-paths/register ./node_modules/@jorgebodega/typeorm-seeding/dist/cli.js seed -d src/data-source.ts src/seeders/**/*.ts",
+    "prettier:fix": "prettier --write ."
   },
   "keywords": [
     "vdhuyme_api",
@@ -22,6 +23,7 @@
   "license": "ISC",
   "description": "VDH BE Portfolio",
   "dependencies": {
+    "@jorgebodega/typeorm-seeding": "^7.1.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
@@ -30,12 +32,10 @@
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
-    "lowdb": "^7.0.1",
     "nodemailer": "^7.0.3",
     "reflect-metadata": "^0.2.2",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.23",
-    "uuid": "^11.1.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
@@ -43,6 +43,7 @@
     "@types/cors": "^2.8.18",
     "@types/ejs": "^3.1.5",
     "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.17",
     "@types/nodemailer": "^6.4.17",
     "prettier": "^3.5.3",

@@ -1,12 +1,18 @@
 import express, { Request, Response } from 'express'
 import { OK } from '@utils/http.status.code'
-import { db } from '@config/database'
 import BaseStatusEnum from '@enums/base.status.enum'
+import { Post } from '@entities/post'
+import { db } from 'data-source'
 
 const router = express.Router()
 
-router.get('/', (req: Request, res: Response) => {
-  const posts = db.data.posts.filter((p) => p.status === BaseStatusEnum.PUBLISHED)
+router.get('/', async (req: Request, res: Response) => {
+  const postRepository = db.getRepository<Post>(Post)
+  const posts = await postRepository.find({
+    where: { status: BaseStatusEnum.PUBLISHED },
+    order: { created_at: 'DESC' }
+  })
+
   res.status(OK).json({ posts })
 })
 

@@ -3,7 +3,7 @@ import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedCol
 @Entity({ name: 'licenses' })
 export class License {
   @PrimaryGeneratedColumn()
-  id: string
+  id: number
 
   @Column('varchar')
   licensed_to: string

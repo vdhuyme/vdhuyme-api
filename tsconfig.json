@@ -26,7 +26,9 @@
       "@mail/*": ["mail/*"],
       "@views/*": ["views/*"],
       "@entities/*": ["entities/*"],
-      "@migrations/*": ["migrations/*"]
+      "@migrations/*": ["migrations/*"],
+      "@seeders/*": ["seeders/*"],
+      "@types/*": ["migrations/*"]
     }
   },
   "include": ["src/**/*.ts"],

@@ -1,4 +1,3 @@
-import BaseStatusEnum from '@enums/base.status.enum'
 import { body, ValidationChain } from 'express-validator'
 
 export const updatePostRequest: ValidationChain[] = [
@@ -23,9 +22,7 @@ export const updatePostRequest: ValidationChain[] = [
     .withMessage('Content must be a string')
     .isLength({ min: 10 })
     .withMessage('Content must be at least 10 characters'),
-  body('status')
-    .notEmpty()
-    .withMessage('Status is required')
-    .isIn(Object.values(BaseStatusEnum))
-    .withMessage('Invalid status')
+  body('thumbnail').optional().isString().withMessage('Thumbnail must be a string'),
+  body('images').optional().isArray().withMessage('Images must be an array of strings'),
+  body('images.*').isString().withMessage('Each image must be a string')
 ]
