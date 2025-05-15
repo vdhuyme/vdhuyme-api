@@ -4,6 +4,7 @@ import BadRequestException from '@exceptions/bad.request.exception'
 import { auth } from '@middlewares/authenticated'
 import { validate } from '@middlewares/validation'
 import CreatePostRequest from '@requests/create.post.request'
+import FilterPostRequest from '@requests/filter.post.request'
 import UpdatePostRequest from '@requests/update.post.request'
 import UpdatePostStatusRequest from '@requests/update.post.status.request'
 import { CREATED, OK } from '@utils/http.status.code'
@@ -14,7 +15,8 @@ import { In } from 'typeorm'
 const router = express.Router()
 
 router.post('/', auth(), validate(CreatePostRequest), async (req: Request, res: Response) => {
-  const { title, description, content, thumbnail, slug, categories } = req.body as CreatePostRequest
+  const { title, description, content, thumbnail, slug, categories } =
+    req.validated as CreatePostRequest
   const { userId } = req.auth
 
   const postRepository = db.getRepository<Post>(Post)
@@ -39,12 +41,22 @@ router.post('/', auth(), validate(CreatePostRequest), async (req: Request, res: 
   res.status(CREATED).json({ message: 'success' })
 })
 
-router.get('/', auth(), async (req: Request, res: Response) => {
-  const postRepository = db.getRepository<Post>(Post)
-  const posts = await postRepository.find({ order: { createdAt: 'DESC' } })
+router.get(
+  '/',
+  auth(),
+  validate(FilterPostRequest, 'query'),
+  async (req: Request, res: Response) => {
+    const { page, limit, query, sort } = req.validated as FilterPostRequest
 
-  res.status(OK).json({ posts })
-})
+    const skip = (page - 1) * limit
+    const postRepository = db.getRepository<Post>(Post)
+    const builder = postRepository.createQueryBuilder('post')
+    query && builder.andWhere('post.title LIKE :query COLLATE NOCASE', { query: `%${query}%` })
+    const posts = await builder.orderBy('post.created_at', sort).skip(skip).take(limit).getMany()
+
+    res.status(OK).json({ posts })
+  }
+)
 
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
   const id = Number(req.params.id)
@@ -65,7 +77,7 @@ router.patch(
   validate(UpdatePostStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
-    const { status } = req.body as UpdatePostStatusRequest
+    const { status } = req.validated as UpdatePostStatusRequest
 
     const postRepository = db.getRepository(Post)
     const post = await postRepository.findOne({ where: { id } })
@@ -86,7 +98,7 @@ router.put(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
     const { title, description, content, thumbnail, slug, categories } =
-      req.body as UpdatePostRequest
+      req.validated as UpdatePostRequest
     const { userId } = req.auth
 
     const postRepository = db.getRepository<Post>(Post)

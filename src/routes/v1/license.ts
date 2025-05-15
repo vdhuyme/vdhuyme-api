@@ -15,14 +15,14 @@ import UpdateLicenseStatusRequest from '@requests/update.license.status.request'
 
 const router = express.Router()
 
-router.get('/', auth(), async (_req: Request, res: Response) => {
+router.get('/', auth(), async (req: Request, res: Response) => {
   const licenses = await db.getRepository<License>(License).find({ order: { createdAt: 'DESC' } })
 
   res.status(OK).json({ licenses })
 })
 
 router.post('/', auth(), validate(CreateLicenseRequest), async (req: Request, res: Response) => {
-  const { licensedTo, activatedAt, expiresAt } = req.body as CreateLicenseRequest
+  const { licensedTo, activatedAt, expiresAt } = req.validated as CreateLicenseRequest
 
   const activatedDate = new Date(activatedAt)
   const expiresDate = new Date(expiresAt)
@@ -62,7 +62,7 @@ router.patch(
   validate(UpdateLicenseStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
-    const { status } = req.body as UpdateLicenseStatusRequest
+    const { status } = req.validated as UpdateLicenseStatusRequest
 
     const licenseRepository = db.getRepository(License)
     const license = await licenseRepository.findOneBy({ id })
@@ -81,7 +81,7 @@ router.post(
   '/validate',
   validate(GetLicenseRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req.body as GetLicenseRequest
+    const { token } = req.validated as GetLicenseRequest
 
     const licenseRepository = db.getRepository(License)
     const found = await licenseRepository.findOneBy({

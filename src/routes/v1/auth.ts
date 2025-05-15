@@ -15,7 +15,7 @@ router.post(
   '/login',
   validate(LoginRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password } = req.body as LoginRequest
+    const { email, password } = req.validated as LoginRequest
 
     const user = await db
       .getRepository<User>(User)

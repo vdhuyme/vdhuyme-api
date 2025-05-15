@@ -53,4 +53,17 @@ router.post('/', validate(SendContactRequest), async (req: Request, res: Respons
   res.json({ message: 'success' })
 })
 
+router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
+  const id = Number(req.params.id)
+
+  const contactRepository = db.getRepository<Contact>(Contact)
+  const contact = await contactRepository.findOne({ where: { id } })
+  if (!contact) {
+    return next(new BadRequestException(`Not found contact: ${id}`))
+  }
+
+  await contactRepository.remove(contact)
+  res.status(OK).json({ message: 'success' })
+})
+
 export default router

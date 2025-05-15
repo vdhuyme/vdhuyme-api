@@ -4,7 +4,8 @@ enum BaseStatusEnum {
   ARCHIVED = 'archived',
   ACTIVATED = 'activated',
   BLOCKED = 'blocked',
-  DRAFTED = 'drafted'
+  DRAFTED = 'drafted',
+  OK = 'ok'
 }
 
 export default BaseStatusEnum
