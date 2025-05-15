@@ -1,6 +1,7 @@
 import express from 'express'
 import auth from '@routes/v1/auth'
 import contact from '@routes/v1/contact'
+import health from '@routes/v1/health'
 import license from '@routes/v1/license'
 import log from '@routes/v1/log'
 import post from '@routes/v1/post'
@@ -10,6 +11,7 @@ const router = express.Router()
 
 router.use('/auth', auth)
 router.use('/contacts', contact)
+router.use('/health', health)
 router.use('/licenses', license)
 router.use('/logs', log)
 router.use('/posts', post)

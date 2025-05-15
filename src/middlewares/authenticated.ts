@@ -1,12 +1,11 @@
-import jsonwebtoken from '@config/jsonwebtoken'
+import jsonwebtoken, { IJwtAuthUserPayload } from '@config/jsonwebtoken'
 import UnauthorizedException from '@exceptions/unauthorized.exception'
 import { NextFunction, Request, Response } from 'express'
-import { JwtPayload } from 'jsonwebtoken'
 
 declare global {
   namespace Express {
     interface Request {
-      auth?: JwtPayload | string
+      auth: IJwtAuthUserPayload
     }
   }
 }
@@ -18,8 +17,8 @@ export const auth = () => async (req: Request, res: Response, next: NextFunction
   }
 
   try {
-    const decoded: JwtPayload | string = jsonwebtoken.verify(token)
-    req.auth = decoded
+    const decoded = jsonwebtoken.verify(token)
+    req.auth = decoded as IJwtAuthUserPayload
   } catch (error: any) {
     const messages = {
       JsonWebTokenError: 'Invalid token',

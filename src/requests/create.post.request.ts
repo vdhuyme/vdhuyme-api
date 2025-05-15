@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString, Length, MinLength } from 'class-validator'
+import { IsArray, IsOptional, IsString, Length, MinLength, IsInt } from 'class-validator'
 
 export default class CreatePostRequest {
   @IsString({ message: 'Title must be a string' })
@@ -6,7 +6,7 @@ export default class CreatePostRequest {
   title!: string
 
   @IsString({ message: 'Description must be a string' })
-  @Length(3, 10000, { message: 'Description must be between 3 and 10000 characters' })
+  @Length(3, 1000, { message: 'Description must be between 3 and 1000 characters' })
   description!: string
 
   @IsString({ message: 'Content must be a string' })
@@ -17,8 +17,12 @@ export default class CreatePostRequest {
   @IsString({ message: 'Thumbnail must be a string' })
   thumbnail?: string
 
+  @IsString({ message: 'Slug must be a string' })
+  @Length(3, 1000, { message: 'Slug must be between 3 and 1000 characters' })
+  slug!: string
+
   @IsOptional()
-  @IsArray({ message: 'Images must be an array of strings' })
-  @IsString({ each: true, message: 'Each image must be a string' })
-  images?: string[]
+  @IsArray({ message: 'Categories must be an array of IDs' })
+  @IsInt({ each: true, message: 'Each category ID must be a valid Integer' })
+  categories?: number[]
 }

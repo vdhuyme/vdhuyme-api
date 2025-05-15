@@ -16,7 +16,7 @@ import UpdateLicenseStatusRequest from '@requests/update.license.status.request'
 const router = express.Router()
 
 router.get('/', auth(), async (_req: Request, res: Response) => {
-  const licenses = await db.getRepository<License>(License).find({ order: { created_at: 'DESC' } })
+  const licenses = await db.getRepository<License>(License).find({ order: { createdAt: 'DESC' } })
 
   res.status(OK).json({ licenses })
 })
@@ -33,11 +33,10 @@ router.post('/', auth(), validate(CreateLicenseRequest), async (req: Request, re
   const licenseRepository = db.getRepository<License>(License)
 
   const license = licenseRepository.create({
-    licensed_to: licensedTo,
-    activated_at: activatedAt,
-    expires_at: expiresAt,
-    token,
-    status: BaseStatusEnum.APPROVED
+    licensedTo,
+    activatedAt,
+    expiresAt,
+    token
   })
 
   await licenseRepository.save(license)
@@ -87,7 +86,7 @@ router.post(
     const licenseRepository = db.getRepository(License)
     const found = await licenseRepository.findOneBy({
       token,
-      status: BaseStatusEnum.APPROVED
+      status: BaseStatusEnum.ACTIVATED
     })
 
     if (!found) {
@@ -95,8 +94,8 @@ router.post(
     }
 
     const now = new Date()
-    const activatedAt = parseISO(found.activated_at)
-    const expiresAt = parseISO(found.expires_at)
+    const activatedAt = parseISO(found.activatedAt)
+    const expiresAt = parseISO(found.expiresAt)
 
     if (isBefore(now, activatedAt)) {
       return next(new UnauthorizedException('License is not active yet'))

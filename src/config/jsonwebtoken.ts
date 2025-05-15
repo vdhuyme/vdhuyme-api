@@ -1,8 +1,15 @@
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 
 interface IJsonWebToken {
   generate(data: Record<string, any>, expiresIn?: number): string
-  verify(token: string): JwtPayload | string
+  verify(token: string): IJwtAuthUserPayload
+}
+
+export interface IJwtAuthUserPayload {
+  userId: number
+  email: string
+  iat?: number
+  exp?: number
 }
 
 class JsonWebToken implements IJsonWebToken {
@@ -18,8 +25,9 @@ class JsonWebToken implements IJsonWebToken {
     return jwt.sign(data, this.tokenKey, { expiresIn: expiresIn || this.expiresIn })
   }
 
-  verify(token: string): JwtPayload | string {
-    return jwt.verify(token, this.tokenKey)
+  verify(token: string): IJwtAuthUserPayload {
+    const decoded = jwt.verify(token, this.tokenKey)
+    return decoded as IJwtAuthUserPayload
   }
 }
 

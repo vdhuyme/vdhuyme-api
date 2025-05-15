@@ -1,28 +1,29 @@
+import BaseStatusEnum from '@enums/base.status.enum'
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity({ name: 'licenses' })
 export class License {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id' })
   id: number
 
-  @Column('varchar')
-  licensed_to: string
+  @Column({ name: 'licensed_to', type: 'varchar', length: 255 })
+  licensedTo: string
 
-  @Column('date')
-  activated_at: string
+  @Column({ name: 'activated_at', type: 'date' })
+  activatedAt: string
 
-  @Column('date')
-  expires_at: string
+  @Column({ name: 'expires_at', type: 'date' })
+  expiresAt: string
 
-  @Column('text')
+  @Column({ name: 'token', type: 'text' })
   token: string
 
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ name: 'status', type: 'varchar', length: 50, default: BaseStatusEnum.ACTIVATED })
   status: string
 
-  @CreateDateColumn()
-  created_at: Date
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date
 
-  @UpdateDateColumn()
-  updated_at: Date
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date
 }

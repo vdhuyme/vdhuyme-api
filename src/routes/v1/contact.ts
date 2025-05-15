@@ -1,5 +1,4 @@
 import { Contact } from '@entities/contact'
-import BaseStatusEnum from '@enums/base.status.enum'
 import BadRequestException from '@exceptions/bad.request.exception'
 import ContactMail from '@mail/contact.mail'
 import { auth } from '@middlewares/authenticated'
@@ -13,7 +12,7 @@ import express, { NextFunction, Request, Response } from 'express'
 const router = express.Router()
 
 router.get('/', auth(), async (req: Request, res: Response) => {
-  const contacts = await db.getRepository<Contact>(Contact).find({ order: { created_at: 'DESC' } })
+  const contacts = await db.getRepository<Contact>(Contact).find({ order: { createdAt: 'DESC' } })
 
   res.status(OK).json({ contacts })
 })
@@ -45,8 +44,7 @@ router.post('/', validate(SendContactRequest), async (req: Request, res: Respons
   const contact = contactRepository.create({
     email,
     name,
-    message,
-    status: BaseStatusEnum.PENDING
+    message
   })
   const mail = new ContactMail(contact)
   await mail.send()

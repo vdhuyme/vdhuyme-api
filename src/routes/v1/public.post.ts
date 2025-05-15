@@ -10,7 +10,7 @@ router.get('/', async (req: Request, res: Response) => {
   const postRepository = db.getRepository<Post>(Post)
   const posts = await postRepository.find({
     where: { status: BaseStatusEnum.PUBLISHED },
-    order: { created_at: 'DESC' }
+    order: { createdAt: 'DESC' }
   })
 
   res.status(OK).json({ posts })

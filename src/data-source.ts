@@ -15,7 +15,8 @@ const config: Record<NodeEnvironment, DataSourceOptions> = {
     synchronize: true,
     logging: true,
     entities: [path.join(basePath, 'entities', '**', '*{.ts,.js}')],
-    migrations: [path.join(basePath, 'migrations', '**', '*{.ts,.js}')]
+    migrations: [path.join(basePath, 'migrations', '**', '*{.ts,.js}')],
+    subscribers: [path.join(basePath, 'subscribers', '**', '*{.ts,.js}')]
   },
   production: {
     type: 'sqlite',
@@ -23,7 +24,8 @@ const config: Record<NodeEnvironment, DataSourceOptions> = {
     synchronize: false,
     logging: true,
     entities: [path.join(basePath, 'entities', '**', '*{.ts,.js}')],
-    migrations: [path.join(basePath, 'migrations', '**', '*{.ts,.js}')]
+    migrations: [path.join(basePath, 'migrations', '**', '*{.ts,.js}')],
+    subscribers: [path.join(basePath, 'subscribers', '**', '*{.ts,.js}')]
   },
   test: {
     type: 'sqlite',
@@ -31,7 +33,8 @@ const config: Record<NodeEnvironment, DataSourceOptions> = {
     synchronize: true,
     logging: false,
     entities: [path.join(basePath, 'entities', '**', '*{.ts,.js}')],
-    migrations: []
+    migrations: [],
+    subscribers: []
   }
 }
 

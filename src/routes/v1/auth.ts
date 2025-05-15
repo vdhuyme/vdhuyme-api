@@ -26,7 +26,7 @@ router.post(
     if (!bcrypt.compareSync(password, user.password)) {
       return next(new UnauthorizedException('Invalid credentials'))
     }
-    const token = jsonwebtoken.generate({ email })
+    const token = jsonwebtoken.generate({ userId: user.id, email: user.email })
 
     res.status(OK).json({ token })
   }
