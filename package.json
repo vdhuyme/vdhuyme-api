@@ -23,6 +23,7 @@
   "license": "ISC",
   "description": "VDH BE Portfolio",
   "dependencies": {
+    "@google-analytics/data": "^5.1.0",
     "@jorgebodega/typeorm-seeding": "^7.1.0",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
