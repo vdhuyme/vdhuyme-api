@@ -10,9 +10,10 @@ import { db } from 'data-source'
 import express, { NextFunction, Request, Response } from 'express'
 
 const router = express.Router()
+const contactRepository = db.getRepository<Contact>(Contact)
 
 router.get('/', auth(), async (req: Request, res: Response) => {
-  const contacts = await db.getRepository<Contact>(Contact).find({ order: { createdAt: 'DESC' } })
+  const contacts = await contactRepository.find({ order: { createdAt: 'DESC' } })
 
   res.status(OK).json({ contacts })
 })
@@ -23,9 +24,8 @@ router.patch(
   validate(UpdateContactStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
-    const { status } = req.body as UpdateContactStatusRequest
+    const { status } = req.validated as UpdateContactStatusRequest
 
-    const contactRepository = db.getRepository<Contact>(Contact)
     const contact = await contactRepository.findOneBy({ id })
     if (!contact) {
       return next(new BadRequestException(`Not found contact: ${id}`))
@@ -38,9 +38,8 @@ router.patch(
 )
 
 router.post('/', validate(SendContactRequest), async (req: Request, res: Response) => {
-  const { email, name, message } = req.body as SendContactRequest
+  const { email, name, message } = req.validated as SendContactRequest
 
-  const contactRepository = db.getRepository<Contact>(Contact)
   const contact = contactRepository.create({
     email,
     name,
@@ -56,7 +55,6 @@ router.post('/', validate(SendContactRequest), async (req: Request, res: Respons
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
   const id = Number(req.params.id)
 
-  const contactRepository = db.getRepository<Contact>(Contact)
   const contact = await contactRepository.findOne({ where: { id } })
   if (!contact) {
     return next(new BadRequestException(`Not found contact: ${id}`))

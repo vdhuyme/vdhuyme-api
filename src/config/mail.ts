@@ -1,6 +1,7 @@
-import nodemailer, { Transporter, SendMailOptions } from 'nodemailer'
 import path from 'path'
 import fs from 'fs'
+
+import nodemailer, { Transporter, SendMailOptions } from 'nodemailer'
 import ejs from 'ejs'
 
 export interface MailContext {

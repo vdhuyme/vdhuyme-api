@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer'
 import { IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator'
 
-export default class FilterPostRequest {
+export default class QueryFilterRequest {
   @IsOptional()
   @IsString()
   query?: string
@@ -16,9 +16,9 @@ export default class FilterPostRequest {
   @IsOptional()
   @IsInt()
   @Min(1)
-  limit: number = 10
+  limit: number = 50
 
   @IsOptional()
-  @IsIn(['DESC', 'ASC'])
-  sort: 'DESC' | 'ASC' = 'DESC'
+  @IsIn(['DESC', 'desc', 'ASC', 'asc'])
+  sort: 'DESC' | 'desc' | 'ASC' | 'asc' = 'DESC'
 }

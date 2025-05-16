@@ -1,20 +1,26 @@
 import express from 'express'
+import analytics from '@routes/v1/analytics'
 import auth from '@routes/v1/auth'
-import contact from '@routes/v1/contact'
+import categories from '@routes/v1/categories'
+import contacts from '@routes/v1/contacts'
 import health from '@routes/v1/health'
-import license from '@routes/v1/license'
-import log from '@routes/v1/log'
-import post from '@routes/v1/post'
-import publicPost from '@routes/v1/public.post'
+import licenses from '@routes/v1/licenses'
+import logs from '@routes/v1/logs'
+import posts from '@routes/v1/posts'
+import publicCategories from '@routes/v1/public.categories'
+import publicPosts from '@routes/v1/public.posts'
 
 const router = express.Router()
 
+router.use('/analytics', analytics)
 router.use('/auth', auth)
-router.use('/contacts', contact)
+router.use('/categories', categories)
+router.use('/contacts', contacts)
 router.use('/health', health)
-router.use('/licenses', license)
-router.use('/logs', log)
-router.use('/posts', post)
-router.use('/public-posts', publicPost)
+router.use('/licenses', licenses)
+router.use('/logs', logs)
+router.use('/posts', posts)
+router.use('/public-categories', publicCategories)
+router.use('/public-posts', publicPosts)
 
 export default router

@@ -10,6 +10,7 @@ import BaseStatusEnum from '@enums/base.status.enum'
 import LoginRequest from '@requests/login.request'
 
 const router = express.Router()
+const userRepository = db.getRepository<User>(User)
 
 router.post(
   '/login',
@@ -17,9 +18,7 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.validated as LoginRequest
 
-    const user = await db
-      .getRepository<User>(User)
-      .findOneBy({ email, status: BaseStatusEnum.ACTIVATED })
+    const user = await userRepository.findOneBy({ email, status: BaseStatusEnum.ACTIVATED })
     if (!user) {
       return next(new UnauthorizedException('Invalid credentials'))
     }

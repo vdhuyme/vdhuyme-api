@@ -5,10 +5,14 @@ import {
   Tree,
   TreeChildren,
   TreeParent,
-  ManyToMany
+  ManyToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  JoinColumn
 } from 'typeorm'
-import { Post } from './post'
 import BaseStatusEnum from '@enums/base.status.enum'
+
+import { Post } from './post'
 
 @Entity('categories')
 @Tree('nested-set')
@@ -19,6 +23,12 @@ export class Category {
   @Column({ name: 'name', unique: true })
   name: string
 
+  @Column({ name: 'thumbnail', type: 'varchar', nullable: true })
+  thumbnail?: string
+
+  @Column({ name: 'icon', type: 'varchar', nullable: true })
+  icon?: string
+
   @Column({ name: 'slug', unique: true })
   slug: string
 
@@ -26,14 +36,21 @@ export class Category {
   status: string
 
   @Column({ name: 'description', type: 'text', nullable: true })
-  description: string
+  description?: string
 
-  @TreeChildren()
+  @TreeChildren({ cascade: true })
   children: Category[]
 
-  @TreeParent()
-  parent: Category
+  @TreeParent({ onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'parent_id' })
+  parent: Category | null
 
-  @ManyToMany(() => Post, (post) => post.categories)
+  @ManyToMany(() => Post, post => post.categories)
   posts: Post[]
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date
 }

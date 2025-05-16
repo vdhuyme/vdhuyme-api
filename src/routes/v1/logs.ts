@@ -1,18 +1,19 @@
-import express, { NextFunction, Request, Response } from 'express'
-import { OK } from '@utils/http.status.code'
 import fs from 'fs'
 import path from 'path'
+
+import express, { NextFunction, Request, Response } from 'express'
+import { OK } from '@utils/http.status.code'
 import { storage } from '@utils/storage'
 import BadRequestException from '@exceptions/bad.request.exception'
 import { auth } from '@middlewares/authenticated'
 
 const router = express.Router()
 
-const parseJsonLines = (content: string): any[] => {
+const parseJsonLines = (content: string) => {
   return content
     .split('\n')
     .filter(Boolean)
-    .map((line) => {
+    .map(line => {
       try {
         return JSON.parse(line)
       } catch {

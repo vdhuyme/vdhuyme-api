@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-namespace */
 import { plainToInstance } from 'class-transformer'
 import { validate as classValidate } from 'class-validator'
 import { RequestHandler } from 'express'

@@ -14,6 +14,10 @@ import compression from 'compression'
 const app: Application = express()
 
 async function bootstrap() {
+  const port: number = Number(process.env.PORT)
+  const host: string = process.env.APP_URL as string
+  const version: string = process.env.VERSION as string
+
   await database()
   view(app)
   app.use(cors())
@@ -21,13 +25,12 @@ async function bootstrap() {
   app.use(compression())
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
-  app.use('/v1', router)
+  app.use(version, router)
   app.use(notFound)
   app.use(errorHandler)
 
-  const port: number = Number((process.env.PORT as string) || '3000')
   app.listen(port, () => {
-    logger.info(`[http://localhost:${port}]`)
+    logger.info(`[${host}:${port}]`)
   })
 }
 

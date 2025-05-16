@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import 'dotenv/config'
+import path from 'path'
+
 import logger from '@config/logging'
 import { DataSource, DataSourceOptions } from 'typeorm'
 import { NodeEnvironment } from 'types'
-import path from 'path'
 
 const env = (process.env.NODE_ENVIRONMENT || 'development') as NodeEnvironment
 

@@ -4,6 +4,7 @@ import { INTERNAL_SERVER_ERROR } from '@utils/http.status.code'
 import HttpException from '@exceptions/http.exception'
 import logger from '@config/logging'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
   const data = {
     method: req.method,
@@ -34,6 +35,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
         status: err.status,
         message: err.message
       })
+      break
 
     default:
       logger.error('Unhandled Error', data)

@@ -4,7 +4,7 @@ import BadRequestException from '@exceptions/bad.request.exception'
 import { auth } from '@middlewares/authenticated'
 import { validate } from '@middlewares/validation'
 import CreatePostRequest from '@requests/create.post.request'
-import FilterPostRequest from '@requests/filter.post.request'
+import QueryFilterRequest from '@requests/query.filter.request'
 import UpdatePostRequest from '@requests/update.post.request'
 import UpdatePostStatusRequest from '@requests/update.post.status.request'
 import { CREATED, OK } from '@utils/http.status.code'
@@ -13,14 +13,13 @@ import express, { NextFunction, Request, Response } from 'express'
 import { In } from 'typeorm'
 
 const router = express.Router()
+const postRepository = db.getRepository<Post>(Post)
+const categoryRepository = db.getRepository<Category>(Category)
 
 router.post('/', auth(), validate(CreatePostRequest), async (req: Request, res: Response) => {
   const { title, description, content, thumbnail, slug, categories } =
     req.validated as CreatePostRequest
   const { userId } = req.auth
-
-  const postRepository = db.getRepository<Post>(Post)
-  const categoryRepository = db.getRepository<Category>(Category)
 
   const categoryEntities =
     categories && categories.length > 0
@@ -44,14 +43,16 @@ router.post('/', auth(), validate(CreatePostRequest), async (req: Request, res: 
 router.get(
   '/',
   auth(),
-  validate(FilterPostRequest, 'query'),
+  validate(QueryFilterRequest, 'query'),
   async (req: Request, res: Response) => {
-    const { page, limit, query, sort } = req.validated as FilterPostRequest
+    const { page, limit, query, sort } = req.validated as QueryFilterRequest
 
     const skip = (page - 1) * limit
-    const postRepository = db.getRepository<Post>(Post)
+
     const builder = postRepository.createQueryBuilder('post')
-    query && builder.andWhere('post.title LIKE :query COLLATE NOCASE', { query: `%${query}%` })
+    if (query) {
+      builder.andWhere('post.title LIKE :query COLLATE NOCASE', { query: `%${query}%` })
+    }
     const posts = await builder.orderBy('post.created_at', sort).skip(skip).take(limit).getMany()
 
     res.status(OK).json({ posts })
@@ -61,7 +62,6 @@ router.get(
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
   const id = Number(req.params.id)
 
-  const postRepository = db.getRepository<Post>(Post)
   const post = await postRepository.findOne({ where: { id } })
   if (!post) {
     return next(new BadRequestException(`Not found post: ${id}`))
@@ -100,9 +100,6 @@ router.put(
     const { title, description, content, thumbnail, slug, categories } =
       req.validated as UpdatePostRequest
     const { userId } = req.auth
-
-    const postRepository = db.getRepository<Post>(Post)
-    const categoryRepository = db.getRepository<Category>(Category)
 
     const categoryEntities =
       categories && categories.length > 0

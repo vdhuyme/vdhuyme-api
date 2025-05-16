@@ -7,8 +7,9 @@ import {
   ManyToMany,
   JoinTable
 } from 'typeorm'
-import { Category } from './category'
 import BaseStatusEnum from '@enums/base.status.enum'
+
+import { Category } from './category'
 
 @Entity({ name: 'posts' })
 export class Post {
@@ -42,7 +43,7 @@ export class Post {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date
 
-  @ManyToMany(() => Category, (category) => category.posts, { cascade: true })
+  @ManyToMany(() => Category, category => category.posts, { cascade: true })
   @JoinTable({
     name: 'post_category',
     joinColumn: { name: 'post_id', referencedColumnName: 'id' },

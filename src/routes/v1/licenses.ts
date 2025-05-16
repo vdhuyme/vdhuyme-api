@@ -12,11 +12,13 @@ import { db } from 'data-source'
 import { License } from '@entities/license'
 import GetLicenseRequest from '@requests/get.license.request'
 import UpdateLicenseStatusRequest from '@requests/update.license.status.request'
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 
 const router = express.Router()
+const licenseRepository = db.getRepository<License>(License)
 
 router.get('/', auth(), async (req: Request, res: Response) => {
-  const licenses = await db.getRepository<License>(License).find({ order: { createdAt: 'DESC' } })
+  const licenses = await licenseRepository.find({ order: { createdAt: 'DESC' } })
 
   res.status(OK).json({ licenses })
 })
@@ -30,7 +32,6 @@ router.post('/', auth(), validate(CreateLicenseRequest), async (req: Request, re
   const toSeconds = Math.floor(diffInMs / 1000)
 
   const token = jsonwebtoken.generate({ licensedTo, activatedAt, expiresAt }, toSeconds)
-  const licenseRepository = db.getRepository<License>(License)
 
   const license = licenseRepository.create({
     licensedTo,
@@ -46,7 +47,6 @@ router.post('/', auth(), validate(CreateLicenseRequest), async (req: Request, re
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
   const id = Number(req.params.id)
 
-  const licenseRepository = db.getRepository(License)
   const license = await licenseRepository.findOneBy({ id })
   if (!license) {
     return next(new BadRequestException(`Not found license: ${id}`))
@@ -64,7 +64,6 @@ router.patch(
     const id = Number(req.params.id)
     const { status } = req.validated as UpdateLicenseStatusRequest
 
-    const licenseRepository = db.getRepository(License)
     const license = await licenseRepository.findOneBy({ id })
     if (!license) {
       return next(new BadRequestException(`Not found license: ${id}`))
@@ -83,7 +82,6 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const { token } = req.validated as GetLicenseRequest
 
-    const licenseRepository = db.getRepository(License)
     const found = await licenseRepository.findOneBy({
       token,
       status: BaseStatusEnum.ACTIVATED
@@ -108,12 +106,17 @@ router.post(
     try {
       jsonwebtoken.verify(token)
       res.status(OK).json({ message: 'Valid license' })
-    } catch (error: any) {
-      const messages = {
-        JsonWebTokenError: 'Invalid token',
-        TokenExpiredError: 'License has expired'
-      }
-      const message = messages[error?.name as keyof typeof messages] || 'Invalid license'
+    } catch (error) {
+      const message = (() => {
+        if (error instanceof TokenExpiredError) {
+          return 'License has expired'
+        }
+        if (error instanceof JsonWebTokenError) {
+          return 'Invalid token'
+        }
+        return 'Invalid license'
+      })()
+
       return next(new UnauthorizedException(message))
     }
   }
