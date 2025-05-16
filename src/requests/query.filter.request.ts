@@ -19,6 +19,6 @@ export default class QueryFilterRequest {
   limit: number = 50
 
   @IsOptional()
-  @IsIn(['DESC', 'desc', 'ASC', 'asc'])
-  sort: 'DESC' | 'desc' | 'ASC' | 'asc' = 'DESC'
+  @IsIn(['DESC', 'ASC'])
+  sort: 'DESC' | 'ASC' = 'DESC'
 }

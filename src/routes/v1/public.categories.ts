@@ -24,7 +24,7 @@ router.get(
   validate(QueryFilterRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params
-    const { limit } = req.validated as QueryFilterRequest
+    const { limit, sort } = req.validated as QueryFilterRequest
 
     const categoryQuery = categoryRepository
       .createQueryBuilder('category')
@@ -38,7 +38,7 @@ router.get(
       .createQueryBuilder('post')
       .innerJoin('post.categories', 'cat', 'cat.id = :catId', { catId: category.id })
       .where('post.status = :status', { status: BaseStatusEnum.PUBLISHED })
-      .orderBy('post.createdAt', 'DESC')
+      .orderBy('post.createdAt', sort)
       .take(limit)
       .getMany()
     category.posts = posts
