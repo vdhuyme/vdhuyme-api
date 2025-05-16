@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { NextFunction, Request, Response } from 'express'
 import { OK } from '@utils/http.status.code'
 import { validate } from '@middlewares/validation'
@@ -12,7 +13,6 @@ import { db } from 'data-source'
 import { License } from '@entities/license'
 import GetLicenseRequest from '@requests/get.license.request'
 import UpdateLicenseStatusRequest from '@requests/update.license.status.request'
-import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 
 const router = express.Router()
 const licenseRepository = db.getRepository<License>(License)
@@ -106,17 +106,12 @@ router.post(
     try {
       jsonwebtoken.verify(token)
       res.status(OK).json({ message: 'Valid license' })
-    } catch (error) {
-      const message = (() => {
-        if (error instanceof TokenExpiredError) {
-          return 'License has expired'
-        }
-        if (error instanceof JsonWebTokenError) {
-          return 'Invalid token'
-        }
-        return 'Invalid license'
-      })()
-
+    } catch (error: any) {
+      const messages = {
+        JsonWebTokenError: 'Invalid token',
+        TokenExpiredError: 'Token has expired'
+      }
+      const message = messages[error?.name as keyof typeof messages] || 'Authentication error'
       return next(new UnauthorizedException(message))
     }
   }

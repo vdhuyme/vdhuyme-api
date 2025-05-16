@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from 'express'
 import ValidationException from '@exceptions/validation.exception'
 import { INTERNAL_SERVER_ERROR } from '@utils/http.status.code'
 import HttpException from '@exceptions/http.exception'
 import logger from '@config/logging'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
   const data = {
     method: req.method,

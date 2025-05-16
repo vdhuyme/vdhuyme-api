@@ -46,7 +46,6 @@ router.get(
   validate(QueryFilterRequest, 'query'),
   async (req: Request, res: Response) => {
     const { page, limit, query, sort } = req.validated as QueryFilterRequest
-
     const skip = (page - 1) * limit
 
     const builder = postRepository.createQueryBuilder('post')
