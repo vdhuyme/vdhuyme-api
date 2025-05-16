@@ -40,8 +40,8 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.3",
+    "pg": "^8.16.0",
     "reflect-metadata": "^0.2.2",
-    "sqlite3": "^5.1.7",
     "typeorm": "^0.3.23",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
