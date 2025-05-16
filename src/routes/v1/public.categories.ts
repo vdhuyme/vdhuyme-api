@@ -36,7 +36,9 @@ router.get(
     }
     const posts = await postRepository
       .createQueryBuilder('post')
-      .innerJoin('post.categories', 'cat', 'cat.id = :catId', { catId: category.id })
+      .innerJoin('post.categories', 'categoryId', 'categoryId.id = :categoryId', {
+        categoryId: category.id
+      })
       .where('post.status = :status', { status: BaseStatusEnum.PUBLISHED })
       .orderBy('post.createdAt', sort)
       .take(limit)
