@@ -5,19 +5,18 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   ManyToMany,
-  JoinTable
+  JoinTable,
+  ManyToOne,
+  JoinColumn
 } from 'typeorm'
 import BaseStatusEnum from '@enums/base.status.enum'
-
-import { Category } from './category'
+import { Category } from '@entities/category'
+import { User } from '@entities/user'
 
 @Entity({ name: 'posts' })
 export class Post {
   @PrimaryGeneratedColumn()
   id: number
-
-  @Column({ name: 'user_id', type: 'bigint' })
-  userId: number
 
   @Column({ name: 'title', type: 'varchar', length: 500 })
   title: string
@@ -26,7 +25,7 @@ export class Post {
   slug: string
 
   @Column({ name: 'description', type: 'varchar', length: 1000 })
-  description: string
+  excerpt: string
 
   @Column({ name: 'thumbnail', type: 'varchar', nullable: true })
   thumbnail?: string
@@ -50,4 +49,8 @@ export class Post {
     inverseJoinColumn: { name: 'category_id', referencedColumnName: 'id' }
   })
   categories: Category[]
+
+  @ManyToOne(() => User, user => user.posts)
+  @JoinColumn({ name: 'auth_id' })
+  author: User
 }

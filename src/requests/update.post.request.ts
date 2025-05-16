@@ -5,9 +5,9 @@ export default class UpdatePostRequest {
   @Length(3, 1000, { message: 'Title must be between 3 and 1000 characters' })
   title!: string
 
-  @IsString({ message: 'Description must be a string' })
-  @Length(3, 1000, { message: 'Description must be between 3 and 1000 characters' })
-  description!: string
+  @IsString({ message: 'Excerpt must be a string' })
+  @Length(3, 1000, { message: 'Excerpt must be between 3 and 1000 characters' })
+  excerpt!: string
 
   @IsString({ message: 'Content must be a string' })
   @MinLength(10, { message: 'Content must be at least 10 characters' })

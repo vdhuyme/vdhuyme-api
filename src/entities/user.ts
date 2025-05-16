@@ -1,5 +1,13 @@
 import BaseStatusEnum from '@enums/base.status.enum'
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany
+} from 'typeorm'
+import { Post } from '@entities/post'
 
 @Entity({ name: 'users' })
 export class User {
@@ -23,4 +31,7 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date
+
+  @OneToMany(() => Post, post => post.author)
+  posts: Post[]
 }

@@ -11,8 +11,7 @@ import {
   JoinColumn
 } from 'typeorm'
 import BaseStatusEnum from '@enums/base.status.enum'
-
-import { Post } from './post'
+import { Post } from '@entities/post'
 
 @Entity('categories')
 @Tree('nested-set')
@@ -43,7 +42,7 @@ export class Category {
 
   @TreeParent({ onDelete: 'SET NULL' })
   @JoinColumn({ name: 'parent_id' })
-  parent: Category | null
+  parent: Category
 
   @ManyToMany(() => Post, post => post.categories)
   posts: Post[]
