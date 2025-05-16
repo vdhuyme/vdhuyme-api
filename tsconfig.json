@@ -29,7 +29,8 @@
       "@migrations/*": ["migrations/*"],
       "@seeders/*": ["seeders/*"],
       "@types/*": ["migrations/*"],
-      "@validators/*": ["validators/*"]
+      "@validators/*": ["validators/*"],
+      "@subscribers/*": ["subscribers/*"]
     }
   },
   "include": ["src/**/*.ts"],

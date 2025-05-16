@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { NextFunction, Request, Response } from 'express'
 import { OK } from '@utils/http.status.code'
 import { validate } from '@middlewares/validation'
@@ -14,15 +15,16 @@ import GetLicenseRequest from '@requests/get.license.request'
 import UpdateLicenseStatusRequest from '@requests/update.license.status.request'
 
 const router = express.Router()
+const licenseRepository = db.getRepository<License>(License)
 
-router.get('/', auth(), async (_req: Request, res: Response) => {
-  const licenses = await db.getRepository<License>(License).find({ order: { created_at: 'DESC' } })
+router.get('/', auth(), async (req: Request, res: Response) => {
+  const licenses = await licenseRepository.find({ order: { createdAt: 'DESC' } })
 
   res.status(OK).json({ licenses })
 })
 
 router.post('/', auth(), validate(CreateLicenseRequest), async (req: Request, res: Response) => {
-  const { licensedTo, activatedAt, expiresAt } = req.body as CreateLicenseRequest
+  const { licensedTo, activatedAt, expiresAt } = req.validated as CreateLicenseRequest
 
   const activatedDate = new Date(activatedAt)
   const expiresDate = new Date(expiresAt)
@@ -30,14 +32,12 @@ router.post('/', auth(), validate(CreateLicenseRequest), async (req: Request, re
   const toSeconds = Math.floor(diffInMs / 1000)
 
   const token = jsonwebtoken.generate({ licensedTo, activatedAt, expiresAt }, toSeconds)
-  const licenseRepository = db.getRepository<License>(License)
 
   const license = licenseRepository.create({
-    licensed_to: licensedTo,
-    activated_at: activatedAt,
-    expires_at: expiresAt,
-    token,
-    status: BaseStatusEnum.APPROVED
+    licensedTo,
+    activatedAt,
+    expiresAt,
+    token
   })
 
   await licenseRepository.save(license)
@@ -47,7 +47,6 @@ router.post('/', auth(), validate(CreateLicenseRequest), async (req: Request, re
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
   const id = Number(req.params.id)
 
-  const licenseRepository = db.getRepository(License)
   const license = await licenseRepository.findOneBy({ id })
   if (!license) {
     return next(new BadRequestException(`Not found license: ${id}`))
@@ -63,9 +62,8 @@ router.patch(
   validate(UpdateLicenseStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
-    const { status } = req.body as UpdateLicenseStatusRequest
+    const { status } = req.validated as UpdateLicenseStatusRequest
 
-    const licenseRepository = db.getRepository(License)
     const license = await licenseRepository.findOneBy({ id })
     if (!license) {
       return next(new BadRequestException(`Not found license: ${id}`))
@@ -82,12 +80,11 @@ router.post(
   '/validate',
   validate(GetLicenseRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req.body as GetLicenseRequest
+    const { token } = req.validated as GetLicenseRequest
 
-    const licenseRepository = db.getRepository(License)
     const found = await licenseRepository.findOneBy({
       token,
-      status: BaseStatusEnum.APPROVED
+      status: BaseStatusEnum.ACTIVATED
     })
 
     if (!found) {
@@ -95,8 +92,8 @@ router.post(
     }
 
     const now = new Date()
-    const activatedAt = parseISO(found.activated_at)
-    const expiresAt = parseISO(found.expires_at)
+    const activatedAt = parseISO(found.activatedAt)
+    const expiresAt = parseISO(found.expiresAt)
 
     if (isBefore(now, activatedAt)) {
       return next(new UnauthorizedException('License is not active yet'))
@@ -112,9 +109,9 @@ router.post(
     } catch (error: any) {
       const messages = {
         JsonWebTokenError: 'Invalid token',
-        TokenExpiredError: 'License has expired'
+        TokenExpiredError: 'Token has expired'
       }
-      const message = messages[error?.name as keyof typeof messages] || 'Invalid license'
+      const message = messages[error?.name as keyof typeof messages] || 'Authentication error'
       return next(new UnauthorizedException(message))
     }
   }

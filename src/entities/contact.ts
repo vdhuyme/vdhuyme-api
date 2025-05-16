@@ -1,25 +1,26 @@
+import BaseStatusEnum from '@enums/base.status.enum'
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity({ name: 'contacts' })
 export class Contact {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id' })
   id: number
 
-  @Column()
+  @Column({ name: 'name', type: 'varchar', length: 255 })
   name: string
 
-  @Column()
+  @Column({ name: 'email', type: 'varchar', length: 255 })
   email: string
 
-  @Column('text')
+  @Column({ name: 'message', type: 'text' })
   message: string
 
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ name: 'status', type: 'varchar', length: 50, default: BaseStatusEnum.PENDING })
   status: string
 
-  @CreateDateColumn()
-  created_at: Date
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date
 
-  @UpdateDateColumn()
-  updated_at: Date
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date
 }
