@@ -42,7 +42,7 @@ export class Category {
 
   @TreeParent({ onDelete: 'SET NULL' })
   @JoinColumn({ name: 'parent_id' })
-  parent: Category
+  parent: Category | null
 
   @ManyToMany(() => Post, post => post.categories)
   posts: Post[]

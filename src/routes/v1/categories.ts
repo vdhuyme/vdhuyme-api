@@ -7,6 +7,7 @@ import { validate } from '@middlewares/validation'
 import CreateCategoryRequest from '@requests/create.category.request'
 import UpdateCategoryRequest from '@requests/update.category.request'
 import { auth } from '@middlewares/authenticated'
+import BadRequestException from '@exceptions/bad.request.exception'
 
 const router = express.Router()
 const categoryRepository = db.getTreeRepository<Category>(Category)
@@ -31,19 +32,28 @@ router.get('/:id', auth(), async (req: Request, res: Response, next: NextFunctio
   res.status(OK).json({ category })
 })
 
-router.post('/', auth(), validate(CreateCategoryRequest), async (req: Request, res: Response) => {
-  const { name, slug, description, parentId } = req.validated
+router.post(
+  '/',
+  auth(),
+  validate(CreateCategoryRequest),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { name, slug, description, parentId } = req.validated
 
-  const category = new Category()
-  category.name = name
-  category.slug = slug
-  category.description = description
-  const parent = await categoryRepository.findOne({ where: { id: parentId } })
-  category.parent = parent as Category
-  await categoryRepository.save(category)
+    const slugExisting = await categoryRepository.findOneBy({ slug })
+    if (slugExisting) {
+      return next(new BadRequestException(`${slug} has been already exist.`))
+    }
+    const category = new Category()
+    category.name = name
+    category.slug = slug
+    category.description = description
+    const parent = await categoryRepository.findOne({ where: { id: parentId } })
+    category.parent = parent as Category
+    await categoryRepository.save(category)
 
-  res.status(CREATED).json({ message: 'success' })
-})
+    res.status(CREATED).json({ message: 'success' })
+  }
+)
 
 router.put(
   '/:id',
@@ -60,8 +70,10 @@ router.put(
     category.name = name
     category.slug = slug
     category.description = description
-    const parent = await categoryRepository.findOne({ where: { id: parentId } })
-    category.parent = parent as Category
+    const parent = !parentId
+      ? null
+      : await categoryRepository.findOne({ where: { id: Number(parentId) } })
+    category.parent = parent
     await categoryRepository.save(category)
 
     res.status(OK).json({ message: 'success' })

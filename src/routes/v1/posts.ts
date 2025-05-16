@@ -29,7 +29,7 @@ router.post(
 
     const slugExisting = await postRepository.findOneBy({ slug })
     if (slugExisting) {
-      return next(new BadRequestException(`Post slug: ${slug} has been already exist.`))
+      return next(new BadRequestException(`${slug} has been already exist.`))
     }
 
     const categoryEntities =

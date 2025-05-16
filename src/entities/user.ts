@@ -17,6 +17,9 @@ export class User {
   @Column({ name: 'name', type: 'varchar', length: 255 })
   name: string
 
+  @Column({ name: 'avatar', type: 'varchar', length: 255, nullable: true })
+  avatar?: string
+
   @Column({ name: 'email', type: 'varchar', length: 255, unique: true })
   email: string
 

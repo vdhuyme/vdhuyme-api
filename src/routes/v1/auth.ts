@@ -8,9 +8,33 @@ import { User } from '@entities/user'
 import bcrypt from 'bcryptjs'
 import BaseStatusEnum from '@enums/base.status.enum'
 import LoginRequest from '@requests/login.request'
+import { auth } from '@middlewares/authenticated'
 
 const router = express.Router()
 const userRepository = db.getRepository<User>(User)
+
+router.get('/me', auth(), async (req: Request, res: Response, next: NextFunction) => {
+  const { userId: id } = req.auth
+
+  const user = await userRepository
+    .createQueryBuilder('user')
+    .select([
+      'user.id',
+      'user.avatar',
+      'user.email',
+      'user.name',
+      'user.status',
+      'user.createdAt',
+      'user.updatedAt'
+    ])
+    .where('user.id = :id', { id })
+    .getOne()
+  if (!user) {
+    return next(new UnauthorizedException('Invalid credentials'))
+  }
+
+  res.status(OK).json({ user })
+})
 
 router.post(
   '/login',
