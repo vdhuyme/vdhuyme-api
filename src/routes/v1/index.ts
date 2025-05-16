@@ -7,8 +7,8 @@ import health from '@routes/v1/health'
 import licenses from '@routes/v1/licenses'
 import logs from '@routes/v1/logs'
 import posts from '@routes/v1/posts'
-import publicCategories from '@routes/v1/public.categories'
-import publicPosts from '@routes/v1/public.posts'
+import publishedCategories from '@routes/v1/published.categories'
+import publishedPosts from '@routes/v1/published.posts'
 
 const router = express.Router()
 
@@ -20,7 +20,7 @@ router.use('/health', health)
 router.use('/licenses', licenses)
 router.use('/logs', logs)
 router.use('/posts', posts)
-router.use('/public-categories', publicCategories)
-router.use('/public-posts', publicPosts)
+router.use('/published-categories', publishedCategories)
+router.use('/published-posts', publishedPosts)
 
 export default router
