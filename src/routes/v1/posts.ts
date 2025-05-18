@@ -61,7 +61,7 @@ router.get(
     const { page, limit, query, sort } = req.validated as QueryFilterRequest
     const skip = (page - 1) * limit
 
-    const posts = await postRepository
+    const [posts, total] = await postRepository
       .createQueryBuilder('post')
       .andWhere(query ? 'LOWER(post.title) LIKE LOWER(:query)' : '1=1', {
         query: `%${query}%`
@@ -69,9 +69,9 @@ router.get(
       .orderBy('post.created_at', sort)
       .skip(skip)
       .take(limit)
-      .getMany()
+      .getManyAndCount()
 
-    res.status(OK).json({ posts })
+    res.status(OK).json({ posts, total })
   }
 )
 

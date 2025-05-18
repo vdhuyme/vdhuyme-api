@@ -14,7 +14,7 @@ import BaseStatusEnum from '@enums/base.status.enum'
 import { Post } from '@entities/post'
 
 @Entity('categories')
-@Tree('nested-set')
+@Tree('closure-table')
 export class Category {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number

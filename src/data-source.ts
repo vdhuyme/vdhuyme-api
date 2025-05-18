@@ -68,8 +68,8 @@ export const database = async (): Promise<void> => {
 
     logger.info(`Connected to database: ${config[env].database}`)
   } catch (error: any) {
-    logger.error(`❌ Failed to connect with ${driver}: ${error.message}`)
-    logger.error(`Stack trace: ${error.stack}`)
+    logger.alert(`❌ Failed to connect with ${driver}: ${error.message}`)
+    logger.alert(`Stack trace: ${error.stack}`)
     throw error
   }
 }

@@ -40,7 +40,7 @@ router.get(
         categoryId: category.id
       })
       .where('post.status = :status', { status: BaseStatusEnum.PUBLISHED })
-      .orderBy('post.createdAt', sort)
+      .orderBy('post.created_at', sort)
       .take(limit)
       .getMany()
     category.posts = posts

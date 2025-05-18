@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer'
 import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator'
 
 export default class CreateCategoryRequest {
@@ -15,5 +16,6 @@ export default class CreateCategoryRequest {
 
   @IsOptional()
   @IsNumber({}, { message: 'parentId must be a number' })
-  parentId?: number
+  @Type(() => Number)
+  parent?: number
 }

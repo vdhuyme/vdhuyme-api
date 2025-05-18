@@ -8,12 +8,13 @@ import CreateCategoryRequest from '@requests/create.category.request'
 import UpdateCategoryRequest from '@requests/update.category.request'
 import { auth } from '@middlewares/authenticated'
 import BadRequestException from '@exceptions/bad.request.exception'
+import { Not } from 'typeorm'
 
 const router = express.Router()
 const categoryRepository = db.getTreeRepository<Category>(Category)
 
 router.get('/', auth(), async (req: Request, res: Response) => {
-  const categories = await categoryRepository.findTrees({ relations: ['children'] })
+  const categories = await categoryRepository.findTrees()
 
   res.status(OK).json({ categories })
 })
@@ -37,7 +38,7 @@ router.post(
   auth(),
   validate(CreateCategoryRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, slug, description, parentId } = req.validated
+    const { name, slug, description, parent } = req.validated as CreateCategoryRequest
 
     const slugExisting = await categoryRepository.findOneBy({ slug })
     if (slugExisting) {
@@ -47,8 +48,7 @@ router.post(
     category.name = name
     category.slug = slug
     category.description = description
-    const parent = await categoryRepository.findOne({ where: { id: parentId } })
-    category.parent = parent as Category
+    category.parent = parent ? await categoryRepository.findOne({ where: { id: parent } }) : null
     await categoryRepository.save(category)
 
     res.status(CREATED).json({ message: 'success' })
@@ -60,20 +60,21 @@ router.put(
   auth(),
   validate(UpdateCategoryRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, slug, description, parentId } = req.validated as UpdateCategoryRequest
+    const { name, slug, description, parent } = req.validated as UpdateCategoryRequest
     const id = Number(req.params.id)
 
     const category = await categoryRepository.findOne({ where: { id } })
     if (!category) {
       return next(new NotFoundException(`Not found category ${id}`))
     }
+    const slugExisting = await categoryRepository.findOneBy({ id: Not(id), slug })
+    if (slugExisting) {
+      return next(new BadRequestException(`${slug} has been already exist.`))
+    }
     category.name = name
     category.slug = slug
     category.description = description
-    const parent = !parentId
-      ? null
-      : await categoryRepository.findOne({ where: { id: Number(parentId) } })
-    category.parent = parent
+    category.parent = parent ? await categoryRepository.findOne({ where: { id: parent } }) : null
     await categoryRepository.save(category)
 
     res.status(OK).json({ message: 'success' })

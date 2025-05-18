@@ -16,5 +16,5 @@ export default class UpdateCategoryRequest {
   @IsOptional()
   @IsNumber({ allowNaN: false }, { message: 'parentId must be a number' })
   @Min(1, { message: 'Parent ID gte 1' })
-  parentId?: number
+  parent?: number
 }

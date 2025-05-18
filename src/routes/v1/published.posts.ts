@@ -15,16 +15,16 @@ router.get('/', validate(QueryFilterRequest, 'query'), async (req: Request, res:
   const { page, limit, query, sort } = req.validated as QueryFilterRequest
   const skip = (page - 1) * limit
 
-  const posts = await postRepository
+  const [posts, total] = await postRepository
     .createQueryBuilder('post')
     .where('post.status = :status', { status: BaseStatusEnum.PUBLISHED })
     .andWhere(query ? 'LOWER(post.title) LIKE LOWER(:query)' : '1=1', { query: `%${query}%` })
     .orderBy('post.createdAt', sort)
     .skip(skip)
     .take(limit)
-    .getMany()
+    .getManyAndCount()
 
-  res.status(OK).json({ posts })
+  res.status(OK).json({ posts, total })
 })
 
 router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => {
