@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-export class Migration1747477427376 implements MigrationInterface {
-  name = 'Migration1747477427376'
+export class Migration1747574159232 implements MigrationInterface {
+  name = 'Migration1747574159232'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -14,10 +14,10 @@ export class Migration1747477427376 implements MigrationInterface {
       `CREATE TABLE "users" ("id" SERIAL NOT NULL, "name" character varying(255) NOT NULL, "avatar" character varying(255), "email" character varying(255) NOT NULL, "password" character varying(255) NOT NULL, "status" character varying(50) NOT NULL DEFAULT 'activated', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`
     )
     await queryRunner.query(
-      `CREATE TABLE "contacts" ("id" SERIAL NOT NULL, "name" character varying(255) NOT NULL, "email" character varying(255) NOT NULL, "message" text NOT NULL, "status" character varying(50) NOT NULL DEFAULT 'pending', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_b99cd40cfd66a99f1571f4f72e6" PRIMARY KEY ("id"))`
+      `CREATE TABLE "licenses" ("id" SERIAL NOT NULL, "licensed_to" character varying(255) NOT NULL, "activated_at" date NOT NULL, "expires_at" date NOT NULL, "token" text NOT NULL, "status" character varying(50) NOT NULL DEFAULT 'activated', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_da5021501ce80efa03de6f40086" PRIMARY KEY ("id"))`
     )
     await queryRunner.query(
-      `CREATE TABLE "licenses" ("id" SERIAL NOT NULL, "licensed_to" character varying(255) NOT NULL, "activated_at" date NOT NULL, "expires_at" date NOT NULL, "token" text NOT NULL, "status" character varying(50) NOT NULL DEFAULT 'activated', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_da5021501ce80efa03de6f40086" PRIMARY KEY ("id"))`
+      `CREATE TABLE "contacts" ("id" SERIAL NOT NULL, "name" character varying(255) NOT NULL, "email" character varying(255) NOT NULL, "message" text NOT NULL, "status" character varying(50) NOT NULL DEFAULT 'pending', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_b99cd40cfd66a99f1571f4f72e6" PRIMARY KEY ("id"))`
     )
     await queryRunner.query(
       `CREATE TABLE "post_category" ("post_id" integer NOT NULL, "category_id" integer NOT NULL, CONSTRAINT "PK_adbadf9ed503800035d1ddcb331" PRIMARY KEY ("post_id", "category_id"))`
@@ -80,8 +80,8 @@ export class Migration1747477427376 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX "public"."IDX_86920132d7d239eea7e091bf47"`)
     await queryRunner.query(`DROP INDEX "public"."IDX_44d258cc3d7387a9a39ec8c27a"`)
     await queryRunner.query(`DROP TABLE "post_category"`)
-    await queryRunner.query(`DROP TABLE "licenses"`)
     await queryRunner.query(`DROP TABLE "contacts"`)
+    await queryRunner.query(`DROP TABLE "licenses"`)
     await queryRunner.query(`DROP TABLE "users"`)
     await queryRunner.query(`DROP TABLE "posts"`)
     await queryRunner.query(`DROP TABLE "categories"`)

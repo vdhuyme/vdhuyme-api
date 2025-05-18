@@ -24,7 +24,7 @@ export class Post {
   @Column({ name: 'slug', type: 'varchar', length: 1000, unique: true })
   slug: string
 
-  @Column({ name: 'description', type: 'varchar', length: 1000 })
+  @Column({ name: 'excerpt', type: 'varchar', length: 1000 })
   excerpt: string
 
   @Column({ name: 'thumbnail', type: 'varchar', nullable: true })

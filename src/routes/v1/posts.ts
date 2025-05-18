@@ -63,10 +63,11 @@ router.get(
 
     const [posts, total] = await postRepository
       .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
       .andWhere(query ? 'LOWER(post.title) LIKE LOWER(:query)' : '1=1', {
         query: `%${query}%`
       })
-      .orderBy('post.created_at', sort)
+      .orderBy('post.createdAt', sort)
       .skip(skip)
       .take(limit)
       .getManyAndCount()

@@ -32,7 +32,6 @@ export default [
     rules: {
       ...tseslint.configs.recommended.rules,
       'no-console': 'warn',
-      'prettier/prettier': 'error',
       'import/order': [
         'warn',
         {
