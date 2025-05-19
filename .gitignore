@@ -9,4 +9,5 @@ dist/
 build/
 
 src/storage/logs/*
+src/storage/data/*
 !src/storage/logs/.gitkeep

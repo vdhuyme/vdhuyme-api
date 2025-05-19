@@ -1,16 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { IJwtAuthUserPayload } from '@interfaces/json.web.token'
 import jwt from 'jsonwebtoken'
 
 interface IJsonWebToken {
   generate(data: Record<string, any>, expiresIn?: number): string
   verify(token: string): IJwtAuthUserPayload
-}
-
-export interface IJwtAuthUserPayload {
-  userId: number
-  email: string
-  iat?: number
-  exp?: number
 }
 
 class JsonWebToken implements IJsonWebToken {

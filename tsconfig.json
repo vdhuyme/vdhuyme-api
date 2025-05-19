@@ -28,7 +28,8 @@
       "@entities/*": ["entities/*"],
       "@migrations/*": ["migrations/*"],
       "@seeders/*": ["seeders/*"],
-      "@types/*": ["migrations/*"],
+      "@types/*": ["types/*"],
+      "@interfaces/*": ["interfaces/*"],
       "@validators/*": ["validators/*"],
       "@subscribers/*": ["subscribers/*"]
     }

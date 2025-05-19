@@ -13,7 +13,7 @@ import compression from 'compression'
 
 const app: Application = express()
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const port: number = Number(process.env.PORT)
   const host: string = process.env.APP_URL as string
   const version: string = process.env.VERSION as string

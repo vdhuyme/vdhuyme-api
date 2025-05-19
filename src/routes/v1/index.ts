@@ -7,6 +7,7 @@ import health from '@routes/v1/health'
 import licenses from '@routes/v1/licenses'
 import logs from '@routes/v1/logs'
 import posts from '@routes/v1/posts'
+import settings from '@routes/v1/settings'
 import publishedCategories from '@routes/v1/published.categories'
 import publishedPosts from '@routes/v1/published.posts'
 
@@ -20,6 +21,8 @@ router.use('/health', health)
 router.use('/licenses', licenses)
 router.use('/logs', logs)
 router.use('/posts', posts)
+router.use('/settings', settings)
+
 router.use('/published-categories', publishedCategories)
 router.use('/published-posts', publishedPosts)
 

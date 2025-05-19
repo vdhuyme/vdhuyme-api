@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-namespace */
-import jsonwebtoken, { IJwtAuthUserPayload } from '@config/jsonwebtoken'
+import jsonwebtoken from '@config/jsonwebtoken'
 import UnauthorizedException from '@exceptions/unauthorized.exception'
+import { IJwtAuthUserPayload } from 'interfaces'
 import { NextFunction, Request, Response } from 'express'
 
 declare global {

@@ -3,23 +3,7 @@ import fs from 'fs'
 
 import nodemailer, { Transporter, SendMailOptions } from 'nodemailer'
 import ejs from 'ejs'
-
-export interface MailContext {
-  [key: string]: string | number | boolean | object
-}
-
-export interface MailContent {
-  template: string
-  with: MailContext
-}
-
-export interface MailData {
-  cc?: string
-  bcc?: string
-  from?: string
-  to?: string
-  subject?: string
-}
+import { MailContent, MailData } from 'interfaces'
 
 export default abstract class Mail {
   public data: MailData

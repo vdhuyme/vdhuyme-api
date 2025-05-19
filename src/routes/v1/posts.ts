@@ -31,7 +31,6 @@ router.post(
     if (slugExisting) {
       return next(new BadRequestException(`${slug} has been already exist.`))
     }
-
     const categoryEntities =
       categories && categories.length > 0
         ? await categoryRepository.find({ where: { id: In(categories) } })
@@ -75,6 +74,24 @@ router.get(
     res.status(OK).json({ posts, total })
   }
 )
+
+router.get('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
+  const id = Number(req.params.id)
+
+  const post = await postRepository
+    .createQueryBuilder('post')
+    .leftJoin('post.categories', 'categories')
+    .addSelect(['categories.id', 'categories.name'])
+    .leftJoin('post.author', 'author')
+    .addSelect(['author.id', 'author.name', 'author.email'])
+    .where('post.id = :id', { id })
+    .getOne()
+  if (!post) {
+    return next(new BadRequestException(`Not found post ${id}`))
+  }
+
+  res.status(OK).json({ post })
+})
 
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
   const id = Number(req.params.id)
@@ -121,7 +138,6 @@ router.put(
       categories && categories.length > 0
         ? await categoryRepository.find({ where: { id: In(categories) } })
         : []
-
     const post = await postRepository.findOne({ where: { id }, relations: ['categories'] })
     if (!post) {
       return next(new BadRequestException(`Not found post: ${id}`))

@@ -1,11 +1,6 @@
-import Mail, { MailContent, MailData } from '@config/mail'
+import Mail from '@config/mail'
+import { ContactMailData, MailContent } from 'interfaces'
 import { SendMailOptions } from 'nodemailer'
-
-export interface ContactMailData extends MailData {
-  name: string
-  email: string
-  message: string
-}
 
 export default class ContactMail extends Mail {
   public data: ContactMailData

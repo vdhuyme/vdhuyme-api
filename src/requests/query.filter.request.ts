@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer'
-import { IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator'
+import { IsDate, IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator'
 
 export default class QueryFilterRequest {
   @IsOptional()
@@ -21,4 +21,14 @@ export default class QueryFilterRequest {
   @IsOptional()
   @IsIn(['DESC', 'ASC'])
   sort: 'DESC' | 'ASC' = 'DESC'
+
+  @Transform(({ value }) => new Date(value))
+  @IsOptional()
+  @IsDate()
+  startDate: Date
+
+  @Transform(({ value }) => new Date(value))
+  @IsOptional()
+  @IsDate()
+  endDate: Date
 }
