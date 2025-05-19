@@ -18,11 +18,13 @@ export const validate = (
   source: 'body' | 'query' | 'params' | 'header' | 'headers' = 'body'
 ): RequestHandler => {
   return async (req, res, next) => {
-    const data = req[source] ?? {}
-    const instance = plainToInstance(dto, data, {
+    const raw = req[source] ?? {}
+    const instance = plainToInstance(dto, raw, {
       enableImplicitConversion: true
     })
-    const errors = await classValidate(instance)
+    const errors = await classValidate(instance, {
+      skipMissingProperties: false
+    })
     if (errors.length > 0) {
       return next(new ValidationException(errors))
     }

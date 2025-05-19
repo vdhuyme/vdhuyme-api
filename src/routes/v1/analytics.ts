@@ -3,8 +3,10 @@ import { validate } from '@middlewares/validation'
 import QueryFilterRequest from '@requests/query.filter.request'
 import { GA4_PROPERTY_ID, ga4Client } from '@utils/ga4.client'
 import { format } from 'date-fns'
-import express, { Request, Response } from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import { Ga4CountryStatResource } from 'mappers/ga4.mapper'
+import { getGA4Setting } from '@routes/v1/settings'
+import BadRequestException from '@exceptions/bad.request.exception'
 
 const router = express.Router()
 
@@ -12,9 +14,13 @@ router.get(
   '/stats',
   auth(),
   validate(QueryFilterRequest, 'query'),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const { startDate, endDate } = req.validated as QueryFilterRequest
 
+    const setting = await getGA4Setting()
+    if (!setting?.isEnabled || !setting.propertyId) {
+      return next(new BadRequestException('Not found GA4 setting.'))
+    }
     const today = new Date()
     const defaultStart = new Date(today.getFullYear(), today.getMonth(), 1)
     const defaultEnd = today
