@@ -1,4 +1,3 @@
-import { Category } from '@entities/category'
 import { Post } from '@entities/post'
 import { User } from '@entities/user'
 import BadRequestException from '@exceptions/bad.request.exception'
@@ -11,11 +10,9 @@ import UpdatePostStatusRequest from '@requests/update.post.status.request'
 import { CREATED, OK } from '@utils/http.status.code'
 import { db } from 'data-source'
 import express, { NextFunction, Request, Response } from 'express'
-import { In } from 'typeorm'
 
 const router = express.Router()
 const postRepository = db.getRepository<Post>(Post)
-const categoryRepository = db.getRepository<Category>(Category)
 const userRepository = db.getRepository<User>(User)
 
 router.post(
@@ -23,19 +20,13 @@ router.post(
   auth(),
   validate(CreatePostRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { title, excerpt, content, thumbnail, slug, categories } =
-      req.validated as CreatePostRequest
+    const { title, excerpt, content, thumbnail, slug } = req.validated as CreatePostRequest
     const { userId } = req.auth
 
     const slugExisting = await postRepository.findOneBy({ slug })
     if (slugExisting) {
       return next(new BadRequestException(`${slug} has been already exist.`))
     }
-    const categoryEntities =
-      categories && categories.length > 0
-        ? await categoryRepository.find({ where: { id: In(categories) } })
-        : []
-
     const author = await userRepository.findOneByOrFail({ id: userId })
     const post = postRepository.create({
       author,
@@ -43,8 +34,7 @@ router.post(
       excerpt,
       content,
       thumbnail,
-      slug,
-      categories: categoryEntities
+      slug
     })
 
     await postRepository.save(post)
@@ -80,8 +70,6 @@ router.get('/:id', auth(), async (req: Request, res: Response, next: NextFunctio
 
   const post = await postRepository
     .createQueryBuilder('post')
-    .leftJoin('post.categories', 'categories')
-    .addSelect(['categories.id', 'categories.name'])
     .leftJoin('post.author', 'author')
     .addSelect(['author.id', 'author.name', 'author.email'])
     .where('post.id = :id', { id })
@@ -131,14 +119,9 @@ router.put(
   validate(UpdatePostRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const id = Number(req.params.id)
-    const { title, excerpt, content, thumbnail, slug, categories } =
-      req.validated as UpdatePostRequest
+    const { title, excerpt, content, thumbnail, slug } = req.validated as UpdatePostRequest
 
-    const categoryEntities =
-      categories && categories.length > 0
-        ? await categoryRepository.find({ where: { id: In(categories) } })
-        : []
-    const post = await postRepository.findOne({ where: { id }, relations: ['categories'] })
+    const post = await postRepository.findOne({ where: { id } })
     if (!post) {
       return next(new BadRequestException(`Not found post: ${id}`))
     }
@@ -148,7 +131,6 @@ router.put(
     post.content = content
     post.thumbnail = thumbnail
     post.slug = slug
-    post.categories = categoryEntities
     await postRepository.save(post)
 
     res.status(OK).json({ message: 'success' })

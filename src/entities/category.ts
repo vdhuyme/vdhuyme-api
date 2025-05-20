@@ -5,13 +5,11 @@ import {
   Tree,
   TreeChildren,
   TreeParent,
-  ManyToMany,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn
 } from 'typeorm'
 import BaseStatusEnum from '@enums/base.status.enum'
-import { Post } from '@entities/post'
 
 @Entity('categories')
 @Tree('closure-table')
@@ -23,10 +21,10 @@ export class Category {
   name: string
 
   @Column({ name: 'thumbnail', type: 'varchar', nullable: true })
-  thumbnail?: string
+  thumbnail?: string | null
 
   @Column({ name: 'icon', type: 'varchar', nullable: true })
-  icon?: string
+  icon?: string | null
 
   @Column({ name: 'slug', unique: true })
   slug: string
@@ -35,17 +33,14 @@ export class Category {
   status: string
 
   @Column({ name: 'description', type: 'text', nullable: true })
-  description?: string
+  description?: string | null
 
   @TreeChildren({ cascade: true })
-  children: Category[]
+  children?: Category[]
 
   @TreeParent({ onDelete: 'SET NULL' })
   @JoinColumn({ name: 'parent_id' })
-  parent: Category | null
-
-  @ManyToMany(() => Post, post => post.categories)
-  posts: Post[]
+  parent?: Category | null
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

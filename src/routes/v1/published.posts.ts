@@ -32,12 +32,8 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
 
   const post = await postRepository
     .createQueryBuilder('post')
-    .leftJoinAndSelect('post.categories', 'category', 'category.status = :categoryStatus', {
-      categoryStatus: BaseStatusEnum.PUBLISHED
-    })
     .leftJoin('post.author', 'author')
     .addSelect(['author.name', 'author.email'])
-    .addSelect(['category.id', 'category.slug', 'category.name'])
     .where('post.slug = :slug', { slug })
     .andWhere('post.status = :status', { status: BaseStatusEnum.PUBLISHED })
     .getOne()

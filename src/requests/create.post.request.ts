@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString, Length, MinLength, IsInt } from 'class-validator'
+import { IsOptional, IsString, Length, MinLength } from 'class-validator'
 
 export default class CreatePostRequest {
   @IsString({ message: 'Title must be a string' })
@@ -20,9 +20,4 @@ export default class CreatePostRequest {
   @IsString({ message: 'Slug must be a string' })
   @Length(3, 1000, { message: 'Slug must be between 3 and 1000 characters' })
   slug!: string
-
-  @IsOptional()
-  @IsArray({ message: 'Categories must be an array of IDs' })
-  @IsInt({ each: true, message: 'Each category ID must be a valid Integer' })
-  categories?: number[]
 }

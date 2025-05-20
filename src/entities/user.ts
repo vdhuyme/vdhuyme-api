@@ -18,10 +18,16 @@ export class User {
   name: string
 
   @Column({ name: 'avatar', type: 'varchar', length: 255, nullable: true })
-  avatar?: string
+  avatar?: string | null
 
   @Column({ name: 'email', type: 'varchar', length: 255, unique: true })
   email: string
+
+  @Column({ name: 'phone_number', type: 'varchar', length: 50, nullable: true })
+  phoneNumber?: string | null
+
+  @Column({ name: 'dob', type: 'date', nullable: true })
+  dob?: string | null
 
   @Column({ name: 'password', type: 'varchar', length: 255 })
   password: string

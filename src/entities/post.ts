@@ -4,13 +4,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinTable,
   ManyToOne,
   JoinColumn
 } from 'typeorm'
 import BaseStatusEnum from '@enums/base.status.enum'
-import { Category } from '@entities/category'
 import { User } from '@entities/user'
 
 @Entity({ name: 'posts' })
@@ -28,7 +25,7 @@ export class Post {
   excerpt: string
 
   @Column({ name: 'thumbnail', type: 'varchar', nullable: true })
-  thumbnail?: string
+  thumbnail?: string | null
 
   @Column({ name: 'content', type: 'text' })
   content: string
@@ -41,14 +38,6 @@ export class Post {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date
-
-  @ManyToMany(() => Category, category => category.posts, { cascade: true })
-  @JoinTable({
-    name: 'post_category',
-    joinColumn: { name: 'post_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'category_id', referencedColumnName: 'id' }
-  })
-  categories: Category[]
 
   @ManyToOne(() => User, user => user.posts)
   @JoinColumn({ name: 'auth_id' })
