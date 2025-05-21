@@ -5,7 +5,6 @@ import { errorHandler } from '@middlewares/error.handler'
 import router from '@routes/v1'
 import cors from 'cors'
 import { notFound } from '@middlewares/not.found'
-import view from '@config/view'
 import logger from '@config/logging'
 import { database } from 'data-source'
 import helmet from 'helmet'
@@ -19,7 +18,6 @@ async function bootstrap(): Promise<void> {
   const version: string = process.env.VERSION as string
 
   await database()
-  view(app)
   app.use(cors())
   app.use(helmet())
   app.use(compression())

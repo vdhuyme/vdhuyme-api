@@ -8,6 +8,7 @@ import {
   OneToMany
 } from 'typeorm'
 import { Post } from '@entities/post'
+import { Comment } from '@entities/comment'
 
 @Entity({ name: 'users' })
 export class User {
@@ -35,12 +36,15 @@ export class User {
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.ACTIVATED })
   status: string
 
+  @OneToMany(() => Post, post => post.author)
+  posts: Post[]
+
+  @OneToMany(() => Comment, comment => comment.user)
+  comments: Comment[]
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date
-
-  @OneToMany(() => Post, post => post.author)
-  posts: Post[]
 }

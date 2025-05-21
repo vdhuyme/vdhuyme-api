@@ -1,22 +1,31 @@
 import { BASE_STATUS } from '@constants/base.status'
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
+  ManyToMany
+} from 'typeorm'
+
+import { Post } from './post'
 
 @Entity({ name: 'tags' })
-export class Setting {
+export class Tag {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number
 
-  @Column({ name: 'key', type: 'varchar', length: 255, unique: true })
+  @Column({ name: 'key', type: 'varchar', length: 255 })
   name: string
 
-  @Column({ name: 'slug', type: 'varchar', length: 1000, unique: true })
+  @Column({ name: 'slug', type: 'varchar', unique: true })
   slug: string
 
-  @Column({ name: 'type', type: 'varchar', length: 50, unique: true, default: 'post' })
-  type: string
-
-  @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.ACTIVATED })
+  @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
   status: string
+
+  @ManyToMany(() => Post, post => post.tags)
+  posts: Post[]
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

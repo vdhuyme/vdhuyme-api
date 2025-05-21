@@ -15,7 +15,15 @@ export default class CreateCategoryRequest {
   description?: string
 
   @IsOptional()
-  @IsNumber({}, { message: 'parentId must be a number' })
+  @IsString()
+  thumbnail?: string
+
+  @IsOptional()
+  @IsString()
+  icon?: string
+
+  @IsOptional()
+  @IsNumber({}, { message: 'Parent ID must be a number' })
   @Type(() => Number)
-  parent?: number
+  parentId?: number
 }

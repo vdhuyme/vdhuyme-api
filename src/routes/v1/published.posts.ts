@@ -17,6 +17,9 @@ router.get('/', validate(QueryFilterRequest, 'query'), async (req: Request, res:
 
   const [posts, total] = await postRepository
     .createQueryBuilder('post')
+    .leftJoin('post.author', 'author')
+    .addSelect(['author.id', 'author.name', 'author.email', 'author.phoneNumber', 'author.avatar'])
+    .leftJoinAndSelect('post.category', 'category')
     .where('post.status = :status', { status: BASE_STATUS.PUBLISHED })
     .andWhere(query ? 'LOWER(post.title) LIKE LOWER(:query)' : '1=1', { query: `%${query}%` })
     .orderBy('post.createdAt', sort)
@@ -33,8 +36,12 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
   const post = await postRepository
     .createQueryBuilder('post')
     .leftJoin('post.author', 'author')
-    .addSelect(['author.name', 'author.email'])
+    .addSelect(['author.id', 'author.name', 'author.email', 'author.phoneNumber', 'author.avatar'])
+    .leftJoinAndSelect('post.category', 'category')
+    .leftJoinAndSelect('post.tags', 'tags')
     .where('post.slug = :slug', { slug })
+    .andWhere('category.status = :status', { status: BASE_STATUS.PUBLISHED })
+    .andWhere('tags.status = :status', { status: BASE_STATUS.PUBLISHED })
     .andWhere('post.status = :status', { status: BASE_STATUS.PUBLISHED })
     .getOne()
   if (!post) {

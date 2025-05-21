@@ -1,34 +1,23 @@
-import express, { NextFunction } from 'express'
-import { Request, Response } from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import { db } from 'data-source'
 import { OK } from '@utils/http.status.code'
-import { Category } from '@entities/category'
+import { Tag } from '@entities/tag'
+import { Post } from '@entities/post'
 import { BASE_STATUS } from '@constants/base.status'
+import NotFoundException from '@exceptions/not.found.exception'
 import { validate } from '@middlewares/validation'
 import QueryFilterRequest from '@requests/query.filter.request'
-import { Post } from '@entities/post'
-import NotFoundException from '@exceptions/not.found.exception'
 
 const router = express.Router()
-const categoryTreeRepository = db.getTreeRepository<Category>(Category)
-const categoryRepository = db.getRepository<Category>(Category)
-const postRepository = db.getRepository<Post>(Post)
+const tagRepository = db.getRepository(Tag)
 
-router.get('/', async (req: Request, res: Response) => {
-  const categories = await categoryRepository.find({
+router.get('/', async (_req: Request, res: Response) => {
+  const tags = await tagRepository.find({
     where: { status: BASE_STATUS.PUBLISHED },
     order: { createdAt: 'DESC' }
   })
 
-  res.status(OK).json({ categories })
-})
-
-router.get('/tree', async (req: Request, res: Response) => {
-  const categories = (await categoryTreeRepository.findTrees({ relations: ['children'] })).filter(
-    category => category.status === BASE_STATUS.PUBLISHED
-  )
-
-  res.status(OK).json({ categories })
+  res.status(OK).json({ tags })
 })
 
 router.get(
@@ -39,14 +28,18 @@ router.get(
     const { page, limit, query, sort } = req.validated as QueryFilterRequest
     const skip = (page - 1) * limit
 
-    const category = await categoryRepository.findOne({
+    const tag = await tagRepository.findOne({
       where: { slug, status: BASE_STATUS.PUBLISHED }
     })
-    if (!category) {
-      return next(new NotFoundException(`Category with slug ${slug} not found.`))
+
+    if (!tag) {
+      return next(new NotFoundException(`Tag with slug ${slug} not found.`))
     }
+
+    const postRepository = db.getRepository(Post)
     const [posts, total] = await postRepository
       .createQueryBuilder('post')
+      .leftJoin('post.tags', 'tag')
       .leftJoin('post.author', 'author')
       .addSelect([
         'author.id',
@@ -56,7 +49,7 @@ router.get(
         'author.avatar'
       ])
       .leftJoinAndSelect('post.category', 'category')
-      .where('category.id = :categoryId', { categoryId: category.id })
+      .where('tag.id = :tagId', { tagId: tag.id })
       .andWhere('post.status = :status', { status: BASE_STATUS.PUBLISHED })
       .andWhere(query ? 'LOWER(post.title) LIKE LOWER(:query)' : '1=1', {
         query: `%${query}%`
@@ -66,7 +59,7 @@ router.get(
       .take(limit)
       .getManyAndCount()
 
-    res.status(OK).json({ category, posts, total })
+    res.status(OK).json({ tag, posts, total })
   }
 )
 

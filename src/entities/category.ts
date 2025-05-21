@@ -21,7 +21,7 @@ export class Category {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number
 
-  @Column({ name: 'name', unique: true })
+  @Column({ name: 'name', type: 'varchar', length: 100, unique: true })
   name: string
 
   @Column({ name: 'thumbnail', type: 'varchar', nullable: true })
@@ -30,7 +30,7 @@ export class Category {
   @Column({ name: 'icon', type: 'varchar', nullable: true })
   icon?: string | null
 
-  @Column({ name: 'slug', unique: true })
+  @Column({ name: 'slug', type: 'varchar', unique: true })
   slug: string
 
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
@@ -44,9 +44,6 @@ export class Category {
 
   @TreeParent({ onDelete: 'SET NULL' })
   parent?: Category | null
-
-  @Column({ name: 'type', type: 'varchar', length: 50, unique: true, default: 'post' })
-  type: string
 
   @OneToMany(() => Post, post => post.category)
   posts: Post[]

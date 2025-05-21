@@ -5,12 +5,16 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   ManyToOne,
-  JoinColumn
+  JoinColumn,
+  ManyToMany,
+  JoinTable,
+  OneToMany
 } from 'typeorm'
 import { BASE_STATUS } from '@constants/base.status'
 import { User } from '@entities/user'
-
-import { Category } from './category'
+import { Category } from '@entities/category'
+import { Tag } from '@entities/tag'
+import { Comment } from '@entities/comment'
 
 @Entity({ name: 'posts' })
 export class Post {
@@ -35,17 +39,34 @@ export class Post {
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
   status: string
 
-  @ManyToOne(() => Category, category => category.posts)
+  @Column({ name: 'read_time', type: 'varchar', length: 100, nullable: true })
+  readTime?: string | null
+
+  @Column({ name: 'like', type: 'int', default: 0 })
+  like: number
+
+  @ManyToOne(() => Category, category => category.posts, { cascade: true })
   @JoinColumn({ name: 'category_id' })
   category: Category
+
+  @ManyToOne(() => User, user => user.posts, { cascade: true })
+  @JoinColumn({ name: 'auth_id' })
+  author: User
+
+  @ManyToMany(() => Tag, tag => tag.posts, { cascade: true })
+  @JoinTable({
+    name: 'post_tag',
+    joinColumn: { name: 'post_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' }
+  })
+  tags: Tag[]
+
+  @OneToMany(() => Comment, comment => comment.post)
+  comments: Comment[]
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date
-
-  @ManyToOne(() => User, user => user.posts)
-  @JoinColumn({ name: 'auth_id' })
-  author: User
 }

@@ -38,7 +38,8 @@ router.post(
   auth(),
   validate(CreateCategoryRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, slug, description, parent } = req.validated as CreateCategoryRequest
+    const { name, slug, description, parentId, icon, thumbnail } =
+      req.validated as CreateCategoryRequest
 
     const slugExisting = await categoryRepository.findOneBy({ slug })
     if (slugExisting) {
@@ -48,7 +49,11 @@ router.post(
     category.name = name
     category.slug = slug
     category.description = description
-    category.parent = parent ? await categoryRepository.findOne({ where: { id: parent } }) : null
+    category.icon = icon
+    category.thumbnail = thumbnail
+    category.parent = parentId
+      ? await categoryRepository.findOne({ where: { id: parentId } })
+      : null
     await categoryRepository.save(category)
 
     res.status(CREATED).json({ message: 'success' })
@@ -60,7 +65,8 @@ router.put(
   auth(),
   validate(UpdateCategoryRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, slug, description, parent } = req.validated as UpdateCategoryRequest
+    const { name, slug, description, parentId, icon, thumbnail, status } =
+      req.validated as UpdateCategoryRequest
     const id = Number(req.params.id)
 
     const category = await categoryRepository.findOne({ where: { id } })
@@ -73,8 +79,13 @@ router.put(
     }
     category.name = name
     category.slug = slug
+    category.status = status
     category.description = description
-    category.parent = parent ? await categoryRepository.findOne({ where: { id: parent } }) : null
+    category.icon = icon
+    category.thumbnail = thumbnail
+    category.parent = parentId
+      ? await categoryRepository.findOne({ where: { id: parentId } })
+      : null
     await categoryRepository.save(category)
 
     res.status(OK).json({ message: 'success' })

@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, Min } from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator'
 
 export default class UpdateCategoryRequest {
   @IsString()
@@ -14,7 +15,19 @@ export default class UpdateCategoryRequest {
   description?: string
 
   @IsOptional()
-  @IsNumber({ allowNaN: false }, { message: 'parentId must be a number' })
-  @Min(1, { message: 'Parent ID gte 1' })
-  parent?: number
+  @IsString()
+  thumbnail?: string
+
+  @IsOptional()
+  @IsString()
+  icon?: string
+
+  @IsOptional()
+  @IsNumber({}, { message: 'Parent ID must be a number' })
+  @Type(() => Number)
+  parentId?: number
+
+  @IsOptional()
+  @IsString()
+  status: string
 }
