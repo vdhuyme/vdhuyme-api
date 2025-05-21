@@ -1,22 +1,19 @@
 import { BASE_STATUS } from '@constants/base.status'
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm'
 
-@Entity({ name: 'licenses' })
-export class License {
+@Entity({ name: 'tags' })
+export class Setting {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number
 
-  @Column({ name: 'licensed_to', type: 'varchar', length: 255 })
-  licensedTo: string
+  @Column({ name: 'key', type: 'varchar', length: 255, unique: true })
+  name: string
 
-  @Column({ name: 'activated_at', type: 'date' })
-  activatedAt: string
+  @Column({ name: 'slug', type: 'varchar', length: 1000, unique: true })
+  slug: string
 
-  @Column({ name: 'expires_at', type: 'date' })
-  expiresAt: string
-
-  @Column({ name: 'token', type: 'text' })
-  token: string
+  @Column({ name: 'type', type: 'varchar', length: 50, unique: true, default: 'post' })
+  type: string
 
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.ACTIVATED })
   status: string

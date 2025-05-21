@@ -1,4 +1,4 @@
-import BaseStatusEnum from '@enums/base.status.enum'
+import { BASE_STATUS } from '@constants/base.status'
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity({ name: 'contacts' })
@@ -15,7 +15,7 @@ export class Contact {
   @Column({ name: 'message', type: 'text', nullable: true })
   message?: string | null
 
-  @Column({ name: 'status', type: 'varchar', length: 50, default: BaseStatusEnum.PENDING })
+  @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PENDING })
   status: string
 
   @CreateDateColumn({ name: 'created_at' })

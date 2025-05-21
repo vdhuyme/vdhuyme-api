@@ -1,4 +1,4 @@
-import BaseStatusEnum from '@enums/base.status.enum'
+import { BASE_STATUS } from '@constants/base.status'
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -32,7 +32,7 @@ export class User {
   @Column({ name: 'password', type: 'varchar', length: 255 })
   password: string
 
-  @Column({ name: 'status', type: 'varchar', length: 50, default: BaseStatusEnum.ACTIVATED })
+  @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.ACTIVATED })
   status: string
 
   @CreateDateColumn({ name: 'created_at' })

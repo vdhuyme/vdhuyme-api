@@ -7,7 +7,7 @@ import CreateLicenseRequest from '@requests/create.license.request'
 import UnauthorizedException from '@exceptions/unauthorized.exception'
 import jsonwebtoken from '@config/jsonwebtoken'
 import BadRequestException from '@exceptions/bad.request.exception'
-import BaseStatusEnum from '@enums/base.status.enum'
+import { BASE_STATUS } from '@constants/base.status'
 import { isAfter, isBefore, parseISO } from 'date-fns'
 import { db } from 'data-source'
 import { License } from '@entities/license'
@@ -84,7 +84,7 @@ router.post(
 
     const found = await licenseRepository.findOneBy({
       token,
-      status: BaseStatusEnum.ACTIVATED
+      status: BASE_STATUS.ACTIVATED
     })
 
     if (!found) {

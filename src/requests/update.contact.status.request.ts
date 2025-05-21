@@ -1,7 +1,7 @@
 import { IsEnum } from 'class-validator'
-import BaseStatusEnum from '@enums/base.status.enum'
+import { BASE_STATUS } from '@constants/base.status'
 
 export default class UpdateContactStatusRequest {
-  @IsEnum(BaseStatusEnum, { message: 'Invalid status' })
-  status!: BaseStatusEnum
+  @IsEnum(BASE_STATUS, { message: 'Invalid status' })
+  status!: (typeof BASE_STATUS)[keyof typeof BASE_STATUS]
 }

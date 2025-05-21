@@ -7,8 +7,10 @@ import {
   ManyToOne,
   JoinColumn
 } from 'typeorm'
-import BaseStatusEnum from '@enums/base.status.enum'
+import { BASE_STATUS } from '@constants/base.status'
 import { User } from '@entities/user'
+
+import { Category } from './category'
 
 @Entity({ name: 'posts' })
 export class Post {
@@ -30,8 +32,12 @@ export class Post {
   @Column({ name: 'content', type: 'text' })
   content: string
 
-  @Column({ name: 'status', type: 'varchar', length: 50, default: BaseStatusEnum.PUBLISHED })
+  @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
   status: string
+
+  @ManyToOne(() => Category, category => category.posts)
+  @JoinColumn({ name: 'category_id' })
+  category: Category
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

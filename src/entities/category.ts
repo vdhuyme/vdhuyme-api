@@ -7,12 +7,16 @@ import {
   TreeParent,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn
+  OneToMany
 } from 'typeorm'
-import BaseStatusEnum from '@enums/base.status.enum'
+import { BASE_STATUS } from '@constants/base.status'
+import { Post } from '@entities/post'
 
 @Entity('categories')
-@Tree('closure-table')
+@Tree('closure-table', {
+  ancestorColumnName: () => 'ancestor_id',
+  descendantColumnName: () => 'descendant_id'
+})
 export class Category {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number
@@ -29,7 +33,7 @@ export class Category {
   @Column({ name: 'slug', unique: true })
   slug: string
 
-  @Column({ name: 'status', type: 'varchar', length: 50, default: BaseStatusEnum.PUBLISHED })
+  @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
   status: string
 
   @Column({ name: 'description', type: 'text', nullable: true })
@@ -39,8 +43,13 @@ export class Category {
   children?: Category[]
 
   @TreeParent({ onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'parent_id' })
   parent?: Category | null
+
+  @Column({ name: 'type', type: 'varchar', length: 50, unique: true, default: 'post' })
+  type: string
+
+  @OneToMany(() => Post, post => post.category)
+  posts: Post[]
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

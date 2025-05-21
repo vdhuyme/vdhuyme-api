@@ -6,7 +6,7 @@ import jsonwebtoken from '@config/jsonwebtoken'
 import { db } from 'data-source'
 import { User } from '@entities/user'
 import bcrypt from 'bcryptjs'
-import BaseStatusEnum from '@enums/base.status.enum'
+import { BASE_STATUS } from '@constants/base.status'
 import LoginRequest from '@requests/login.request'
 import { auth } from '@middlewares/authenticated'
 
@@ -42,7 +42,7 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.validated as LoginRequest
 
-    const user = await userRepository.findOneBy({ email, status: BaseStatusEnum.ACTIVATED })
+    const user = await userRepository.findOneBy({ email, status: BASE_STATUS.ACTIVATED })
     if (!user) {
       return next(new UnauthorizedException('Invalid credentials'))
     }

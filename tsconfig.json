@@ -22,7 +22,7 @@
       "@routes/*": ["routes/*"],
       "@utils/*": ["utils/*"],
       "@storage/*": ["storage/*"],
-      "@enums/*": ["enums/*"],
+      "@constants/*": ["constants/*"],
       "@mail/*": ["mail/*"],
       "@views/*": ["views/*"],
       "@entities/*": ["entities/*"],
