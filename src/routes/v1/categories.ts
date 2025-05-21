@@ -2,7 +2,6 @@ import express, { NextFunction, Request, Response } from 'express'
 import { db } from 'data-source'
 import { Category } from '@entities/category'
 import { OK, CREATED } from '@utils/http.status.code'
-import NotFoundException from '@exceptions/not.found.exception'
 import { validate } from '@middlewares/validation'
 import CreateCategoryRequest from '@requests/create.category.request'
 import UpdateCategoryRequest from '@requests/update.category.request'
@@ -27,7 +26,7 @@ router.get('/:id', auth(), async (req: Request, res: Response, next: NextFunctio
     relations: ['parent', 'children']
   })
   if (!category) {
-    return next(new NotFoundException(`Not found category ${id}`))
+    return next(new BadRequestException(`Not found category ${id}`))
   }
 
   res.status(OK).json({ category })
@@ -71,7 +70,7 @@ router.put(
 
     const category = await categoryRepository.findOne({ where: { id } })
     if (!category) {
-      return next(new NotFoundException(`Not found category ${id}`))
+      return next(new BadRequestException(`Not found category ${id}`))
     }
     const slugExisting = await categoryRepository.findOneBy({ id: Not(id), slug })
     if (slugExisting) {
@@ -97,7 +96,7 @@ router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunc
 
   const category = await categoryRepository.findOne({ where: { id } })
   if (!category) {
-    return next(new NotFoundException(`Not found category ${id}`))
+    return next(new BadRequestException(`Not found category ${id}`))
   }
   await categoryRepository.remove(category)
 

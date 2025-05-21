@@ -2,7 +2,6 @@ import express, { NextFunction, Request, Response } from 'express'
 import { db } from 'data-source'
 import { Tag } from '@entities/tag'
 import { OK, CREATED } from '@utils/http.status.code'
-import NotFoundException from '@exceptions/not.found.exception'
 import BadRequestException from '@exceptions/bad.request.exception'
 import { validate } from '@middlewares/validation'
 import { auth } from '@middlewares/authenticated'
@@ -24,7 +23,7 @@ router.get('/:id', auth(), async (req: Request, res: Response, next: NextFunctio
 
   const tag = await tagRepository.findOne({ where: { id } })
   if (!tag) {
-    return next(new NotFoundException(`Not found tag ${id}`))
+    return next(new BadRequestException(`Not found tag ${id}`))
   }
 
   res.status(OK).json({ tag })
@@ -58,7 +57,7 @@ router.put(
 
     const tag = await tagRepository.findOne({ where: { id } })
     if (!tag) {
-      return next(new NotFoundException(`Not found tag ${id}`))
+      return next(new BadRequestException(`Not found tag ${id}`))
     }
     const slugExisting = await tagRepository.findOneBy({ id: Not(id), slug })
     if (slugExisting) {
@@ -79,7 +78,7 @@ router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunc
 
   const tag = await tagRepository.findOne({ where: { id } })
   if (!tag) {
-    return next(new NotFoundException(`Not found tag ${id}`))
+    return next(new BadRequestException(`Not found tag ${id}`))
   }
   await tagRepository.remove(tag)
 

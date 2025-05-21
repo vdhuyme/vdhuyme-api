@@ -6,7 +6,7 @@ import { BASE_STATUS } from '@constants/base.status'
 import QueryFilterRequest from '@requests/query.filter.request'
 import { validate } from '@middlewares/validation'
 import { OK } from '@utils/http.status.code'
-import NotFoundException from '@exceptions/not.found.exception'
+import BadRequestException from '@exceptions/bad.request.exception'
 
 const router = express.Router()
 const postRepository = db.getRepository<Post>(Post)
@@ -45,7 +45,7 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
     .andWhere('post.status = :status', { status: BASE_STATUS.PUBLISHED })
     .getOne()
   if (!post) {
-    return next(new NotFoundException(`Not found post ${slug}`))
+    return next(new BadRequestException(`Not found post ${slug}`))
   }
 
   res.status(OK).json({ post })

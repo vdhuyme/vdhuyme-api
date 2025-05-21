@@ -115,7 +115,6 @@ router.patch(
     const id = Number(req.params.id)
     const { status } = req.validated as UpdatePostStatusRequest
 
-    const postRepository = db.getRepository(Post)
     const post = await postRepository.findOne({ where: { id } })
     if (!post) {
       return next(new BadRequestException(`Not found post: ${id}`))

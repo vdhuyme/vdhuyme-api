@@ -7,7 +7,7 @@ import { BASE_STATUS } from '@constants/base.status'
 import { validate } from '@middlewares/validation'
 import QueryFilterRequest from '@requests/query.filter.request'
 import { Post } from '@entities/post'
-import NotFoundException from '@exceptions/not.found.exception'
+import BadRequestException from '@exceptions/bad.request.exception'
 
 const router = express.Router()
 const categoryTreeRepository = db.getTreeRepository<Category>(Category)
@@ -43,7 +43,7 @@ router.get(
       where: { slug, status: BASE_STATUS.PUBLISHED }
     })
     if (!category) {
-      return next(new NotFoundException(`Category with slug ${slug} not found.`))
+      return next(new BadRequestException(`Category with slug ${slug} not found.`))
     }
     const [posts, total] = await postRepository
       .createQueryBuilder('post')

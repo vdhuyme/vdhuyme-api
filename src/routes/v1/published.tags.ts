@@ -4,9 +4,9 @@ import { OK } from '@utils/http.status.code'
 import { Tag } from '@entities/tag'
 import { Post } from '@entities/post'
 import { BASE_STATUS } from '@constants/base.status'
-import NotFoundException from '@exceptions/not.found.exception'
 import { validate } from '@middlewares/validation'
 import QueryFilterRequest from '@requests/query.filter.request'
+import BadRequestException from '@exceptions/bad.request.exception'
 
 const router = express.Router()
 const tagRepository = db.getRepository(Tag)
@@ -33,7 +33,7 @@ router.get(
     })
 
     if (!tag) {
-      return next(new NotFoundException(`Tag with slug ${slug} not found.`))
+      return next(new BadRequestException(`Tag with slug ${slug} not found.`))
     }
 
     const postRepository = db.getRepository(Post)
