@@ -8,7 +8,7 @@ package-lock.json
 dist/
 build/
 
-*.sqlite
-
 src/storage/logs/*
 !src/storage/logs/.gitkeep
+
+src/storage/data/*

@@ -1,18 +1,32 @@
 import express from 'express'
+import analytics from '@routes/v1/analytics'
 import auth from '@routes/v1/auth'
-import contact from '@routes/v1/contact'
-import license from '@routes/v1/license'
-import log from '@routes/v1/log'
-import post from '@routes/v1/post'
-import publicPost from '@routes/v1/public.post'
+import categories from '@routes/v1/categories'
+import comments from '@routes/v1/comments'
+import health from '@routes/v1/health'
+import logs from '@routes/v1/logs'
+import posts from '@routes/v1/posts'
+import settings from '@routes/v1/settings'
+import tags from '@routes/v1/tags'
+import publishedCategories from '@routes/v1/published.categories'
+import publishedComments from '@routes/v1/published.comments'
+import publishedPosts from '@routes/v1/published.posts'
+import publishedTags from '@routes/v1/published.tags'
 
 const router = express.Router()
 
+router.use('/analytics', analytics)
 router.use('/auth', auth)
-router.use('/contacts', contact)
-router.use('/licenses', license)
-router.use('/logs', log)
-router.use('/posts', post)
-router.use('/public-posts', publicPost)
+router.use('/categories', categories)
+router.use('/comments', comments)
+router.use('/health', health)
+router.use('/logs', logs)
+router.use('/posts', posts)
+router.use('/settings', settings)
+router.use('/tags', tags)
+router.use('/published-categories', publishedCategories)
+router.use('/published-comments', publishedComments)
+router.use('/published-posts', publishedPosts)
+router.use('/published-tags', publishedTags)
 
 export default router

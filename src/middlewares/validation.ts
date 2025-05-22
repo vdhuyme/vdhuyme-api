@@ -1,17 +1,35 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-namespace */
 import { plainToInstance } from 'class-transformer'
 import { validate as classValidate } from 'class-validator'
 import { RequestHandler } from 'express'
 import ValidationException from '@exceptions/validation.exception'
 
-export const validate = (dto: any): RequestHandler => {
+declare global {
+  namespace Express {
+    interface Request {
+      validated: any
+    }
+  }
+}
+
+export const validate = (
+  dto: any,
+  source: 'body' | 'query' | 'params' | 'header' | 'headers' = 'body'
+): RequestHandler => {
   return async (req, res, next) => {
-    const instance = plainToInstance(dto, req.body ?? {})
-    const errors = await classValidate(instance)
-    if (errors.length) {
+    const raw = req[source] ?? {}
+    const instance = plainToInstance(dto, raw, {
+      enableImplicitConversion: true
+    })
+    const errors = await classValidate(instance, {
+      skipMissingProperties: false
+    })
+    if (errors.length > 0) {
       return next(new ValidationException(errors))
     }
+    req.validated = instance
 
-    req.body = instance
     next()
   }
 }

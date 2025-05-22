@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from 'express'
 import ValidationException from '@exceptions/validation.exception'
 import { INTERNAL_SERVER_ERROR } from '@utils/http.status.code'
@@ -34,6 +35,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
         status: err.status,
         message: err.message
       })
+      break
 
     default:
       logger.error('Unhandled Error', data)

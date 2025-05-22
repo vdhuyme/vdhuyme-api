@@ -1,13 +1,24 @@
-import { IsArray, IsOptional, IsString, Length, MinLength } from 'class-validator'
+import {
+  IsArray,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+  Min,
+  MinLength,
+  ArrayMinSize
+} from 'class-validator'
+import { Type } from 'class-transformer'
 
 export default class CreatePostRequest {
   @IsString({ message: 'Title must be a string' })
   @Length(3, 1000, { message: 'Title must be between 3 and 1000 characters' })
   title!: string
 
-  @IsString({ message: 'Description must be a string' })
-  @Length(3, 10000, { message: 'Description must be between 3 and 10000 characters' })
-  description!: string
+  @IsString({ message: 'Excerpt must be a string' })
+  @Length(3, 1000, { message: 'Excerpt must be between 3 and 1000 characters' })
+  excerpt!: string
 
   @IsString({ message: 'Content must be a string' })
   @MinLength(10, { message: 'Content must be at least 10 characters' })
@@ -17,8 +28,22 @@ export default class CreatePostRequest {
   @IsString({ message: 'Thumbnail must be a string' })
   thumbnail?: string
 
+  @IsString({ message: 'Slug must be a string' })
+  @Length(3, 1000, { message: 'Slug must be between 3 and 1000 characters' })
+  slug: string
+
   @IsOptional()
-  @IsArray({ message: 'Images must be an array of strings' })
-  @IsString({ each: true, message: 'Each image must be a string' })
-  images?: string[]
+  @IsString({ message: 'Read time must be a string' })
+  readTime?: string
+
+  @IsNumber({}, { message: 'Category ID must be a number' })
+  @Min(1, { message: 'Category ID must be at least 1' })
+  categoryId!: number
+
+  @IsArray({ message: 'Tags must be an array' })
+  @ArrayMinSize(0)
+  @Type(() => Number)
+  @IsInt({ each: true, message: 'Each tag must be an integer' })
+  @Min(1, { each: true, message: 'Each tag ID must be at least 1' })
+  tagIds!: number[]
 }

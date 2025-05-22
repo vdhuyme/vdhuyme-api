@@ -22,14 +22,16 @@
       "@routes/*": ["routes/*"],
       "@utils/*": ["utils/*"],
       "@storage/*": ["storage/*"],
-      "@enums/*": ["enums/*"],
+      "@constants/*": ["constants/*"],
       "@mail/*": ["mail/*"],
       "@views/*": ["views/*"],
       "@entities/*": ["entities/*"],
       "@migrations/*": ["migrations/*"],
       "@seeders/*": ["seeders/*"],
-      "@types/*": ["migrations/*"],
-      "@validators/*": ["validators/*"]
+      "@types/*": ["types/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@validators/*": ["validators/*"],
+      "@subscribers/*": ["subscribers/*"]
     }
   },
   "include": ["src/**/*.ts"],
