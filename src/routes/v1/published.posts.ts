@@ -3,32 +3,49 @@ import { Request, Response } from 'express'
 import { db } from 'data-source'
 import { Post } from '@entities/post'
 import { BASE_STATUS } from '@constants/base.status'
-import QueryFilterRequest from '@requests/query.filter.request'
 import { validate } from '@middlewares/validation'
 import { OK } from '@utils/http.status.code'
 import BadRequestException from '@exceptions/bad.request.exception'
+import QueryFilterPublishedPostRequest from '@requests/query.filter.published.post.request'
 
 const router = express.Router()
 const postRepository = db.getRepository<Post>(Post)
 
-router.get('/', validate(QueryFilterRequest, 'query'), async (req: Request, res: Response) => {
-  const { page, limit, query, sort } = req.validated as QueryFilterRequest
-  const skip = (page - 1) * limit
+router.get(
+  '/',
+  validate(QueryFilterPublishedPostRequest, 'query'),
+  async (req: Request, res: Response) => {
+    const { page, limit, query, sort, categoryId } =
+      req.validated as QueryFilterPublishedPostRequest
+    const skip = (page - 1) * limit
 
-  const [posts, total] = await postRepository
-    .createQueryBuilder('post')
-    .leftJoin('post.author', 'author')
-    .addSelect(['author.id', 'author.name', 'author.email', 'author.phoneNumber', 'author.avatar'])
-    .leftJoinAndSelect('post.category', 'category')
-    .where('post.status = :status', { status: BASE_STATUS.PUBLISHED })
-    .andWhere(query ? 'LOWER(post.title) LIKE LOWER(:query)' : '1=1', { query: `%${query}%` })
-    .orderBy('post.createdAt', sort)
-    .skip(skip)
-    .take(limit)
-    .getManyAndCount()
+    const queryBuilder = postRepository
+      .createQueryBuilder('post')
+      .leftJoin('post.author', 'author')
+      .addSelect([
+        'author.id',
+        'author.name',
+        'author.email',
+        'author.phoneNumber',
+        'author.avatar'
+      ])
+      .leftJoinAndSelect('post.category', 'category')
+      .where('post.status = :status', { status: BASE_STATUS.PUBLISHED })
+    if (query) {
+      queryBuilder.andWhere('LOWER(post.title) LIKE LOWER(:query)', { query: `%${query}%` })
+    }
+    if (categoryId) {
+      queryBuilder.andWhere('category.id = :categoryId', { categoryId })
+    }
+    const [posts, total] = await queryBuilder
+      .orderBy('post.createdAt', sort)
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount()
 
-  res.status(OK).json({ posts, total })
-})
+    res.status(OK).json({ posts, total })
+  }
+)
 
 router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => {
   const { slug } = req.params
