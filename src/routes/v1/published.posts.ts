@@ -69,26 +69,19 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
 router.get('/related/:slug', async (req: Request, res: Response, next: NextFunction) => {
   const { slug } = req.params
 
-  const post = await postRepository.findOne({
-    where: { slug },
-    relations: ['category', 'tags']
-  })
+  const post = await postRepository.findOne({ where: { slug }, relations: ['category'] })
   if (!post) {
     return next(new BadRequestException('Post not found'))
   }
-  const tagIds = post.tags.map(t => t.id)
   const relatedPosts = await postRepository
     .createQueryBuilder('post')
     .leftJoin('post.category', 'category')
-    .where('post.status = :status', { status: BASE_STATUS.PUBLISHED })
     .leftJoin('post.tags', 'tag')
-    .where('tag.id IN (:...tagIds)', { tagIds })
+    .where('post.status = :status', { status: BASE_STATUS.PUBLISHED })
     .andWhere('post.id != :id', { id: post.id })
     .groupBy('post.id')
     .addGroupBy('category.id')
-    .addSelect('category.id')
-    .addSelect('category.name')
-    .addSelect('category.slug')
+    .addSelect(['category.id', 'category.name', 'category.slug'])
     .orderBy('post.createdAt', 'DESC')
     .distinct(true)
     .take(10)

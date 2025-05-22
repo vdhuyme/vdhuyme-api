@@ -45,7 +45,10 @@ export class Post {
   @Column({ name: 'views', type: 'int', default: 0 })
   views: number
 
-  @ManyToOne(() => Category, category => category.posts, { cascade: true })
+  @ManyToOne(() => Category, category => category.posts, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
   @JoinColumn({ name: 'category_id' })
   category: Category
 

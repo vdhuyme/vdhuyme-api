@@ -36,10 +36,10 @@ export class User {
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.ACTIVATED })
   status: string
 
-  @OneToMany(() => Post, post => post.author)
+  @OneToMany(() => Post, post => post.author, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   posts: Post[]
 
-  @OneToMany(() => Comment, comment => comment.user)
+  @OneToMany(() => Comment, comment => comment.user, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   comments: Comment[]
 
   @CreateDateColumn({ name: 'created_at' })

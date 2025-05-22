@@ -22,11 +22,14 @@ export class Comment {
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
   status: string
 
-  @ManyToOne(() => Post, post => post.comments, { cascade: true })
+  @ManyToOne(() => Post, post => post.comments, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
   @JoinColumn({ name: 'post_id' })
   post: Post
 
-  @ManyToOne(() => User, user => user.comments, { cascade: true })
+  @ManyToOne(() => User, user => user.comments)
   @JoinColumn({ name: 'user_id' })
   user: User
 
