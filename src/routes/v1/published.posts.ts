@@ -21,6 +21,7 @@ router.get('/', validate(QueryFilterRequest, 'query'), async (req: Request, res:
     .addSelect(['author.id', 'author.name', 'author.email', 'author.phoneNumber', 'author.avatar'])
     .leftJoinAndSelect('post.category', 'category')
     .where('post.status = :status', { status: BASE_STATUS.PUBLISHED })
+    .andWhere('category.status = :status', { status: BASE_STATUS.PUBLISHED })
     .andWhere(query ? 'LOWER(post.title) LIKE LOWER(:query)' : '1=1', { query: `%${query}%` })
     .orderBy('post.createdAt', sort)
     .skip(skip)
