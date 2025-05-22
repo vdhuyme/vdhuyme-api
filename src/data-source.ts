@@ -31,6 +31,7 @@ const config: Record<NodeEnvironment, DataSourceOptions> = {
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
+    ssl: true,
     synchronize: false,
     logging: true,
     entities: [path.join(basePath, 'entities', '**', '*{.ts,.js}')],
