@@ -22,9 +22,6 @@ export class Comment {
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
   status: string
 
-  @Column({ name: 'like', type: 'int', default: 0 })
-  like: number
-
   @ManyToOne(() => Post, post => post.comments, { cascade: true })
   @JoinColumn({ name: 'post_id' })
   post: Post

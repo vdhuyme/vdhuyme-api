@@ -41,7 +41,7 @@ router.get(
 )
 
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
-  const id = Number(req.params.id)
+  const id = parseInt(req.params.id, 10)
 
   const comment = await commentRepository.findOne({ where: { id } })
   if (!comment) {
@@ -57,7 +57,7 @@ router.patch(
   auth(),
   validate(UpdateCommentStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const id = Number(req.params.id)
+    const id = parseInt(req.params.id, 10)
     const { status } = req.validated as UpdateCommentStatusRequest
 
     const comment = await commentRepository.findOne({ where: { id } })

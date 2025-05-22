@@ -7,8 +7,8 @@ type RunReportRow = protos.google.analytics.data.v1beta.IRow
 export class Ga4CountryStatResource {
   static toDto(row: RunReportRow): IGA4CountryStat {
     const country = row.dimensionValues?.[0]?.value ?? 'Unknown'
-    const activeUsers = Number(row.metricValues?.[0]?.value ?? 0)
-    const pageViews = Number(row.metricValues?.[1]?.value ?? 0)
+    const activeUsers = parseInt(row.metricValues?.[0]?.value ?? '0', 10)
+    const pageViews = parseInt(row.metricValues?.[1]?.value ?? '0', 10)
 
     return { country, activeUsers, pageViews }
   }

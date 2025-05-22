@@ -42,8 +42,8 @@ export class Post {
   @Column({ name: 'read_time', type: 'varchar', length: 100, nullable: true })
   readTime?: string | null
 
-  @Column({ name: 'like', type: 'int', default: 0 })
-  like: number
+  @Column({ name: 'views', type: 'int', default: 0 })
+  views: number
 
   @ManyToOne(() => Category, category => category.posts, { cascade: true })
   @JoinColumn({ name: 'category_id' })

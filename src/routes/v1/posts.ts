@@ -45,7 +45,7 @@ router.get(
 )
 
 router.get('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
-  const id = Number(req.params.id)
+  const id = parseInt(req.params.id, 10)
 
   const post = await postRepository
     .createQueryBuilder('post')
@@ -96,7 +96,7 @@ router.post(
 )
 
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
-  const id = Number(req.params.id)
+  const id = parseInt(req.params.id, 10)
 
   const post = await postRepository.findOne({ where: { id } })
   if (!post) {
@@ -112,7 +112,7 @@ router.patch(
   auth(),
   validate(UpdatePostStatusRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const id = Number(req.params.id)
+    const id = parseInt(req.params.id, 10)
     const { status } = req.validated as UpdatePostStatusRequest
 
     const post = await postRepository.findOne({ where: { id } })
@@ -131,7 +131,7 @@ router.put(
   auth(),
   validate(UpdatePostRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const id = Number(req.params.id)
+    const id = parseInt(req.params.id, 10)
     const { title, excerpt, content, thumbnail, slug, categoryId, tagIds, readTime } =
       req.validated as UpdatePostRequest
 

@@ -14,7 +14,7 @@ const config: Record<NodeEnvironment, DataSourceOptions> = {
   development: {
     type: 'postgres',
     host: process.env.POSTGRES_HOST,
-    port: Number(process.env.POSTGRES_PORT || '5432'),
+    port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
@@ -27,7 +27,7 @@ const config: Record<NodeEnvironment, DataSourceOptions> = {
   production: {
     type: 'postgres',
     host: process.env.POSTGRES_HOST,
-    port: Number(process.env.POSTGRES_PORT || '5432'),
+    port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
@@ -40,7 +40,7 @@ const config: Record<NodeEnvironment, DataSourceOptions> = {
   test: {
     type: 'postgres',
     host: process.env.POSTGRES_HOST,
-    port: Number(process.env.POSTGRES_PORT || '5432'),
+    port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,

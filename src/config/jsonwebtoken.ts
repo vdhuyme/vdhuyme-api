@@ -13,7 +13,7 @@ class JsonWebToken implements IJsonWebToken {
 
   constructor() {
     this.tokenKey = process.env.TOKEN_KEY as string
-    this.expiresIn = Number(process.env.TOKEN_EXP_TIME)
+    this.expiresIn = parseInt(process.env.TOKEN_EXP_TIME as string, 10)
   }
 
   generate(data: Record<string, any>, expiresIn?: number): string {

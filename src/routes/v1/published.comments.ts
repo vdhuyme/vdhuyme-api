@@ -21,14 +21,14 @@ router.post(
   auth(),
   validate(CreateCommentRequest),
   async (req: Request, res: Response, next: NextFunction) => {
-    const { postId, content } = req.validated as CreateCommentRequest
+    const { slug, content } = req.validated as CreateCommentRequest
     const { userId } = req.auth
 
     const post = await postRepository.findOne({
-      where: { id: postId, status: BASE_STATUS.PUBLISHED }
+      where: { slug, status: BASE_STATUS.PUBLISHED }
     })
     if (!post) {
-      return next(new BadRequestException(`Post with id ${postId} not found or unpublished.`))
+      return next(new BadRequestException(`Post with slug ${slug} not found or unpublished.`))
     }
     const user = await userRepository.findOne({ where: { id: userId } })
     if (!user) {
@@ -46,7 +46,7 @@ router.post(
 )
 
 router.get(
-  '/',
+  '/by-user',
   auth(),
   validate(QueryFilterRequest, 'query'),
   async (req: Request, res: Response) => {
@@ -66,6 +66,29 @@ router.get(
       .take(limit)
       .getManyAndCount()
 
+    res.status(OK).json({ comments, total })
+  }
+)
+
+router.get(
+  '/by-post/:slug',
+  auth(),
+  validate(QueryFilterRequest, 'query'),
+  async (req: Request, res: Response) => {
+    const { slug } = req.params
+    const { page, limit, sort } = req.validated as QueryFilterRequest
+    const skip = (page - 1) * limit
+
+    const [comments, total] = await commentRepository
+      .createQueryBuilder('comment')
+      .leftJoin('comment.user', 'user')
+      .addSelect(['user.id', 'user.name', 'user.avatar', 'user.phoneNumber', 'user.email'])
+      .innerJoin('comment.post', 'post')
+      .where('post.slug = :slug', { slug })
+      .orderBy('comment.createdAt', sort)
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount()
     res.status(OK).json({ comments, total })
   }
 )

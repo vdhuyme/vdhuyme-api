@@ -6,13 +6,13 @@ export default class QueryFilterRequest {
   @IsString()
   query?: string
 
-  @Transform(({ value }) => parseInt(value))
+  @Transform(({ value }) => parseInt(value, 10))
   @IsOptional()
   @IsInt()
   @Min(1)
   page: number = 1
 
-  @Transform(({ value }) => parseInt(value))
+  @Transform(({ value }) => parseInt(value, 10))
   @IsOptional()
   @IsInt()
   @Min(1)

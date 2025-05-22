@@ -19,7 +19,7 @@ router.get('/', auth(), async (req: Request, res: Response) => {
 })
 
 router.get('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
-  const id = Number(req.params.id)
+  const id = parseInt(req.params.id, 10)
 
   const category = await categoryRepository.findOne({
     where: { id },
@@ -66,7 +66,7 @@ router.put(
   async (req: Request, res: Response, next: NextFunction) => {
     const { name, slug, description, parentId, icon, thumbnail, status } =
       req.validated as UpdateCategoryRequest
-    const id = Number(req.params.id)
+    const id = parseInt(req.params.id, 10)
 
     const category = await categoryRepository.findOne({ where: { id } })
     if (!category) {
@@ -92,7 +92,7 @@ router.put(
 )
 
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
-  const id = Number(req.params.id)
+  const id = parseInt(req.params.id, 10)
 
   const category = await categoryRepository.findOne({ where: { id } })
   if (!category) {

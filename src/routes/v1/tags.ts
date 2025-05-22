@@ -19,7 +19,7 @@ router.get('/', auth(), async (req: Request, res: Response) => {
 })
 
 router.get('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
-  const id = Number(req.params.id)
+  const id = parseInt(req.params.id, 10)
 
   const tag = await tagRepository.findOne({ where: { id } })
   if (!tag) {
@@ -53,7 +53,7 @@ router.put(
   validate(UpdateTagRequest),
   async (req: Request, res: Response, next: NextFunction) => {
     const { name, slug, status } = req.validated as UpdateTagRequest
-    const id = Number(req.params.id)
+    const id = parseInt(req.params.id, 10)
 
     const tag = await tagRepository.findOne({ where: { id } })
     if (!tag) {
@@ -74,7 +74,7 @@ router.put(
 )
 
 router.delete('/:id', auth(), async (req: Request, res: Response, next: NextFunction) => {
-  const id = Number(req.params.id)
+  const id = parseInt(req.params.id, 10)
 
   const tag = await tagRepository.findOne({ where: { id } })
   if (!tag) {
