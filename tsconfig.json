@@ -18,6 +18,7 @@
       "@config/*": ["config/*"],
       "@constants/*": ["constants/*"],
       "@controllers/*": ["controllers/*"],
+      "@decorators/*": ["decorators/*"],
       "@entities/*": ["entities/*"],
       "@exceptions/*": ["exceptions/*"],
       "@interfaces/*": ["interfaces/*"],
@@ -33,7 +34,8 @@
       "@types/*": ["types/*"],
       "@utils/*": ["utils/*"],
       "@validators/*": ["validators/*"]
-    }
+    },
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

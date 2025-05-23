@@ -1,11 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from 'express'
 import ValidationException from '@exceptions/validation.exception'
 import { INTERNAL_SERVER_ERROR } from '@utils/http.status.code'
 import HttpException from '@exceptions/http.exception'
 import logger from '@config/logging'
 
-export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  _next: NextFunction
+): void => {
   const data = {
     method: req.method,
     url: req.originalUrl,
