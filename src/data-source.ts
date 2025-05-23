@@ -5,71 +5,64 @@ import path from 'path'
 import logger from '@config/logging'
 import { DataSource, DataSourceOptions } from 'typeorm'
 import { NodeEnvironment } from 'types'
+import { config } from '@config/app'
 
-const env = (process.env.NODE_ENVIRONMENT || 'development') as NodeEnvironment
-
+const env = config.app.env
 const basePath: string = __dirname
 
-const config: Record<NodeEnvironment, DataSourceOptions> = {
+const databaseConfig: Record<NodeEnvironment, DataSourceOptions> = {
   development: {
     type: 'postgres',
-    host: process.env.POSTGRES_HOST,
-    port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
-    username: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DB,
-    synchronize: true,
-    logging: true,
+    host: config.database.host,
+    port: config.database.port,
+    username: config.database.username,
+    password: config.database.password,
+    database: config.database.database,
+    synchronize: config.database.synchronize,
+    logging: config.database.logging,
     entities: [path.join(basePath, 'entities', '**', '*{.ts,.js}')],
     migrations: [path.join(basePath, 'migrations', '**', '*{.ts,.js}')],
     subscribers: [path.join(basePath, 'subscribers', '**', '*{.ts,.js}')]
   },
   production: {
     type: 'postgres',
-    host: process.env.POSTGRES_HOST,
-    port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
-    username: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DB,
-    ssl: true,
-    synchronize: false,
-    logging: true,
+    host: config.database.host,
+    port: config.database.port,
+    username: config.database.username,
+    password: config.database.password,
+    database: config.database.database,
+    synchronize: config.database.synchronize,
+    logging: config.database.logging,
+    ssl: config.database.ssl,
     entities: [path.join(basePath, 'entities', '**', '*{.ts,.js}')],
     migrations: [path.join(basePath, 'migrations', '**', '*{.ts,.js}')],
     subscribers: [path.join(basePath, 'subscribers', '**', '*{.ts,.js}')]
   },
   test: {
     type: 'postgres',
-    host: process.env.POSTGRES_HOST,
-    port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
-    username: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DB,
-    synchronize: false,
-    logging: false,
+    host: config.database.host,
+    port: config.database.port,
+    username: config.database.username,
+    password: config.database.password,
+    database: config.database.database,
+    synchronize: config.database.synchronize,
+    logging: config.database.logging,
     entities: [path.join(basePath, 'entities', '**', '*{.ts,.js}')],
     migrations: [],
     subscribers: []
   }
 }
 
-logger.info(`Database configuration for ${env}:`, {
-  database: config[env].database,
-  entities: config[env].entities,
-  migrations: config[env].migrations
-})
-
-export const ds = new DataSource(config[env])
-const driver = process.env.DB_CONNECTION as string
+export const ds = new DataSource(databaseConfig[env])
 
 export const database = async (): Promise<void> => {
   try {
     await ds.initialize()
-    logger.info(`[${env}]📦 ${driver} database connected`)
-
-    logger.info(`Connected to database: ${config[env].database}`)
+    logger.info(
+      `📂  [${env.toUpperCase()}] Connected to ${config.database.connection.toUpperCase()} → ${databaseConfig[env].database}`
+    )
   } catch (error: any) {
-    logger.error(`❌ Failed to connect with ${driver}: ${error.message}`)
+    logger.error(`❌ Failed to connect with ${config.database.connection}: ${error.message}`)
     logger.error(`Stack trace: ${error.stack}`)
     throw error
   }

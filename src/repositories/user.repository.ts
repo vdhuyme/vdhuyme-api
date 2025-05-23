@@ -10,6 +10,11 @@ export default class UserRepository implements IUserRepository {
     this.repository = ds.getRepository<User>(User)
   }
 
+  createUser(data: Partial<User>): Promise<User> {
+    const user = this.repository.create(data)
+    return this.repository.save(user)
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     return this.repository.findOne({ where: { email } })
   }
@@ -28,5 +33,19 @@ export default class UserRepository implements IUserRepository {
       ])
       .where('user.id = :userId', { userId })
       .getOne()
+  }
+
+  async findOrCreate(data: Partial<User>): Promise<User> {
+    if (!data.email) {
+      throw new Error('Email is required to find or create user')
+    }
+
+    const user = await this.findByEmail(data.email)
+    if (user) {
+      return user
+    }
+
+    const newUser = this.repository.create(data)
+    return this.repository.save(newUser)
   }
 }

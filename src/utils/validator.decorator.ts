@@ -2,8 +2,7 @@ import { plainToInstance } from 'class-transformer'
 import { validate as classValidate } from 'class-validator'
 import { Request, Response, NextFunction } from 'express'
 import ValidationException from '@exceptions/validation.exception'
-
-type RequestDataSource = 'body' | 'query' | 'params' | 'headers'
+import { RequestDataSource } from 'types'
 
 export function createValidatorDecorator<T extends object>(
   dto: new () => T,

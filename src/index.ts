@@ -11,6 +11,7 @@ import helmet from 'helmet'
 import compression from 'compression'
 import { InversifyExpressServer } from 'inversify-express-utils'
 import { container } from 'inversify-config'
+import { config } from '@config/app'
 
 async function bootstrap(): Promise<void> {
   await database()
@@ -31,11 +32,13 @@ async function bootstrap(): Promise<void> {
   })
 
   const app = server.build()
-  const port = parseInt(process.env.PORT as string)
-  const host = process.env.APP_URL as string
 
-  app.listen(port, () => {
-    logger.info(`[${host}:${port}]`)
+  app.listen(config.app.port, () => {
+    const { host, port, env } = config.app
+
+    logger.info('🚀 Application started successfully')
+    logger.info(`🌐 Environment : ${env}`)
+    logger.info(`📡 Listening   : ${host}:${port}`)
   })
 }
 

@@ -1,10 +1,9 @@
 import bcrypt from 'bcryptjs'
-
-const SALT = parseInt(process.env.SALT as string | '10', 10)
+import { config } from '@config/app'
 
 export const Hash = {
   make(plain: string): string {
-    return bcrypt.hashSync(plain, SALT)
+    return bcrypt.hashSync(plain, config.hash.salt)
   },
 
   check(plain: string, hash: string): boolean {

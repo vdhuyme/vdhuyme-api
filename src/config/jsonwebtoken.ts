@@ -1,31 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IJwtAuthUserPayload } from '@interfaces/common/json.web.token'
 import jwt from 'jsonwebtoken'
+import { config } from '@config/app'
+import { IJwtAuthUserPayload } from '@interfaces/common/json.web.token'
 
 interface IJsonWebToken {
-  generate(data: Record<string, any>, expiresIn?: number): string
-  verify(token: string): IJwtAuthUserPayload
+  generateAccessToken(data: Record<string, any>, expiresIn?: number): string
+  generateRefreshToken(data: Record<string, any>, expiresIn?: number): string
+  verifyAccessToken(token: string): IJwtAuthUserPayload
+  verifyRefreshToken(token: string): IJwtAuthUserPayload
 }
 
 class JsonWebToken implements IJsonWebToken {
-  private tokenKey: string
-  private expiresIn: number
+  private accessTokenKey = config.jwt.accessTokenSecretKey
+  private refreshTokenKey = config.jwt.refreshTokenSecretKey
+  private accessExpiresIn = config.jwt.accessTokenExpirationTime
+  private refreshExpiresIn = config.jwt.refreshTokenExpirationTime
 
-  constructor() {
-    this.tokenKey = process.env.TOKEN_KEY as string
-    this.expiresIn = parseInt(process.env.TOKEN_EXP_TIME as string, 10)
+  generateAccessToken(data: Record<string, any>, expiresIn?: number): string {
+    return jwt.sign(data, this.accessTokenKey, { expiresIn: expiresIn || this.accessExpiresIn })
   }
 
-  generate(data: Record<string, any>, expiresIn?: number): string {
-    return jwt.sign(data, this.tokenKey, { expiresIn: expiresIn || this.expiresIn })
+  generateRefreshToken(data: Record<string, any>, expiresIn?: number): string {
+    return jwt.sign(data, this.refreshTokenKey, { expiresIn: expiresIn || this.refreshExpiresIn })
   }
 
-  verify(token: string): IJwtAuthUserPayload {
-    const decoded = jwt.verify(token, this.tokenKey)
-    return decoded as IJwtAuthUserPayload
+  verifyAccessToken(token: string): IJwtAuthUserPayload {
+    return jwt.verify(token, this.accessTokenKey) as IJwtAuthUserPayload
+  }
+
+  verifyRefreshToken(token: string): IJwtAuthUserPayload {
+    return jwt.verify(token, this.refreshTokenKey) as IJwtAuthUserPayload
   }
 }
 
 const jsonwebtoken = new JsonWebToken()
-
 export default jsonwebtoken
