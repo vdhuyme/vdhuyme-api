@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IJwtAuthUserPayload } from '@interfaces/json.web.token'
+import { IJwtAuthUserPayload } from '@interfaces/common/json.web.token'
 import jwt from 'jsonwebtoken'
 
 interface IJsonWebToken {

@@ -11,7 +11,7 @@ import {
 } from 'class-validator'
 import { Type } from 'class-transformer'
 
-export default class CreatePostRequest {
+export default class UpdatePostREquest {
   @IsString({ message: 'Title must be a string' })
   @Length(3, 1000, { message: 'Title must be between 3 and 1000 characters' })
   title!: string

@@ -59,12 +59,12 @@ logger.info(`Database configuration for ${env}:`, {
   migrations: config[env].migrations
 })
 
-export const db = new DataSource(config[env])
+export const ds = new DataSource(config[env])
+const driver = process.env.DB_CONNECTION as string
 
-const driver = process.env.DB_CONNECTION
 export const database = async (): Promise<void> => {
   try {
-    await db.initialize()
+    await ds.initialize()
     logger.info(`[${env}]📦 ${driver} database connected`)
 
     logger.info(`Connected to database: ${config[env].database}`)
