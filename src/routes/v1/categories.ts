@@ -76,6 +76,9 @@ router.put(
     if (slugExisting) {
       return next(new BadRequestException(`${slug} has been already exist.`))
     }
+    if (category.id === parentId) {
+      throw new BadRequestException('Category cannot be its own parent.')
+    }
     category.name = name
     category.slug = slug
     category.status = status
