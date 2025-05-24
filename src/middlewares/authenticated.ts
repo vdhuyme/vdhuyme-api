@@ -10,7 +10,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    const decoded = jsonwebtoken.verifyAccessToken(token)
+    const decoded = jsonwebtoken.verify(token)
     req.auth = decoded as IJwtAuthUserPayload
   } catch (error: unknown) {
     const messages: Record<string, string> = {

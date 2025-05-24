@@ -3,11 +3,11 @@ import jwt from 'jsonwebtoken'
 import { config } from '@config/app'
 import { IJwtAuthUserPayload } from '@interfaces/common/json.web.token'
 
+type TokenType = 'access' | 'refresh'
+
 interface IJsonWebToken {
-  generateAccessToken(data: Record<string, any>, expiresIn?: number): string
-  generateRefreshToken(data: Record<string, any>, expiresIn?: number): string
-  verifyAccessToken(token: string): IJwtAuthUserPayload
-  verifyRefreshToken(token: string): IJwtAuthUserPayload
+  generate(data: Record<string, any>, type?: TokenType, expiresIn?: number): string
+  verify(token: string, type?: TokenType): IJwtAuthUserPayload
 }
 
 class JsonWebToken implements IJsonWebToken {
@@ -16,20 +16,16 @@ class JsonWebToken implements IJsonWebToken {
   private accessExpiresIn = config.jwt.accessTokenExpirationTime
   private refreshExpiresIn = config.jwt.refreshTokenExpirationTime
 
-  generateAccessToken(data: Record<string, any>, expiresIn?: number): string {
-    return jwt.sign(data, this.accessTokenKey, { expiresIn: expiresIn || this.accessExpiresIn })
+  generate(data: Record<string, any>, type: TokenType = 'access', expiresIn?: number): string {
+    const secretKey = type === 'access' ? this.accessTokenKey : this.refreshTokenKey
+    const expiresInTime =
+      expiresIn || (type === 'access' ? this.accessExpiresIn : this.refreshExpiresIn)
+    return jwt.sign(data, secretKey, { expiresIn: expiresInTime })
   }
 
-  generateRefreshToken(data: Record<string, any>, expiresIn?: number): string {
-    return jwt.sign(data, this.refreshTokenKey, { expiresIn: expiresIn || this.refreshExpiresIn })
-  }
-
-  verifyAccessToken(token: string): IJwtAuthUserPayload {
-    return jwt.verify(token, this.accessTokenKey) as IJwtAuthUserPayload
-  }
-
-  verifyRefreshToken(token: string): IJwtAuthUserPayload {
-    return jwt.verify(token, this.refreshTokenKey) as IJwtAuthUserPayload
+  verify(token: string, type: TokenType = 'access'): IJwtAuthUserPayload {
+    const secretKey = type === 'access' ? this.accessTokenKey : this.refreshTokenKey
+    return jwt.verify(token, secretKey) as IJwtAuthUserPayload
   }
 }
 

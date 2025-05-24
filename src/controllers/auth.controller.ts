@@ -10,7 +10,7 @@ import RefreshTokenRequest from '@requests/refresh.token.request'
 
 @controller('/auth')
 export default class AuthController {
-  constructor(@inject('AuthService') private authService: IAuthService) {}
+  constructor(@inject('IAuthService') private authService: IAuthService) {}
 
   @httpPost('/login')
   @body(LoginRequest)
@@ -71,6 +71,18 @@ export default class AuthController {
     try {
       const accessToken = this.authService.refreshAccessToken(refreshToken)
       return res.status(OK).json({ accessToken })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  @httpGet('/health-check')
+  healthCheck(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    try {
+      res.status(OK).json({
+        uptime: process.uptime(),
+        timestamp: Date.now()
+      })
     } catch (error) {
       next(error)
     }

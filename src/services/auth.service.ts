@@ -23,8 +23,8 @@ export default class AuthService implements IAuthService {
       throw new UnauthorizedException('Invalid credentials')
     }
 
-    const accessToken = jsonwebtoken.generateAccessToken({ userId: user.id, email: user.email })
-    const refreshToken = jsonwebtoken.generateRefreshToken({ userId: user.id, email: user.email })
+    const accessToken = jsonwebtoken.generate({ userId: user.id, email: user.email })
+    const refreshToken = jsonwebtoken.generate({ userId: user.id, email: user.email }, 'refresh')
 
     return { accessToken, refreshToken }
   }
@@ -68,17 +68,17 @@ export default class AuthService implements IAuthService {
       throw new UnauthorizedException('Your account has been blocked.')
     }
 
-    const accessToken = jsonwebtoken.generateAccessToken({ userId: user.id, email: user.email })
-    const refreshToken = jsonwebtoken.generateAccessToken({ userId: user.id, email: user.email })
+    const accessToken = jsonwebtoken.generate({ userId: user.id, email: user.email })
+    const refreshToken = jsonwebtoken.generate({ userId: user.id, email: user.email }, 'refresh')
 
     return { accessToken, refreshToken }
   }
 
   refreshAccessToken(refreshToken: string): string {
     try {
-      const decoded = jsonwebtoken.verifyRefreshToken(refreshToken)
+      const decoded = jsonwebtoken.verify(refreshToken, 'refresh')
       const { userId, email } = decoded
-      const token = jsonwebtoken.generateAccessToken({ userId, email })
+      const token = jsonwebtoken.generate({ userId, email })
       return token
     } catch (error: unknown) {
       const messages: Record<string, string> = {

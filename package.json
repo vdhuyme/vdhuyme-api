@@ -42,8 +42,10 @@
     "inversify": "^6.2.2",
     "inversify-express-utils": "^6.5.0",
     "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.1.5",
     "pg": "^8.16.0",
     "reflect-metadata": "^0.2.2",
+    "slugify": "^1.6.6",
     "typeorm": "^0.3.24",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
