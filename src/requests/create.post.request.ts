@@ -28,10 +28,6 @@ export default class CreatePostRequest {
   @IsString({ message: 'Thumbnail must be a string' })
   thumbnail?: string
 
-  @IsString({ message: 'Slug must be a string' })
-  @Length(3, 1000, { message: 'Slug must be between 3 and 1000 characters' })
-  slug: string
-
   @IsOptional()
   @IsString({ message: 'Read time must be a string' })
   readTime?: string

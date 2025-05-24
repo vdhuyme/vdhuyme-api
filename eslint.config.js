@@ -44,6 +44,13 @@ export default [
           pathGroupsExcludedImportTypes: ['builtin'],
           'newlines-between': 'always'
         }
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_'
+        }
       ]
     }
   },

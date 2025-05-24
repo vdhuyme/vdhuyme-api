@@ -7,15 +7,14 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany
 } from 'typeorm'
-
-import { Post } from './post'
+import { Post } from '@entities/post'
 
 @Entity({ name: 'tags' })
 export class Tag {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number
 
-  @Column({ name: 'key', type: 'varchar', length: 255 })
+  @Column({ name: 'name', type: 'varchar', length: 255 })
   name: string
 
   @Column({ name: 'slug', type: 'varchar', unique: true })
