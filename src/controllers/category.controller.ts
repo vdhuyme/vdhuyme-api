@@ -24,6 +24,41 @@ import QueryFilterPublishedPostRequest from '@requests/query.filter.published.po
 export default class CategoryController {
   constructor(@inject('ICategoryService') private categoryService: ICategoryService) {}
 
+  @httpGet('/published-categories')
+  @query(QueryFilterRequest)
+  async getPublishedCategories(
+    @request() req: Request,
+    @response() res: Response,
+    @next() next: NextFunction
+  ) {
+    const query = req.validated as QueryFilterRequest
+
+    try {
+      const result = await this.categoryService.getPublishedCategories(query)
+      res.status(OK).json(result)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  @httpGet('/published-categories/:slug')
+  @query(QueryFilterPublishedPostRequest)
+  async getPublishedCategory(
+    @request() req: Request,
+    @response() res: Response,
+    @next() next: NextFunction
+  ) {
+    const slug = req.params.slug as string
+    const options = req.validated as QueryFilterPublishedPostRequest
+
+    try {
+      const category = await this.categoryService.getPublishedCategory(slug, options)
+      res.status(OK).json(category)
+    } catch (error) {
+      next(error)
+    }
+  }
+
   @httpGet('/')
   @authenticate()
   @query(QueryFilterRequest)
@@ -48,23 +83,6 @@ export default class CategoryController {
     try {
       const result = await this.categoryService.getCategoryTrees()
       res.status(OK).json(result)
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  @httpGet('/:slug/detail')
-  @authenticate()
-  async getCategory(
-    @request() req: Request,
-    @response() res: Response,
-    @next() next: NextFunction
-  ) {
-    const slug = req.params.slug as string
-
-    try {
-      const category = await this.categoryService.getCategory(slug)
-      res.status(OK).json(category)
     } catch (error) {
       next(error)
     }
@@ -119,41 +137,6 @@ export default class CategoryController {
     try {
       await this.categoryService.deleteCategory(slug)
       res.status(OK).json({ message: 'success' })
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  @httpGet('/published-categories/:slug')
-  @query(QueryFilterPublishedPostRequest)
-  async getPublishedCategory(
-    @request() req: Request,
-    @response() res: Response,
-    @next() next: NextFunction
-  ) {
-    const slug = req.params.slug as string
-    const options = req.validated as QueryFilterPublishedPostRequest
-
-    try {
-      const category = await this.categoryService.getPublishedCategory(slug, options)
-      res.status(OK).json(category)
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  @httpGet('/published-categories')
-  @query(QueryFilterRequest)
-  async getPublishedCategories(
-    @request() req: Request,
-    @response() res: Response,
-    @next() next: NextFunction
-  ) {
-    const query = req.validated as QueryFilterRequest
-
-    try {
-      const result = await this.categoryService.getPublishedCategories(query)
-      res.status(OK).json(result)
     } catch (error) {
       next(error)
     }

@@ -1,9 +1,7 @@
 import { BASE_STATUS } from '@constants/base.status'
 import { Post } from '@entities/post'
 import { IPostRepository, PostsWithTotal } from '@interfaces/index'
-import CreatePostRequest from '@requests/create.post.request'
 import QueryFilterPublishedPostRequest from '@requests/query.filter.published.post.request'
-import UpdatePostRequest from '@requests/update.post.request'
 import { ds } from 'data-source'
 import { injectable } from 'inversify'
 import { Repository } from 'typeorm'
@@ -16,7 +14,7 @@ export default class PostRepository implements IPostRepository {
     this.repository = ds.getRepository<Post>(Post)
   }
 
-  async createPost(data: CreatePostRequest): Promise<void> {
+  async createPost(data: Partial<Post>): Promise<void> {
     const post = this.repository.create(data)
     await this.repository.save(post)
   }
@@ -62,8 +60,8 @@ export default class PostRepository implements IPostRepository {
     return { posts, total }
   }
 
-  async updatePost(slug: string, data: UpdatePostRequest): Promise<void> {
-    await this.repository.update({ slug }, data)
+  async updatePost(data: Partial<Post>): Promise<void> {
+    await this.repository.save(data)
   }
 
   async deletePost(slug: string): Promise<void> {
@@ -122,9 +120,11 @@ export default class PostRepository implements IPostRepository {
     return { posts, total }
   }
 
-  async getRelatedPosts(slug: string): Promise<Post[]> {
+  async getRelatedPosts(slug: string, limit: number = 10): Promise<Post[]> {
     const post = await this.getPost(slug)
-    if (!post) return []
+    if (!post) {
+      return []
+    }
 
     return this.repository
       .createQueryBuilder('post')
@@ -134,10 +134,11 @@ export default class PostRepository implements IPostRepository {
       .andWhere('post.id != :id', { id: post.id })
       .groupBy('post.id')
       .addGroupBy('category.id')
+      .addGroupBy('tag.id')
       .addSelect(['category.id', 'category.name', 'category.slug'])
       .orderBy('post.createdAt', 'DESC')
       .distinct(true)
-      .take(10)
+      .take(limit)
       .getMany()
   }
 }

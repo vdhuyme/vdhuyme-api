@@ -1,11 +1,9 @@
 import { Tag } from '@entities/tag'
 import { TagsWithTotal } from '@interfaces/contracts/tag.contract'
 import { ITagRepository } from '@interfaces/repositories/tag.repository.interface'
-import CreateTagRequest from '@requests/create.tag.request'
 import QueryFilterRequest from '@requests/query.filter.request'
-import UpdateTagRequest from '@requests/update.tag.request'
 import { ds } from 'data-source'
-import { Repository } from 'typeorm'
+import { In, Repository } from 'typeorm'
 
 export default class TagRepository implements ITagRepository {
   repository: Repository<Tag>
@@ -13,8 +11,14 @@ export default class TagRepository implements ITagRepository {
   constructor() {
     this.repository = ds.getRepository<Tag>(Tag)
   }
+  findById(id: number): Promise<Tag | null> {
+    return this.repository.findOne({ where: { id } })
+  }
+  findManyByIds(ids: number[]): Promise<Tag[]> {
+    return this.repository.find({ where: { id: In(ids) } })
+  }
 
-  async createTag(data: CreateTagRequest): Promise<void> {
+  async createTag(data: Partial<Tag>): Promise<void> {
     const tag = this.repository.create(data)
     await this.repository.save(tag)
   }
@@ -40,8 +44,8 @@ export default class TagRepository implements ITagRepository {
     return await this.repository.findOne({ where: { slug } })
   }
 
-  async updateTag(slug: string, data: UpdateTagRequest): Promise<void> {
-    await this.repository.update({ slug }, data)
+  async updateTag(data: Partial<Tag>): Promise<void> {
+    await this.repository.save(data)
   }
 
   async deleteTag(slug: string): Promise<void> {

@@ -10,6 +10,10 @@ export default class UserRepository implements IUserRepository {
     this.repository = ds.getRepository<User>(User)
   }
 
+  async findById(id: number): Promise<User | null> {
+    return this.repository.findOne({ where: { id } })
+  }
+
   createUser(data: Partial<User>): Promise<User> {
     const user = this.repository.create(data)
     return this.repository.save(user)

@@ -46,7 +46,7 @@ export default class CategoryService implements ICategoryService {
     }
 
     if (!parentId) {
-      return await this.categoryRepository.updateCategory(slug, { ...rest, parent: null })
+      return await this.categoryRepository.updateCategory({ ...rest, parent: null })
     }
 
     const parent = await this.categoryRepository.getCategoryById(parentId)
@@ -54,7 +54,7 @@ export default class CategoryService implements ICategoryService {
       throw new BadRequestException(`Parent category not found ${parentId}`)
     }
 
-    return await this.categoryRepository.updateCategory(slug, { ...rest, parent })
+    return await this.categoryRepository.updateCategory({ ...rest, parent })
   }
 
   async deleteCategory(slug: string): Promise<void> {

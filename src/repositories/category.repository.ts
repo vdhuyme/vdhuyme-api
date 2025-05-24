@@ -2,7 +2,6 @@ import { BASE_STATUS } from '@constants/base.status'
 import { Category } from '@entities/category'
 import { CategoriesWithTotal } from '@interfaces/contracts/category.contract'
 import { ICategoryRepository } from '@interfaces/repositories/category.repository.interface'
-import CreateCategoryRequest from '@requests/create.category.request'
 import QueryFilterRequest from '@requests/query.filter.request'
 import { ds } from 'data-source'
 import { Repository, TreeRepository } from 'typeorm'
@@ -20,7 +19,7 @@ export default class CategoryRepository implements ICategoryRepository {
     return this.repository.findOne({ where: { id } })
   }
 
-  async createCategory(data: CreateCategoryRequest): Promise<void> {
+  async createCategory(data: Partial<Category>): Promise<void> {
     const category = this.repository.create(data)
     await this.repository.save(category)
   }
@@ -46,8 +45,8 @@ export default class CategoryRepository implements ICategoryRepository {
     return { categories, total }
   }
 
-  async updateCategory(slug: string, data: Partial<Category>): Promise<void> {
-    await this.repository.update({ slug }, data)
+  async updateCategory(data: Partial<Category>): Promise<void> {
+    await this.repository.save(data)
   }
 
   async deleteCategory(slug: string): Promise<void> {
