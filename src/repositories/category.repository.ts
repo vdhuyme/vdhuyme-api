@@ -32,11 +32,15 @@ export default class CategoryRepository implements ICategoryRepository {
     const { page, limit, query, sort } = options
     const skip = (page - 1) * limit
 
-    const [categories, total] = await this.repository
-      .createQueryBuilder('category')
-      .andWhere(query ? 'LOWER(category.name) LIKE LOWER(:query)' : '1=1', {
+    const queryBuilder = this.repository.createQueryBuilder('category')
+
+    if (query) {
+      queryBuilder.andWhere('LOWER(category.name) LIKE LOWER(:query)', {
         query: `%${query}%`
       })
+    }
+
+    const [categories, total] = await queryBuilder
       .orderBy('category.createdAt', sort)
       .skip(skip)
       .take(limit)

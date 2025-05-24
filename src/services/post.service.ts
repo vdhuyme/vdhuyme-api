@@ -69,8 +69,7 @@ export default class PostService implements IPostService {
   }
 
   async getPosts(options: QueryFilterPublishedPostRequest): Promise<PostsWithTotal> {
-    const { posts, total } = await this.postRepository.getPosts(options)
-    return { posts, total }
+    return await this.postRepository.getPosts(options)
   }
 
   async deletePost(slug: string): Promise<void> {
