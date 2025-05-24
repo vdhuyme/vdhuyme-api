@@ -1,3 +1,4 @@
+import { BASE_STATUS } from '@constants/base.status'
 import { Category } from '@entities/category'
 import BadRequestException from '@exceptions/bad.request.exception'
 import { CategoriesWithTotal } from '@interfaces/contracts/category.contract'
@@ -69,7 +70,7 @@ export default class CategoryService implements ICategoryService {
     options: QueryFilterPublishedPostRequest
   ): Promise<PostsWithTotal> {
     const category = await this.categoryRepository.getCategory(slug)
-    if (!category) {
+    if (!category || category.status !== BASE_STATUS.PUBLISHED) {
       throw new BadRequestException(`Not found category ${slug}`)
     }
 
