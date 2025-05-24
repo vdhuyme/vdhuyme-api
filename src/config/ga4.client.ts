@@ -1,6 +1,11 @@
 import { BetaAnalyticsDataClient } from '@google-analytics/data'
-import { storage } from '@utils/storage'
+import { config } from '@config/app'
+
+const credentials = config.ga4.credentials
+if (!credentials) {
+  throw new Error('Missing GA4 credentials')
+}
 
 export const ga4Client = new BetaAnalyticsDataClient({
-  keyFile: storage.storagePath('data/google-analyst.json')
+  credentials: JSON.parse(credentials)
 })

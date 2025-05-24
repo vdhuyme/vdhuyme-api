@@ -35,10 +35,16 @@ export interface JWTConfig {
   refreshTokenExpirationTime: number
 }
 
+export interface GA4 {
+  propertyId: number
+  credentials: string
+}
+
 export interface Config {
   app: AppConfig
   google: GoogleConfig
   database: DatabaseConfig
   hash: Hash
   jwt: JWTConfig
+  ga4: GA4
 }

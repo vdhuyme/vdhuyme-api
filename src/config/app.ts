@@ -34,5 +34,9 @@ export const config: Config = {
     refreshTokenSecretKey: env.REFRESH_TOKEN_KEY!,
     accessTokenExpirationTime: parseInt(env.ACCESS_TOKEN_EXP_TIME || '300', 10),
     refreshTokenExpirationTime: parseInt(env.REFRESH_TOKEN_EXP_TIME || '10080', 10)
+  },
+  ga4: {
+    propertyId: parseInt(env.GOOGLE_ANALYST_PROPERTY_ID as string, 10),
+    credentials: env.GOOGLE_ANALYST_CREDENTIALS!
   }
 }

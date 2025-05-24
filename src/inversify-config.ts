@@ -18,6 +18,8 @@ import CommentService from '@services/comment.service'
 import { ICommentService } from '@interfaces/services/comment.service.interface'
 import { ICommentRepository } from '@interfaces/repositories/comment.repository.interface'
 import CommentRepository from '@repositories/comment.repository'
+import { IStatsService } from '@interfaces/services/stats.service.interface'
+import StatsService from '@services/stats.service'
 
 const container = new Container()
 
@@ -29,10 +31,11 @@ container.bind<ITagRepository>('ITagRepository').to(TagRepository).inSingletonSc
 container.bind<IUserRepository>('IUserRepository').to(UserRepository).inSingletonScope()
 
 // Register services
+container.bind<IAuthService>('IAuthService').to(AuthService).inSingletonScope()
 container.bind<ICategoryService>('ICategoryService').to(CategoryService).inSingletonScope()
 container.bind<ICommentService>('ICommentService').to(CommentService).inSingletonScope()
 container.bind<IPostService>('IPostService').to(PostService).inSingletonScope()
-container.bind<IAuthService>('IAuthService').to(AuthService).inSingletonScope()
+container.bind<IStatsService>('IStatsService').to(StatsService).inSingletonScope()
 container.bind<ITagService>('ITagService').to(TagService).inSingletonScope()
 
 export { container }
