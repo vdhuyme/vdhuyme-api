@@ -20,7 +20,7 @@ export default class CommentRepository implements ICommentRepository {
       .createQueryBuilder('comment')
       .leftJoin('comment.user', 'user')
       .addSelect(['user.id', 'user.name', 'user.avatar', 'user.phoneNumber', 'user.email'])
-      .leftJoinAndSelect('comment.post', 'post')
+      .leftJoin('comment.post', 'post')
       .orderBy('comment.createdAt', sort)
       .skip(skip)
       .take(limit)

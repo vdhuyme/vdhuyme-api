@@ -6,6 +6,7 @@ import CreateCommentRequest from '@requests/create.comment.request'
 import QueryFilterCommentRequest from '@requests/query.filter.comment.request'
 import UpdateCommentRequest from '@requests/update.comment.request'
 import { CREATED, OK } from '@utils/http.status.code'
+import { jsonResponse } from '@utils/json.response'
 import { NextFunction, Request, Response } from 'express'
 import { inject } from 'inversify'
 import {
@@ -34,8 +35,8 @@ export default class CommentController {
     const queryFilter = req.validated as QueryFilterCommentRequest
 
     try {
-      const { comments, total } = await this.commentService.getCommentsByPostSlug(slug, queryFilter)
-      res.status(OK).json({ comments, total })
+      const result = await this.commentService.getCommentsByPostSlug(slug, queryFilter)
+      return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
@@ -54,7 +55,7 @@ export default class CommentController {
 
     try {
       await this.commentService.createComment(data, userId)
-      res.status(CREATED).json({ message: 'success' })
+      return jsonResponse(res, null, CREATED, 'success')
     } catch (error) {
       next(error)
     }
@@ -71,8 +72,8 @@ export default class CommentController {
     const queryFilter = req.validated as QueryFilterCommentRequest
 
     try {
-      const { comments, total } = await this.commentService.getComments(queryFilter)
-      res.status(CREATED).json({ comments, total })
+      const result = await this.commentService.getComments(queryFilter)
+      return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
@@ -91,7 +92,7 @@ export default class CommentController {
 
     try {
       await this.commentService.updateComment(id, data)
-      res.status(OK).json({ message: 'success' })
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
@@ -108,7 +109,7 @@ export default class CommentController {
 
     try {
       await this.commentService.deleteComment(id)
-      res.status(OK).json({ message: 'success' })
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
