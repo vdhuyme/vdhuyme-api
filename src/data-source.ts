@@ -59,7 +59,7 @@ export const database = async (): Promise<void> => {
   try {
     await ds.initialize()
     logger.info(
-      `📂  [${env.toUpperCase()}] Connected to ${config.database.connection.toUpperCase()} → ${databaseConfig[env].database}`
+      `📂 [${env.toUpperCase()}] Connected to ${config.database.connection.toUpperCase()} → ${databaseConfig[env].database}`
     )
   } catch (error: any) {
     logger.error(`❌ Failed to connect with ${config.database.connection}: ${error.message}`)

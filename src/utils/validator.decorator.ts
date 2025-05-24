@@ -36,7 +36,8 @@ export function createValidatorDecorator<T extends object>(
         })
 
         const errors = await classValidate(instance, {
-          skipMissingProperties: false
+          skipMissingProperties: false,
+          whitelist: true
         })
 
         if (errors.length > 0) {
