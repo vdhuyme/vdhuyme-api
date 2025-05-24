@@ -19,6 +19,7 @@ import CreateCategoryRequest from '@requests/create.category.request'
 import UpdateCategoryRequest from '@requests/update.category.request'
 import { CREATED, OK } from '@utils/http.status.code'
 import QueryFilterPublishedPostRequest from '@requests/query.filter.published.post.request'
+import { jsonResponse } from '@utils/json.response'
 
 @controller('/categories')
 export default class CategoryController {
@@ -35,7 +36,7 @@ export default class CategoryController {
 
     try {
       const result = await this.categoryService.getPublishedCategories(query)
-      res.status(OK).json(result)
+      return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
@@ -53,7 +54,7 @@ export default class CategoryController {
 
     try {
       const category = await this.categoryService.getPublishedCategory(slug, options)
-      res.status(OK).json(category)
+      return jsonResponse(res, category)
     } catch (error) {
       next(error)
     }
@@ -71,7 +72,7 @@ export default class CategoryController {
 
     try {
       const result = await this.categoryService.getCategories(query)
-      res.status(OK).json(result)
+      return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
@@ -82,7 +83,7 @@ export default class CategoryController {
   async getTrees(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     try {
       const result = await this.categoryService.getCategoryTrees()
-      res.status(OK).json(result)
+      return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
@@ -100,7 +101,7 @@ export default class CategoryController {
 
     try {
       await this.categoryService.createCategory(body)
-      res.status(CREATED).json({ message: 'success' })
+      return jsonResponse(res, null, CREATED, 'success')
     } catch (error) {
       next(error)
     }
@@ -119,7 +120,7 @@ export default class CategoryController {
 
     try {
       await this.categoryService.updateCategory(slug, body)
-      res.status(OK).json({ message: 'success' })
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
@@ -136,7 +137,7 @@ export default class CategoryController {
 
     try {
       await this.categoryService.deleteCategory(slug)
-      res.status(OK).json({ message: 'success' })
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
