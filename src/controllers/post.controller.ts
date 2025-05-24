@@ -19,6 +19,7 @@ import { body } from '@decorators/validate.body.decorator'
 import { query } from '@decorators/validate.query.decorator'
 import UpdatePostRequest from '@requests/update.post.request'
 import QueryFilterPublishedPostRequest from '@requests/query.filter.published.post.request'
+import { jsonResponse } from '@utils/json.response'
 
 @controller('/posts')
 export class PostController {
@@ -35,7 +36,7 @@ export class PostController {
 
     try {
       const result = await this.postService.getPublishedPosts(queryFilter)
-      res.status(OK).json(result)
+      return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
@@ -51,7 +52,7 @@ export class PostController {
 
     try {
       const post = await this.postService.getPublishedPost(slug)
-      res.status(OK).json(post)
+      return jsonResponse(res, post)
     } catch (error) {
       next(error)
     }
@@ -69,7 +70,7 @@ export class PostController {
 
     try {
       const posts = await this.postService.getRelatedPosts(slug, limit)
-      return res.status(OK).json({ posts })
+      return jsonResponse(res, posts)
     } catch (error) {
       next(error)
     }
@@ -82,8 +83,8 @@ export class PostController {
     const queryFilter = req.validated as QueryFilterRequest
 
     try {
-      const { posts, total } = await this.postService.getPosts(queryFilter)
-      return res.status(OK).json({ posts, total })
+      const result = await this.postService.getPosts(queryFilter)
+      return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
@@ -96,7 +97,7 @@ export class PostController {
 
     try {
       const post = await this.postService.getPost(slug)
-      return res.status(OK).json({ post })
+      return jsonResponse(res, post)
     } catch (error) {
       next(error)
     }
@@ -111,7 +112,7 @@ export class PostController {
 
     try {
       await this.postService.createPost(data, userId)
-      return res.status(CREATED).json({ message: 'success' })
+      return jsonResponse(res, null, CREATED, 'success')
     } catch (error) {
       next(error)
     }
@@ -126,7 +127,7 @@ export class PostController {
 
     try {
       await this.postService.updatePost(slug, data)
-      return res.status(OK).json({ message: 'success' })
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
@@ -139,7 +140,7 @@ export class PostController {
 
     try {
       await this.postService.deletePost(slug)
-      return res.status(OK).json({ message: 'success' })
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
