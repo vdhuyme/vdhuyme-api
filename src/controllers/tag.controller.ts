@@ -6,6 +6,7 @@ import CreateTagRequest from '@requests/create.tag.request'
 import QueryFilterRequest from '@requests/query.filter.request'
 import UpdateTagRequest from '@requests/update.tag.request'
 import { CREATED, OK } from '@utils/http.status.code'
+import { jsonResponse } from '@utils/json.response'
 import { NextFunction, Request, Response } from 'express'
 import { inject } from 'inversify'
 import {
@@ -31,7 +32,7 @@ export default class TagController {
 
     try {
       await this.tagService.createTag(data)
-      res.status(CREATED).json({ message: 'success' })
+      return jsonResponse(res, null, CREATED, 'success')
     } catch (error) {
       next(error)
     }
@@ -44,8 +45,8 @@ export default class TagController {
     const queryFilter = req.validated as QueryFilterRequest
 
     try {
-      const { tags, total } = await this.tagService.getTags(queryFilter)
-      res.status(OK).json({ tags, total })
+      const result = await this.tagService.getTags(queryFilter)
+      return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
@@ -60,7 +61,7 @@ export default class TagController {
 
     try {
       await this.tagService.updateTag(slug, data)
-      res.status(OK).json({ message: 'success' })
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
@@ -73,7 +74,7 @@ export default class TagController {
 
     try {
       await this.tagService.deleteTag(slug)
-      res.status(OK).json({ message: 'success' })
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
