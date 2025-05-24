@@ -13,20 +13,27 @@ import { LoginResponse } from '@interfaces/index'
 export default class AuthService implements IAuthService {
   constructor(@inject('IUserRepository') private userRepository: IUserRepository) {}
 
-  async login({ email, password }: LoginRequest): Promise<LoginResponse> {
-    const user = await this.userRepository.findByEmail(email)
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials')
-    }
-
-    if (!Hash.check(password, user.password) || user.status === BASE_STATUS.BLOCKED) {
-      throw new UnauthorizedException('Invalid credentials')
-    }
-
+  private generateTokens(user: User): LoginResponse {
     const accessToken = jsonwebtoken.generate({ userId: user.id, email: user.email })
     const refreshToken = jsonwebtoken.generate({ userId: user.id, email: user.email }, 'refresh')
-
     return { accessToken, refreshToken }
+  }
+
+  private validateUser(user: User | null) {
+    if (!user || user.status === BASE_STATUS.BLOCKED) {
+      throw new UnauthorizedException('Invalid credentials or blocked account')
+    }
+  }
+
+  async login({ email, password }: LoginRequest): Promise<LoginResponse> {
+    const user = await this.userRepository.findByEmail(email)
+    this.validateUser(user)
+
+    if (!Hash.check(password, user!.password)) {
+      throw new UnauthorizedException('Invalid credentials')
+    }
+
+    return this.generateTokens(user!)
   }
 
   async getUserInfo(userId: number): Promise<User> {
@@ -64,14 +71,9 @@ export default class AuthService implements IAuthService {
 
     const { email, name, picture } = socialAccount
     const user = await this.userRepository.findOrCreate({ email, name, avatar: picture })
-    if (user.status === BASE_STATUS.BLOCKED) {
-      throw new UnauthorizedException('Your account has been blocked.')
-    }
+    this.validateUser(user)
 
-    const accessToken = jsonwebtoken.generate({ userId: user.id, email: user.email })
-    const refreshToken = jsonwebtoken.generate({ userId: user.id, email: user.email }, 'refresh')
-
-    return { accessToken, refreshToken }
+    return this.generateTokens(user!)
   }
 
   refreshAccessToken(refreshToken: string): string {
