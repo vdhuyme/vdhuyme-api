@@ -3,6 +3,7 @@ import { query } from '@decorators/validate.query.decorator'
 import { IStatsService } from '@interfaces/services/stats.service.interface'
 import QueryFilterRequest from '@requests/query.filter.request'
 import { OK } from '@utils/http.status.code'
+import { jsonResponse } from '@utils/json.response'
 import { NextFunction, Request, Response } from 'express'
 import { inject } from 'inversify'
 import { controller, httpGet, next, request, response } from 'inversify-express-utils'
@@ -19,7 +20,7 @@ export default class StatsController {
 
     try {
       const result = await this.statsService.ga4(queryFilter)
-      res.status(OK).json(result)
+      return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
