@@ -4,6 +4,14 @@ import { Request, Response, NextFunction } from 'express'
 import ValidationException from '@exceptions/validation.exception'
 import { RequestDataSource } from 'types'
 
+declare global {
+  namespace Express {
+    interface Request {
+      validated?: unknown
+    }
+  }
+}
+
 export function createValidatorDecorator<T extends object>(
   dto: new () => T,
   source: RequestDataSource
