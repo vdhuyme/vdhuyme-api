@@ -28,9 +28,9 @@ export default class UpdatePostRequest {
   @IsString({ message: 'Thumbnail must be a string' })
   thumbnail?: string
 
-  @IsOptional()
-  @IsString({ message: 'Read time must be a string' })
-  readTime?: string
+  @IsNumber({}, { message: 'Read time must be a number' })
+  @Min(1, { message: 'Read time must be at least 1' })
+  readTime?: number
 
   @IsNumber({}, { message: 'Category ID must be a number' })
   @Min(1, { message: 'Category ID must be at least 1' })

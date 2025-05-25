@@ -39,6 +39,7 @@ export default class PostRepository implements IPostRepository {
       .leftJoin('post.author', 'author')
       .addSelect(['author.id', 'author.name', 'author.email'])
       .leftJoinAndSelect('post.category', 'category')
+      .leftJoinAndSelect('post.tags', 'tags')
 
     if (query) {
       queryBuilder.andWhere('LOWER(post.title) LIKE LOWER(:query)', {
@@ -92,7 +93,7 @@ export default class PostRepository implements IPostRepository {
 
     const queryBuilder = this.repository
       .createQueryBuilder('post')
-      .leftJoin('post.author', 'author')
+      .innerJoin('post.author', 'author')
       .addSelect([
         'author.id',
         'author.name',
@@ -100,11 +101,15 @@ export default class PostRepository implements IPostRepository {
         'author.phoneNumber',
         'author.avatar'
       ])
-      .leftJoinAndSelect('post.category', 'category')
-      .where('post.status = :status', { status: BASE_STATUS.PUBLISHED })
+      .innerJoinAndSelect('post.category', 'category')
+      .where('category.status = :categoryStatus', { categoryStatus: BASE_STATUS.PUBLISHED })
+      .andWhere('post.status = :postStatus', { postStatus: BASE_STATUS.PUBLISHED })
 
     if (query) {
-      queryBuilder.andWhere('LOWER(post.title) LIKE LOWER(:query)', { query: `%${query}%` })
+      queryBuilder.andWhere(
+        `(LOWER(post.title) ILIKE LOWER(:query) OR LOWER(post.content) ILIKE LOWER(:query))`,
+        { query: `%${query}%` }
+      )
     }
 
     if (categoryId) {
