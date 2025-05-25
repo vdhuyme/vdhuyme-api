@@ -40,6 +40,12 @@ export interface GA4 {
   credentials: string
 }
 
+export interface ImageKit {
+  urlEndpoint: string
+  publicKey: string
+  privateKey: string
+}
+
 export interface Config {
   app: AppConfig
   google: GoogleConfig
@@ -47,4 +53,5 @@ export interface Config {
   hash: Hash
   jwt: JWTConfig
   ga4: GA4
+  imagekit: ImageKit
 }

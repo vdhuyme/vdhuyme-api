@@ -1,6 +1,7 @@
 export * from './auth.controller'
 export * from './category.controller'
 export * from './comment.controller'
+export * from './imagekit.controller'
 export * from './post.controller'
 export * from './stats.controller'
 export * from './tag.controller'

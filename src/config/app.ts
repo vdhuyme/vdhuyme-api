@@ -38,5 +38,10 @@ export const config: Config = {
   ga4: {
     propertyId: parseInt(env.GOOGLE_ANALYST_PROPERTY_ID as string, 10),
     credentials: env.GOOGLE_ANALYST_CREDENTIALS!
+  },
+  imagekit: {
+    urlEndpoint: env.IMAGEKIT_URL_ENDPOINT!,
+    publicKey: env.IMAGEKIT_PUBLIC_KEY!,
+    privateKey: env.IMAGEKIT_PRIVATE_KEY!
   }
 }

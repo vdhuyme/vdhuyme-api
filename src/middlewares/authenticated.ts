@@ -3,6 +3,14 @@ import UnauthorizedException from '@exceptions/unauthorized.exception'
 import { IJwtAuthUserPayload } from 'interfaces'
 import { NextFunction, Request, Response } from 'express'
 
+declare global {
+  namespace Express {
+    interface Request {
+      auth: IJwtAuthUserPayload
+    }
+  }
+}
+
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   const token: string = req.headers?.authorization?.split(' ')[1] || ''
   if (!token) {
