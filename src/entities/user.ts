@@ -30,11 +30,14 @@ export class User {
   @Column({ name: 'dob', type: 'date', nullable: true })
   dob?: string | null
 
-  @Column({ name: 'password', type: 'varchar', length: 255 })
+  @Column({ name: 'password', type: 'varchar', length: 255, nullable: true })
   password: string
 
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.ACTIVATED })
   status: string
+
+  @Column({ name: 'super_user', type: 'boolean', default: 0 })
+  superUser: number
 
   @OneToMany(() => Post, post => post.author, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   posts: Post[]

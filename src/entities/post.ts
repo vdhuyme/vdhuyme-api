@@ -39,8 +39,8 @@ export class Post {
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
   status: string
 
-  @Column({ name: 'read_time', type: 'varchar', length: 100, nullable: true })
-  readTime?: string | null
+  @Column({ name: 'read_time', type: 'int', nullable: true })
+  readTime?: number | null
 
   @Column({ name: 'views', type: 'int', default: 0 })
   views: number

@@ -21,7 +21,7 @@ export class Category {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number
 
-  @Column({ name: 'name', type: 'varchar', length: 100, unique: true })
+  @Column({ name: 'name', type: 'varchar', length: 100 })
   name: string
 
   @Column({ name: 'thumbnail', type: 'varchar', nullable: true })

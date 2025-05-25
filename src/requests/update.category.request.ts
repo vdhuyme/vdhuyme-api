@@ -6,10 +6,6 @@ export default class UpdateCategoryRequest {
   @IsNotEmpty({ message: 'Name is required' })
   name: string
 
-  @IsString()
-  @IsNotEmpty({ message: 'Slug is required' })
-  slug: string
-
   @IsOptional()
   @IsString()
   description?: string
@@ -25,7 +21,7 @@ export default class UpdateCategoryRequest {
   @IsOptional()
   @IsNumber({}, { message: 'Parent ID must be a number' })
   @Type(() => Number)
-  parentId?: number
+  parentId: number
 
   @IsOptional()
   @IsString()

@@ -11,7 +11,7 @@ import {
 } from 'class-validator'
 import { Type } from 'class-transformer'
 
-export default class CreatePostRequest {
+export default class UpdatePostRequest {
   @IsString({ message: 'Title must be a string' })
   @Length(3, 1000, { message: 'Title must be between 3 and 1000 characters' })
   title!: string
@@ -28,13 +28,9 @@ export default class CreatePostRequest {
   @IsString({ message: 'Thumbnail must be a string' })
   thumbnail?: string
 
-  @IsString({ message: 'Slug must be a string' })
-  @Length(3, 1000, { message: 'Slug must be between 3 and 1000 characters' })
-  slug: string
-
-  @IsOptional()
-  @IsString({ message: 'Read time must be a string' })
-  readTime?: string
+  @IsNumber({}, { message: 'Read time must be a number' })
+  @Min(1, { message: 'Read time must be at least 1' })
+  readTime?: number
 
   @IsNumber({}, { message: 'Category ID must be a number' })
   @Min(1, { message: 'Category ID must be at least 1' })
