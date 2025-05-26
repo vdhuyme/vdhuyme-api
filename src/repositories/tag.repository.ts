@@ -32,7 +32,7 @@ export default class TagRepository implements ITagRepository {
       .andWhere(query ? 'LOWER(tag.name) LIKE LOWER(:query)' : '1=1', {
         query: `%${query}%`
       })
-      .orderBy('tag.createdAt', sort)
+      // .orderBy('tag.createdAt', sort)
       .skip(skip)
       .take(limit)
       .getManyAndCount()

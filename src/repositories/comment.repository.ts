@@ -16,14 +16,16 @@ export default class CommentRepository implements ICommentRepository {
     const { page = 1, limit = 10, sort = 'DESC' } = options
     const skip = (page - 1) * limit
 
-    return this.repository
-      .createQueryBuilder('comment')
-      .leftJoin('comment.user', 'user')
-      .addSelect(['user.id', 'user.name', 'user.avatar', 'user.phoneNumber', 'user.email'])
-      .leftJoin('comment.post', 'post')
-      .orderBy('comment.createdAt', sort)
-      .skip(skip)
-      .take(limit)
+    return (
+      this.repository
+        .createQueryBuilder('comment')
+        .leftJoin('comment.user', 'user')
+        .addSelect(['user.id', 'user.name', 'user.avatar', 'user.phoneNumber', 'user.email'])
+        .leftJoin('comment.post', 'post')
+        // .orderBy('comment.createdAt', sort)
+        .skip(skip)
+        .take(limit)
+    )
   }
 
   async getCommentsByPostSlug(

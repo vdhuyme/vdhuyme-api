@@ -52,7 +52,7 @@ export default class PostRepository implements IPostRepository {
     }
 
     queryBuilder
-      .orderBy('post.createdAt', sort as 'ASC' | 'DESC')
+      // .orderBy('post.createdAt', sort as 'ASC' | 'DESC')
       .skip(skip)
       .take(limit)
 
@@ -117,7 +117,7 @@ export default class PostRepository implements IPostRepository {
     }
 
     const [posts, total] = await queryBuilder
-      .orderBy('post.createdAt', sort)
+      // .orderBy('post.createdAt', sort)
       .skip(skip)
       .take(limit)
       .getManyAndCount()

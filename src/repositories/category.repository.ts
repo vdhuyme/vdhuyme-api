@@ -41,7 +41,7 @@ export default class CategoryRepository implements ICategoryRepository {
     }
 
     const [categories, total] = await queryBuilder
-      .orderBy('category.createdAt', sort)
+      // .orderBy('category.createdAt', sort)
       .skip(skip)
       .take(limit)
       .getManyAndCount()
@@ -69,7 +69,7 @@ export default class CategoryRepository implements ICategoryRepository {
       queryBuilder.andWhere('LOWER(category.name) LIKE LOWER(:query)', { query: `%${query}%` })
     }
 
-    queryBuilder.orderBy('category.createdAt', sort).skip(skip).take(limit)
+    // queryBuilder.orderBy('category.createdAt', sort).skip(skip).take(limit)
 
     const [categories, total] = await queryBuilder.getManyAndCount()
 
