@@ -1,5 +1,6 @@
+import { BASE_STATUS } from '@constants/base.status'
 import { Type } from 'class-transformer'
-import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator'
+import { IsString, IsNotEmpty, IsOptional, IsNumber, IsEnum } from 'class-validator'
 
 export default class UpdateCategoryRequest {
   @IsString()
@@ -24,6 +25,6 @@ export default class UpdateCategoryRequest {
   parentId: number
 
   @IsOptional()
-  @IsString()
-  status: string
+  @IsEnum(BASE_STATUS, { message: 'Invalid status' })
+  status!: (typeof BASE_STATUS)[keyof typeof BASE_STATUS]
 }

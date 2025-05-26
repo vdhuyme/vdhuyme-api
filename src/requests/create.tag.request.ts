@@ -1,4 +1,5 @@
-import { IsString, Length, IsOptional } from 'class-validator'
+import { BASE_STATUS } from '@constants/base.status'
+import { IsString, Length, IsOptional, IsEnum } from 'class-validator'
 
 export default class CreateTagRequest {
   @IsString()
@@ -6,6 +7,6 @@ export default class CreateTagRequest {
   name: string
 
   @IsOptional()
-  @IsString()
-  status?: string
+  @IsEnum(BASE_STATUS, { message: 'Invalid status' })
+  status!: (typeof BASE_STATUS)[keyof typeof BASE_STATUS]
 }

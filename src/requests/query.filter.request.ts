@@ -1,5 +1,22 @@
 import { Transform } from 'class-transformer'
-import { IsDate, IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator'
+import {
+  IsArray,
+  IsDate,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested
+} from 'class-validator'
+
+class SortItem {
+  @IsString()
+  key: string
+
+  @IsIn(['ASC', 'DESC'])
+  order: 'ASC' | 'DESC'
+}
 
 export default class QueryFilterRequest {
   @IsOptional()
@@ -19,8 +36,18 @@ export default class QueryFilterRequest {
   limit: number = 50
 
   @IsOptional()
-  @IsIn(['DESC', 'ASC'])
-  sort: 'DESC' | 'ASC' = 'DESC'
+  @Transform(({ obj }) => {
+    const keys = obj.sortKey ?? []
+    const orders = obj.sortOrder ?? []
+    if (!Array.isArray(keys)) return []
+    return keys.map((key: string, i: number) => ({
+      key,
+      order: orders[i] ?? 'ASC'
+    }))
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  sort?: SortItem[]
 
   @Transform(({ value }) => new Date(value))
   @IsOptional()
