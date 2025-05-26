@@ -66,7 +66,7 @@ export default class CategoryRepository implements ICategoryRepository {
       .where('category.status = :status', { status: BASE_STATUS.PUBLISHED })
 
     if (query) {
-      queryBuilder.andWhere('LOWER(category.title) LIKE LOWER(:query)', { query: `%${query}%` })
+      queryBuilder.andWhere('LOWER(category.name) LIKE LOWER(:query)', { query: `%${query}%` })
     }
 
     queryBuilder.orderBy('category.createdAt', sort).skip(skip).take(limit)

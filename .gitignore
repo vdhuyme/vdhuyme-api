@@ -12,3 +12,4 @@ src/storage/logs/*
 !src/storage/logs/.gitkeep
 
 src/storage/data/*
+!src/storage/data/.gitkeep

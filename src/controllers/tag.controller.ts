@@ -1,6 +1,5 @@
 import { authenticate } from '@decorators/authenticate'
-import { body } from '@decorators/validate.body.decorator'
-import { query } from '@decorators/validate.query.decorator'
+import { body, query } from '@decorators/validator'
 import { ITagService } from '@interfaces/services/tag.service.interface'
 import CreateTagRequest from '@requests/create.tag.request'
 import QueryFilterRequest from '@requests/query.filter.request'
@@ -28,7 +27,7 @@ export default class TagController {
   @authenticate()
   @body(CreateTagRequest)
   async createTag(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = req.validated as CreateTagRequest
+    const data = req.body as CreateTagRequest
 
     try {
       await this.tagService.createTag(data)
@@ -42,10 +41,10 @@ export default class TagController {
   @authenticate()
   @query(QueryFilterRequest)
   async getTags(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const queryFilter = req.validated as QueryFilterRequest
+    const queryFilters = req.query as unknown as QueryFilterRequest
 
     try {
-      const result = await this.tagService.getTags(queryFilter)
+      const result = await this.tagService.getTags(queryFilters)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
@@ -57,7 +56,7 @@ export default class TagController {
   @body(UpdateTagRequest)
   async updateTag(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const slug = req.params.slug
-    const data = req.validated as UpdateTagRequest
+    const data = req.body as UpdateTagRequest
 
     try {
       await this.tagService.updateTag(slug, data)

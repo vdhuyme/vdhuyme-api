@@ -1,5 +1,5 @@
 import { authenticate } from '@decorators/authenticate'
-import { query } from '@decorators/validate.query.decorator'
+import { query } from '@decorators/validator'
 import { IStatsService } from '@interfaces/services/stats.service.interface'
 import QueryFilterRequest from '@requests/query.filter.request'
 import { jsonResponse } from '@utils/json.response'
@@ -15,10 +15,10 @@ export default class StatsController {
   @authenticate()
   @query(QueryFilterRequest)
   async ga4(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const queryFilter = req.validated as QueryFilterRequest
+    const queryFilters = req.query as unknown as QueryFilterRequest
 
     try {
-      const result = await this.statsService.ga4(queryFilter)
+      const result = await this.statsService.ga4(queryFilters)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)

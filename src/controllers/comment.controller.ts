@@ -1,6 +1,5 @@
 import { authenticate } from '@decorators/authenticate'
-import { body } from '@decorators/validate.body.decorator'
-import { query } from '@decorators/validate.query.decorator'
+import { body, query } from '@decorators/validator'
 import { ICommentService } from '@interfaces/services/comment.service.interface'
 import CreateCommentRequest from '@requests/create.comment.request'
 import QueryFilterCommentRequest from '@requests/query.filter.comment.request'
@@ -32,10 +31,10 @@ export default class CommentController {
     @next() next: NextFunction
   ) {
     const slug = req.params.slug as string
-    const queryFilter = req.validated as QueryFilterCommentRequest
+    const queryFilters = req.query as unknown as QueryFilterCommentRequest
 
     try {
-      const result = await this.commentService.getCommentsByPostSlug(slug, queryFilter)
+      const result = await this.commentService.getCommentsByPostSlug(slug, queryFilters)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
@@ -69,10 +68,10 @@ export default class CommentController {
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const queryFilter = req.validated as QueryFilterCommentRequest
+    const queryFilters = req.query as unknown as QueryFilterCommentRequest
 
     try {
-      const result = await this.commentService.getComments(queryFilter)
+      const result = await this.commentService.getComments(queryFilters)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)

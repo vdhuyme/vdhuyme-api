@@ -15,8 +15,7 @@ import { CREATED, OK } from '@utils/http.status.code'
 import { authenticate } from '@decorators/authenticate'
 import CreatePostRequest from '@requests/create.post.request'
 import QueryFilterRequest from '@requests/query.filter.request'
-import { body } from '@decorators/validate.body.decorator'
-import { query } from '@decorators/validate.query.decorator'
+import { body, query } from '@decorators/validator'
 import UpdatePostRequest from '@requests/update.post.request'
 import QueryFilterPublishedPostRequest from '@requests/query.filter.published.post.request'
 import { jsonResponse } from '@utils/json.response'
@@ -32,10 +31,10 @@ export class PostController {
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const queryFilter = req.validated as QueryFilterPublishedPostRequest
+    const queryFilters = req.query as unknown as QueryFilterPublishedPostRequest
 
     try {
-      const result = await this.postService.getPublishedPosts(queryFilter)
+      const result = await this.postService.getPublishedPosts(queryFilters)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
@@ -66,7 +65,7 @@ export class PostController {
     @next() next: NextFunction
   ) {
     const slug = req.params.slug as string
-    const { limit } = req.validated as QueryFilterRequest
+    const { limit } = req.query as unknown as QueryFilterRequest
 
     try {
       const posts = await this.postService.getRelatedPosts(slug, limit)
@@ -80,10 +79,10 @@ export class PostController {
   @authenticate()
   @query(QueryFilterRequest)
   async getPosts(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const queryFilter = req.validated as QueryFilterRequest
+    const queryFilters = req.query as unknown as QueryFilterRequest
 
     try {
-      const result = await this.postService.getPosts(queryFilter)
+      const result = await this.postService.getPosts(queryFilters)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
@@ -107,7 +106,7 @@ export class PostController {
   @authenticate()
   @body(CreatePostRequest)
   async createPost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = req.validated as CreatePostRequest
+    const data = req.body as unknown as CreatePostRequest
     const { userId } = req.auth
 
     try {
@@ -122,7 +121,7 @@ export class PostController {
   @authenticate()
   @body(UpdatePostRequest)
   async updatePost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = req.validated as UpdatePostRequest
+    const data = req.body as unknown as UpdatePostRequest
     const slug = req.params.slug as string
 
     try {

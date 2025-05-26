@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express'
 import { controller, httpGet, httpPost, next, request, response } from 'inversify-express-utils'
 import { OK } from '@utils/http.status.code'
-import { body } from '@decorators/validate.body.decorator'
 import LoginRequest from '@requests/login.request'
 import { inject } from 'inversify'
 import { IAuthService } from '@interfaces/services/auth.service.interface'
 import { authenticate } from '@decorators/authenticate'
 import RefreshTokenRequest from '@requests/refresh.token.request'
 import { jsonResponse } from '@utils/json.response'
+import { body } from '@decorators/validator'
 
 @controller('/auth')
 export default class AuthController {
@@ -16,7 +16,7 @@ export default class AuthController {
   @httpPost('/login')
   @body(LoginRequest)
   async login(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = req.validated as LoginRequest
+    const data = req.body as LoginRequest
 
     try {
       const result = await this.authService.login(data)
@@ -68,7 +68,7 @@ export default class AuthController {
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const { refreshToken } = req.validated as RefreshTokenRequest
+    const { refreshToken } = req.body as RefreshTokenRequest
     try {
       const accessToken = this.authService.refreshAccessToken(refreshToken)
       return jsonResponse(res, accessToken)

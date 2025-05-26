@@ -12,8 +12,7 @@ import {
 } from 'inversify-express-utils'
 import { authenticate } from '@decorators/authenticate'
 import QueryFilterRequest from '@requests/query.filter.request'
-import { body } from '@decorators/validate.body.decorator'
-import { query } from '@decorators/validate.query.decorator'
+import { body, query } from '@decorators/validator'
 import { ICategoryService } from '@interfaces/services/category.service.interface'
 import CreateCategoryRequest from '@requests/create.category.request'
 import UpdateCategoryRequest from '@requests/update.category.request'
@@ -32,10 +31,10 @@ export default class CategoryController {
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const query = req.validated as QueryFilterRequest
+    const queryFilters = req.query as unknown as QueryFilterRequest
 
     try {
-      const result = await this.categoryService.getPublishedCategories(query)
+      const result = await this.categoryService.getPublishedCategories(queryFilters)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
@@ -50,10 +49,10 @@ export default class CategoryController {
     @next() next: NextFunction
   ) {
     const slug = req.params.slug as string
-    const options = req.validated as QueryFilterPublishedPostRequest
+    const queryFilters = req.query as unknown as QueryFilterPublishedPostRequest
 
     try {
-      const category = await this.categoryService.getPublishedCategory(slug, options)
+      const category = await this.categoryService.getPublishedCategory(slug, queryFilters)
       return jsonResponse(res, category)
     } catch (error) {
       next(error)
@@ -68,10 +67,10 @@ export default class CategoryController {
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const query = req.validated as QueryFilterRequest
+    const queryFilters = req.query as unknown as QueryFilterRequest
 
     try {
-      const result = await this.categoryService.getCategories(query)
+      const result = await this.categoryService.getCategories(queryFilters)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
