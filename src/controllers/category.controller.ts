@@ -16,7 +16,7 @@ import { body, query } from '@decorators/validator'
 import { ICategoryService } from '@interfaces/services/category.service.interface'
 import CreateCategoryRequest from '@requests/create.category.request'
 import UpdateCategoryRequest from '@requests/update.category.request'
-import { CREATED, OK } from '@utils/http.status.code'
+import { CREATED, OK } from '@constants/http.status.code'
 import QueryFilterPublishedPostRequest from '@requests/query.filter.published.post.request'
 import { jsonResponse } from '@utils/json.response'
 

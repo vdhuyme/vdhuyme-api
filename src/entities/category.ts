@@ -45,7 +45,7 @@ export class Category {
   @TreeParent({ onDelete: 'SET NULL' })
   parent?: Category | null
 
-  @OneToMany(() => Post, post => post.category)
+  @OneToMany(() => Post, post => post.category, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   posts: Post[]
 
   @CreateDateColumn({ name: 'created_at' })

@@ -11,13 +11,14 @@ import {
   ObjectLiteral,
   SelectQueryBuilder,
   QueryRunner,
-  FindOptionsRelations
+  FindOptionsRelations,
+  TreeRepository,
+  EntityMetadata
 } from 'typeorm'
 
 export interface IPaginationOptions {
   page: number
   limit: number
-  route?: string
 }
 
 export interface IPaginationMeta {
@@ -33,9 +34,11 @@ export interface IPaginationResult<T> {
   meta: IPaginationMeta
 }
 
-export interface IQueryOptions<T> extends Omit<FindManyOptions<T>, 'skip' | 'take' | 'search'> {
+export interface IQueryOptions<T> extends Omit<FindManyOptions<T>, 'skip' | 'take'> {
   page?: number
   limit?: number
+  search?: string
+  sort?: Array<[keyof T, 'ASC' | 'DESC']>
 }
 
 export interface IBaseRepository<T extends ObjectLiteral> {
@@ -351,10 +354,34 @@ export interface IBaseRepository<T extends ObjectLiteral> {
   query<R = T[]>(sql: string, parameters?: ObjectLiteral[]): Promise<R>
 
   /**
-   * Returns the underlying TypeORM repository.
-   * @returns {Repository<T>} TypeORM repository.
+   * Returns the underlying TypeORM repository instance.
+   * Useful when you need to perform advanced operations directly with TypeORM.
+   *
+   * @returns {Repository<T>} The TypeORM repository for the entity.
    * @example
-   * const typeormRepo = repo.getRepository()
+   * const userRepo = userService.getRepository();
+   * const users = await userRepo.find();
    */
   getRepository(): Repository<T>
+
+  /**
+   * Returns the TreeRepository for hierarchical entity operations.
+   * Only works for entities decorated with @Tree in TypeORM.
+   *
+   * @returns {TreeRepository<T>} The TreeRepository for tree-structured entities.
+   * @example
+   * const categoryTree = await repo.getTreeRepository().findTrees();
+   */
+  getTreeRepository(): TreeRepository<T>
+
+  /**
+   * Returns the entity metadata, which includes information such as
+   * entity name, columns, relations, table name, and more.
+   * Useful for building dynamic queries or reflecting schema info.
+   *
+   * @returns {EntityMetadata} The metadata information for the entity.
+   * @example
+   * const columns = repo.getEntityMetaData().columns;
+   */
+  getEntityMetaData(): EntityMetadata
 }

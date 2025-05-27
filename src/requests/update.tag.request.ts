@@ -1,13 +1,6 @@
-import { BASE_STATUS } from '@constants/base.status'
-import { IsString, Length, IsOptional, IsEnum } from 'class-validator'
+import { body, param, ValidationChain } from 'express-validator'
 
-export default class UpdateTagRequest {
-  @IsString()
-  @Length(1, 255)
-  name: string
-
-  @IsOptional()
-  @IsOptional()
-  @IsEnum(BASE_STATUS, { message: 'Invalid status' })
-  status!: (typeof BASE_STATUS)[keyof typeof BASE_STATUS]
-}
+export const UPDATE_TAG_REQUEST: ValidationChain[] = [
+  param('id').isInt().toInt(),
+  body('name').notEmpty().isLength({ max: 50 })
+]

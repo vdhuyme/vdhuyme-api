@@ -11,7 +11,7 @@ import {
   response
 } from 'inversify-express-utils'
 import { IPostService } from '@interfaces/index'
-import { CREATED, OK } from '@utils/http.status.code'
+import { CREATED, OK } from '@constants/http.status.code'
 import { authenticate } from '@decorators/authenticate'
 import CreatePostRequest from '@requests/create.post.request'
 import QueryFilterRequest from '@requests/query.filter.request'

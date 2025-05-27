@@ -1,7 +1,6 @@
 import {
   IBaseRepository,
-  IPaginationResult,
-  IQueryOptions
+  IPaginationResult
 } from '@repositories/contracts/base.repository.interface'
 import {
   FindOptionsWhere,
@@ -25,14 +24,6 @@ export interface IBaseService<T extends ObjectLiteral> {
    * @returns {T} The new entity instance.
    */
   create(entityData: DeepPartial<T>): T
-
-  /**
-   * Creates and saves a new entity.
-   * @param {DeepPartial<T>} entityData - Partial entity data.
-   * @param {SaveOptions} [options] - Optional save options.
-   * @returns {Promise<T>} The created entity.
-   */
-  createAndSave(entityData: DeepPartial<T>, options?: SaveOptions): Promise<T>
 
   /**
    * Saves (inserts or updates) an entity.
@@ -106,7 +97,7 @@ export interface IBaseService<T extends ObjectLiteral> {
    * @param {IQueryOptions<T>} options - Query and pagination options.
    * @returns {Promise<IPaginationResult<T>>} Paginated result.
    */
-  findWithPagination(options: IQueryOptions<T>): Promise<IPaginationResult<T>>
+  findWithPagination(options: FindManyOptions<T>): Promise<IPaginationResult<T>>
 
   /**
    * Counts entities matching the options.

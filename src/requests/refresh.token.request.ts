@@ -1,7 +1,3 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { body } from 'express-validator'
 
-export default class RefreshTokenRequest {
-  @IsNotEmpty()
-  @IsString()
-  refreshToken: string
-}
+export const REFRESH_TOKEN_REQUEST = [body('refreshToken').notEmpty().isJWT()]

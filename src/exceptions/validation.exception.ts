@@ -1,5 +1,5 @@
-import { UNPROCESSABLE_ENTITY } from '@utils/http.status.code'
-import { ValidationError } from 'class-validator'
+import { UNPROCESSABLE_ENTITY } from '@constants/http.status.code'
+import { ValidationError } from 'express-validator'
 
 export default class ValidationException extends Error {
   public status: number

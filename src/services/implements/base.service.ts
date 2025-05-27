@@ -19,37 +19,9 @@ import {
 } from 'typeorm'
 import { IBaseService } from '@services/contracts/base.service.interface'
 
-/**
- * Abstract base service implementation providing common CRUD operations.
- * Extend this class for your entity services.
- * @template T
- * @example
- * @injectable()
- * class UserService extends BaseService<User> {
- *   constructor(
- *     @inject(TYPES.UserRepository) userRepository: IBaseRepository<User>
- *   ) {
- *     super(userRepository)
- *   }
- *
- *   async findByEmail(email: string): Promise<User | null> {
- *     return await this.findOneBy({ email })
- *   }
- * }
- */
 export default abstract class BaseService<T extends ObjectLiteral> implements IBaseService<T> {
   protected repository: IBaseRepository<T>
 
-  /**
-   * Constructs a new BaseService.
-   * @param {IBaseRepository<T>} repository - The repository instance.
-   * @example
-   * constructor(
-   *   @inject(TYPES.UserRepository) userRepository: IBaseRepository<User>
-   * ) {
-   *   super(userRepository)
-   * }
-   */
   constructor(repository: IBaseRepository<T>) {
     this.repository = repository
   }
@@ -57,12 +29,6 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
   /** @inheritdoc */
   create(entityData: DeepPartial<T>): T {
     return this.repository.create(entityData)
-  }
-
-  /** @inheritdoc */
-  async createAndSave(entityData: DeepPartial<T>, options?: SaveOptions): Promise<T> {
-    const entity = this.repository.create(entityData)
-    return await this.repository.save(entity, options)
   }
 
   /** @inheritdoc */
@@ -118,6 +84,23 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
     return await this.repository.findOneBy(where)
   }
 
+  protected buildOrder(
+    sort: [keyof T, 'ASC' | 'DESC'][] | undefined,
+    allowedFields: (keyof T)[]
+  ): Partial<Record<keyof T, 'ASC' | 'DESC'>> | undefined {
+    if (!sort) return undefined
+
+    return sort.reduce(
+      (acc, [field, direction]) => {
+        if (allowedFields.includes(field)) {
+          acc[field] = direction
+        }
+        return acc
+      },
+      {} as Partial<Record<keyof T, 'ASC' | 'DESC'>>
+    )
+  }
+
   /** @inheritdoc */
   async findWithPagination(options: IQueryOptions<T>): Promise<IPaginationResult<T>> {
     return await this.repository.findWithPagination(options)
@@ -152,7 +135,7 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
   /** @inheritdoc */
   async updateById(id: string | number, partialEntity: DeepPartial<T>): Promise<T> {
     const updateResult = await this.repository.update(id, partialEntity)
-    if (updateResult.affected === 0) {
+    if (!updateResult.affected) {
       throw new Error(`Entity with id ${id} not found`)
     }
     return await this.findByIdOrFail(id)
@@ -171,7 +154,7 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
   /** @inheritdoc */
   async deleteById(id: string | number): Promise<boolean> {
     const deleteResult = await this.repository.delete(id)
-    if (deleteResult.affected === 0) {
+    if (!deleteResult.affected) {
       throw new Error(`Entity with id ${id} not found`)
     }
     return true
