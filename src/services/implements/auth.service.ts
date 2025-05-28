@@ -85,7 +85,10 @@ export default class AuthService implements IAuthService {
     const tokenId = await this.getTokenIdFromCode(code)
     const account = await this.getSocialAccountFromToken(tokenId)
     const { email } = account
-    const user = await this.userRepository.findOrCreate({ where: { email } }, account)
+
+    const user =
+      (await this.userRepository.findOneBy({ email })) ??
+      (await this.userRepository.save(this.userRepository.create(account)))
 
     return this.generateTokens(user)
   }
