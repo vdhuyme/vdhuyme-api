@@ -64,4 +64,23 @@ export default class CategoryService extends BaseService<Category> implements IC
 
     return category
   }
+
+  async updateCategory(
+    id: string | number,
+    parentId: string | number,
+    data: DeepPartial<Category>
+  ): Promise<Category> {
+    const category = await this.findById(id)
+    if (!category) {
+      throw new BadRequestException(`Not found category ${id}`)
+    }
+
+    if (parentId === category.id) {
+      throw new BadRequestException('A category cannot be its own parent')
+    }
+
+    const parent = parentId ? await this.findById(parentId) : null
+    Object.assign(category, { parent, data })
+    return await this.save(category)
+  }
 }

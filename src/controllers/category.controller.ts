@@ -102,13 +102,12 @@ export default class CategoryController {
 
   @httpPut('/:id')
   @auth()
-  @validate(UPDATE_CATEGORY_REQUEST)
+  @validate([...UPDATE_CATEGORY_REQUEST, ...ID_REQUEST])
   async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = matchedData(req)
-    const id = req.params.id as string
+    const { id, parentId, ...rest } = matchedData(req)
 
     try {
-      await this.categoryService.updateById(id, data)
+      await this.categoryService.updateCategory(id, parentId, rest)
       return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)

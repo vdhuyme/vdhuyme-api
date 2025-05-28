@@ -7,5 +7,10 @@ export interface ICategoryService extends IBaseService<Category> {
   getPublishedCategories(options: IQueryOptions<Category>): Promise<IPaginationResult<Category>>
   getPublishedCategory(id: string | number, options?: IQueryOptions<Category>): Promise<Category>
   getTrees(): Promise<Category[]>
-  store(ancestorId: string | number, data: DeepPartial<Category>): Promise<Category>
+  store(parentId: string | number, data: DeepPartial<Category>): Promise<Category>
+  updateCategory(
+    id: string | number,
+    parentId: string | number,
+    data: DeepPartial<Category>
+  ): Promise<Category>
 }
