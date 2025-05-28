@@ -14,8 +14,15 @@ export default class AuthService implements IAuthService {
   constructor(@inject(TYPES.UserRepository) private readonly userRepository: IUserRepository) {}
 
   private generateTokens(user: User): IAuthResponse {
-    const accessToken = jsonwebtoken.generate({ userId: user.id, email: user.email })
-    const refreshToken = jsonwebtoken.generate({ userId: user.id, email: user.email }, 'refresh')
+    const accessToken = jsonwebtoken.generate({
+      userId: user.id,
+      email: user.email,
+      status: user.status
+    })
+    const refreshToken = jsonwebtoken.generate(
+      { userId: user.id, email: user.email, status: user.status },
+      'refresh'
+    )
     return { accessToken, refreshToken }
   }
 
@@ -86,8 +93,8 @@ export default class AuthService implements IAuthService {
   refreshAccessToken(refreshToken: string): string {
     try {
       const decoded = jsonwebtoken.verify(refreshToken, 'refresh')
-      const { userId, email } = decoded
-      const token = jsonwebtoken.generate({ userId, email })
+      const { userId, email, status } = decoded
+      const token = jsonwebtoken.generate({ userId, email, status })
       return token
     } catch (error: unknown) {
       const messages: Record<string, string> = {
