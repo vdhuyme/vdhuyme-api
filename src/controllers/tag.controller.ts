@@ -29,10 +29,11 @@ export default class TagController {
   @auth()
   @validate(CREATE_TAG_REQUEST)
   async store(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = req.body
+    const data = matchedData(req)
 
     try {
-      await this.tagService.save(data)
+      const tag = this.tagService.create(data)
+      await this.tagService.save(tag)
       return jsonResponse(res, 'ok', CREATED)
     } catch (error) {
       next(error)
