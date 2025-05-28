@@ -7,26 +7,19 @@ import { ICategoryRepository } from '@repositories/contracts/category.repository
 import { ICategoryService } from '@services/contracts/category.service.interface'
 import BaseService from '@services/implements/base.service'
 import { inject, injectable } from 'inversify'
-import { DeepPartial, ILike } from 'typeorm'
+import { DeepPartial, FindOptionsWhere, ILike } from 'typeorm'
 
 @injectable()
 export default class CategoryService extends BaseService<Category> implements ICategoryService {
-  private categoryRepository: ICategoryRepository
+  private readonly categoryRepository: ICategoryRepository
 
   constructor(@inject(TYPES.CategoryRepository) categoryRepository: ICategoryRepository) {
     super(categoryRepository)
     this.categoryRepository = categoryRepository
   }
 
-  async store(parentId: string | number, data: DeepPartial<Category>): Promise<Category> {
-    const parent = await this.findById(parentId)
-    Object.assign(data, { parent })
-    const category = this.create(data)
-    return await this.save(category)
-  }
-
   async getTrees(): Promise<Category[]> {
-    return this.categoryRepository.getTrees()
+    return this.categoryRepository.findTrees()
   }
 
   async getPublishedCategories(
@@ -34,7 +27,7 @@ export default class CategoryService extends BaseService<Category> implements IC
   ): Promise<IPaginationResult<Category>> {
     const { search, sort, ...rest } = options
 
-    const where = {
+    const where: FindOptionsWhere<Category> = {
       status: BASE_STATUS.PUBLISHED,
       ...(search && { name: ILike(`%${search}%`) })
     }
@@ -65,22 +58,31 @@ export default class CategoryService extends BaseService<Category> implements IC
     return category
   }
 
+  async store(parentId: string | number, data: DeepPartial<Category>): Promise<Category> {
+    const parent = parentId ? await this.findById(parentId) : null
+    const category = this.create({ ...data, parent })
+    return await this.save(category)
+  }
+
   async updateCategory(
     id: string | number,
     parentId: string | number,
     data: DeepPartial<Category>
   ): Promise<Category> {
     const category = await this.findById(id)
+
     if (!category) {
       throw new BadRequestException(`Not found category ${id}`)
     }
 
     if (parentId === category.id) {
-      throw new BadRequestException('A category cannot be its own parent')
+      throw new BadRequestException(`A category cannot be its own parent`)
+    }
+    const parent = await this.categoryRepository.findById(parentId)
+    if (!parent) {
+      throw new BadRequestException(`Parent category not found ${parentId}`)
     }
 
-    const parent = parentId ? await this.findById(parentId) : null
-    Object.assign(category, { parent, data })
-    return await this.save(category)
+    return await this.save(this.create({ ...data, parent }))
   }
 }

@@ -88,7 +88,9 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
     sort: [keyof T, 'ASC' | 'DESC'][] | undefined,
     allowedFields: (keyof T)[]
   ): Partial<Record<keyof T, 'ASC' | 'DESC'>> | undefined {
-    if (!sort) return undefined
+    if (!sort) {
+      return undefined
+    }
 
     return sort.reduce(
       (acc, [field, direction]) => {

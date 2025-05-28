@@ -10,65 +10,67 @@ import {
   request,
   response
 } from 'inversify-express-utils'
-import { IPostService } from '@interfaces/index'
 import { CREATED, OK } from '@constants/http.status.code'
-import { authenticate } from '@decorators/authenticate'
-import CreatePostRequest from '@requests/create.post.request'
-import QueryFilterRequest from '@requests/query.filter.request'
-import { body, query } from '@decorators/validator'
-import UpdatePostRequest from '@requests/update.post.request'
-import QueryFilterPublishedPostRequest from '@requests/query.filter.published.post.request'
 import { jsonResponse } from '@utils/json.response'
+import { IPostService } from '@services/contracts/post.service.interface'
+import { TYPES } from '@constants/types'
+import { validate } from '@decorators/validator'
+import { QUERY_FILTER_REQUEST } from '@requests/query.filter.request'
+import { matchedData } from 'express-validator'
+import { ID_REQUEST } from '@requests/id.request'
+import { auth } from '@decorators/authenticate'
+import { CREATE_POST_REQUEST } from '@requests/create.post.request'
+import { UPDATE_POST_REQUEST } from '@requests/update.post.request'
 
 @controller('/posts')
 export class PostController {
-  constructor(@inject('IPostService') private postService: IPostService) {}
+  constructor(@inject(TYPES.PostService) private postService: IPostService) {}
 
   @httpGet('/published-posts')
-  @query(QueryFilterPublishedPostRequest)
+  @validate(QUERY_FILTER_REQUEST)
   async getPublishedPosts(
     @request() req: Request,
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const queryFilters = req.query as unknown as QueryFilterPublishedPostRequest
+    const data = matchedData(req)
 
     try {
-      const result = await this.postService.getPublishedPosts(queryFilters)
+      const result = await this.postService.getPublishedPosts(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
   }
 
-  @httpGet('/published-post/:slug')
+  @httpGet('/published-post/:id')
+  @validate(ID_REQUEST)
   async getPublishedPost(
     @request() req: Request,
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const slug = req.params.slug as string
+    const { id } = matchedData(req)
 
     try {
-      const post = await this.postService.getPublishedPost(slug)
+      const post = await this.postService.getPublishedPost(id!)
       return jsonResponse(res, post)
     } catch (error) {
       next(error)
     }
   }
 
-  @httpGet('/related-posts/:slug')
-  @query(QueryFilterRequest)
+  @httpGet('/related-posts/:id')
+  @validate([...QUERY_FILTER_REQUEST, ...ID_REQUEST])
   async getRelatedPosts(
     @request() req: Request,
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const slug = req.params.slug as string
-    const { limit } = req.query as unknown as QueryFilterRequest
+    const { id, limit } = matchedData(req)
 
     try {
-      const posts = await this.postService.getRelatedPosts(slug, limit)
+      const posts = await this.postService.getRelatedPosts(id, limit)
       return jsonResponse(res, posts)
     } catch (error) {
       next(error)
@@ -76,26 +78,27 @@ export class PostController {
   }
 
   @httpGet('/')
-  @authenticate()
-  @query(QueryFilterRequest)
+  @auth()
+  @validate(QUERY_FILTER_REQUEST)
   async getPosts(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const queryFilters = req.query as unknown as QueryFilterRequest
+    const data = matchedData(req)
 
     try {
-      const result = await this.postService.getPosts(queryFilters)
+      const result = await this.postService.findWithPagination(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
   }
 
-  @httpGet('/:slug')
-  @authenticate()
+  @httpGet('/:id')
+  @auth()
+  @validate(ID_REQUEST)
   async getPost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const { slug } = req.params
+    const { id } = matchedData(req)
 
     try {
-      const post = await this.postService.getPost(slug)
+      const post = await this.postService.findById(id)
       return jsonResponse(res, post)
     } catch (error) {
       next(error)
@@ -103,42 +106,42 @@ export class PostController {
   }
 
   @httpPost('/')
-  @authenticate()
-  @body(CreatePostRequest)
+  @auth()
+  @validate(CREATE_POST_REQUEST)
   async createPost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = req.body as unknown as CreatePostRequest
+    const { categoryId, tagIds, ...rest } = matchedData(req)
     const { userId } = req.auth
 
     try {
-      await this.postService.createPost(data, userId)
+      await this.postService.store(userId, categoryId, tagIds, rest)
       return jsonResponse(res, null, CREATED, 'success')
     } catch (error) {
       next(error)
     }
   }
 
-  @httpPut('/:slug')
-  @authenticate()
-  @body(UpdatePostRequest)
+  @httpPut('/:id')
+  @auth()
+  @validate([...UPDATE_POST_REQUEST, ...ID_REQUEST])
   async updatePost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = req.body as unknown as UpdatePostRequest
-    const slug = req.params.slug as string
+    const { id, categoryId, tagIds, ...rest } = matchedData(req)
 
     try {
-      await this.postService.updatePost(slug, data)
+      await this.postService.updatePost(id, categoryId, tagIds, rest)
       return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
   }
 
-  @httpDelete('/:slug')
-  @authenticate()
+  @httpDelete('/:id')
+  @auth()
+  @validate(ID_REQUEST)
   async deletePost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const slug = req.params.slug as string
+    const { id } = matchedData(req)
 
     try {
-      await this.postService.deletePost(slug)
+      await this.postService.deleteById(id)
       return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)

@@ -6,6 +6,6 @@ export const CREATE_CATEGORY_REQUEST = [
   body('description').optional().isString(),
   body('thumbnail').optional().isString(),
   body('icon').optional().isString(),
-  body('parentId').optional().isNumeric().toInt(),
+  body('parentId').optional({ checkFalsy: true }).isNumeric().toInt(),
   body('status').optional().isIn(Object.values(BASE_STATUS))
 ]

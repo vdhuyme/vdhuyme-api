@@ -11,10 +11,9 @@ export default class CategoryRepository
 {
   constructor(@inject(TYPES.DataSource) dataSource: DataSource) {
     super(Category, dataSource)
-    this.treeRepository = dataSource.getTreeRepository(Category)
   }
 
-  async getTrees(): Promise<Category[]> {
-    return this.treeRepository.findTrees()
+  async findTrees(): Promise<Category[]> {
+    return this.treeRepository.findTrees({ relations: ['children'] })
   }
 }
