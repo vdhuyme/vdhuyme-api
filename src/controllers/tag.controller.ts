@@ -20,6 +20,7 @@ import {
 } from 'inversify-express-utils'
 import { matchedData } from 'express-validator'
 import { QUERY_FILTER_REQUEST } from '@requests/query.filter.request'
+import { ID_REQUEST } from '@requests/id.request'
 
 @controller('/tags')
 export default class TagController {
@@ -55,13 +56,12 @@ export default class TagController {
   }
   @httpPut('/:id')
   @auth()
-  @validate(UPDATE_TAG_REQUEST)
+  @validate([...UPDATE_TAG_REQUEST, ...ID_REQUEST])
   async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = matchedData(req)
-    const { id } = data
+    const { id, ...rest } = matchedData(req)
 
     try {
-      await this.tagService.updateById(id, data)
+      await this.tagService.updateById(id, rest)
       return jsonResponse(res, 'ok')
     } catch (error) {
       next(error)
@@ -70,11 +70,12 @@ export default class TagController {
 
   @httpDelete('/:id')
   @auth()
+  @validate(ID_REQUEST)
   async destroy(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const id = parseInt(req.params.id)
+    const data = matchedData(req)
 
     try {
-      await this.tagService.deleteById(id)
+      await this.tagService.deleteById(data.id)
       return jsonResponse(res, 'ok')
     } catch (error) {
       next(error)

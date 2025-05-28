@@ -1,13 +1,13 @@
+import { BASE_STATUS } from '@constants/base.status'
 import { TYPES } from '@constants/types'
 import { Category } from '@entities/category'
+import BadRequestException from '@exceptions/bad.request.exception'
 import { IQueryOptions, IPaginationResult } from '@repositories/contracts/base.repository.interface'
 import { ICategoryRepository } from '@repositories/contracts/category.repository.interface'
-import {
-  ICategoryService,
-  ICategoryWithPostsResponse
-} from '@services/contracts/category.service.interface'
+import { ICategoryService } from '@services/contracts/category.service.interface'
 import BaseService from '@services/implements/base.service'
 import { inject, injectable } from 'inversify'
+import { DeepPartial, ILike } from 'typeorm'
 
 @injectable()
 export default class CategoryService extends BaseService<Category> implements ICategoryService {
@@ -18,6 +18,13 @@ export default class CategoryService extends BaseService<Category> implements IC
     this.categoryRepository = categoryRepository
   }
 
+  async store(parentId: string | number, data: DeepPartial<Category>): Promise<Category> {
+    const parent = await this.findById(parentId)
+    Object.assign(data, { parent })
+    const category = this.create(data)
+    return await this.save(category)
+  }
+
   async getTrees(): Promise<Category[]> {
     return this.categoryRepository.getTrees()
   }
@@ -25,10 +32,36 @@ export default class CategoryService extends BaseService<Category> implements IC
   async getPublishedCategories(
     options: IQueryOptions<Category>
   ): Promise<IPaginationResult<Category>> {
-    throw new Error('Method not implemented.')
+    const { search, sort, ...rest } = options
+
+    const where = {
+      status: BASE_STATUS.PUBLISHED,
+      ...(search && { name: ILike(`%${search}%`) })
+    }
+    const allowedSortFields: (keyof Category)[] = ['id', 'name', 'status', 'updatedAt', 'createdAt']
+    const order = this.buildOrder(sort, allowedSortFields)
+
+    return super.findWithPagination({ ...rest, where, order })
   }
 
-  async getPublishedCategory(id: string): Promise<ICategoryWithPostsResponse> {
-    throw new Error('Method not implemented.')
+  async getPublishedCategory(
+    id: string | number,
+    options?: IQueryOptions<Category>
+  ): Promise<Category> {
+    const { page = 1, limit = 50 } = options || {}
+
+    const query = this.repository
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.posts', 'post', 'post.status = :status', { status: 'PUBLISHED' })
+      .where('category.id = :id', { id })
+
+    query.skip((page - 1) * limit).take(limit)
+    const category = await query.getOne()
+
+    if (!category) {
+      throw new BadRequestException(`Not found category ${id}`)
+    }
+
+    return category
   }
 }

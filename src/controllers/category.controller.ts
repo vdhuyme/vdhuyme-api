@@ -20,6 +20,7 @@ import { ICategoryService } from '@services/contracts/category.service.interface
 import { TYPES } from '@constants/types'
 import { UPDATE_CATEGORY_REQUEST } from '@requests/update.category.request'
 import { CREATE_CATEGORY_REQUEST } from '@requests/create.category.request'
+import { ID_REQUEST } from '@requests/id.request'
 
 @controller('/categories')
 export default class CategoryController {
@@ -43,15 +44,16 @@ export default class CategoryController {
   }
 
   @httpGet('/published-categories/:id')
+  @validate([...QUERY_FILTER_REQUEST, ...ID_REQUEST])
   async getPublishedCategory(
     @request() req: Request,
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const id = req.params.id as string
+    const { id, ...rest } = matchedData(req)
 
     try {
-      const category = await this.categoryService.getPublishedCategory(id)
+      const category = await this.categoryService.getPublishedCategory(id, rest)
       return jsonResponse(res, category)
     } catch (error) {
       next(error)
@@ -88,10 +90,10 @@ export default class CategoryController {
   @validate(CREATE_CATEGORY_REQUEST)
   async store(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)
+    const { parentId, ...rest } = data
 
     try {
-      const category = this.categoryService.create(data)
-      await this.categoryService.save(category)
+      await this.categoryService.store(parentId, rest)
       return jsonResponse(res, null, CREATED, 'success')
     } catch (error) {
       next(error)
