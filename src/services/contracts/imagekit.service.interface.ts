@@ -1,4 +1,4 @@
-import { IImagekitAuth } from '@interfaces/imagekit/imagekit.auth'
+import { IImagekitAuth } from 'interfaces'
 
 export interface IImagekitService {
   auth(): IImagekitAuth

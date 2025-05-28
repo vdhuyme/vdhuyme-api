@@ -1,6 +1,6 @@
 import { config } from '@config/app'
 import { imagekit } from '@config/imagekit'
-import { IImagekitAuth } from '@interfaces/imagekit/imagekit.auth'
+import { IImagekitAuth } from '@interfaces/common/imagekit'
 import { IImagekitService } from '@services/contracts/imagekit.service.interface'
 
 export default class ImagekitService implements IImagekitService {
