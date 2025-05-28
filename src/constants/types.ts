@@ -3,6 +3,7 @@ const TYPES = {
   TagRepository: Symbol.for('TagRepository'),
   TagService: Symbol.for('TagService'),
   AuthService: Symbol.for('AuthService'),
+  ImagekitService: Symbol.for('ImagekitService'),
   UserRepository: Symbol.for('UserRepository')
 }
 

@@ -5,6 +5,7 @@ import { BASE_STATUS } from '@constants/base.status'
 import { TYPES } from '@constants/types'
 import { User } from '@entities/user'
 import UnauthorizedException from '@exceptions/unauthorized.exception'
+import { IUserResponse, UserResource } from '@mappers/user.mapper'
 import { IUserRepository } from '@repositories/contracts/user.repository.interface'
 import { IAuthResponse, IAuthService } from '@services/contracts/auth.service.interface'
 import { inject } from 'inversify'
@@ -28,20 +29,20 @@ export default class AuthService implements IAuthService {
     const user = await this.userRepository.findOneBy({ email })
     this.validateUser(user)
 
-    if (!Hash.check(password, user!.password)) {
+    if (!Hash.check(password, user?.password as string)) {
       throw new UnauthorizedException('Invalid credentials')
     }
 
     return this.generateTokens(user!)
   }
 
-  async getUserInfo(userId: number): Promise<User> {
+  async getUserInfo(userId: number): Promise<IUserResponse> {
     const user = await this.userRepository.findById(userId)
     if (!user) {
-      throw new UnauthorizedException('Not found user')
+      throw new UnauthorizedException('User not found')
     }
 
-    return user
+    return UserResource.fromEntity(user)
   }
 
   redirect(): string {
@@ -76,10 +77,8 @@ export default class AuthService implements IAuthService {
   async callback(code: string): Promise<IAuthResponse> {
     const tokenId = await this.getTokenIdFromCode(code)
     const account = await this.getSocialAccountFromToken(tokenId)
-    const { email, name, picture } = account
-    const user = await this.userRepository.findOneBy({ email })
-    if (!user) {
-    }
+    const { email } = account
+    const user = await this.userRepository.findOrCreate({ where: { email } }, account)
 
     return this.generateTokens(user)
   }

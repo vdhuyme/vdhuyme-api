@@ -9,6 +9,7 @@ import { LOGIN_REQUEST } from '@requests/login.request'
 import { matchedData } from 'express-validator'
 import { TYPES } from '@constants/types'
 import { auth } from '@decorators/authenticate'
+import { IAuthService } from '@services/contracts/auth.service.interface'
 
 @controller('/auth')
 export default class AuthController {
@@ -17,10 +18,10 @@ export default class AuthController {
   @httpPost('/login')
   @validate(LOGIN_REQUEST)
   async login(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = matchedData(req)
+    const { email, password } = matchedData(req)
 
     try {
-      const result = await this.authService.login(data)
+      const result = await this.authService.login(email, password)
       return jsonResponse(res, result, OK)
     } catch (error) {
       next(error)

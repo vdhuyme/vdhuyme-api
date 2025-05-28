@@ -23,7 +23,7 @@ import { QUERY_FILTER_REQUEST } from '@requests/query.filter.request'
 
 @controller('/tags')
 export default class TagController {
-  @inject(TYPES.TagService) private tagService: ITagService
+  constructor(@inject(TYPES.TagService) private tagService: ITagService) {}
 
   @httpPost('/')
   @auth()

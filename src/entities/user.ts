@@ -31,7 +31,7 @@ export class User {
   dob?: string | null
 
   @Column({ name: 'password', type: 'varchar', length: 255, nullable: true })
-  password: string
+  password?: string
 
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.ACTIVATED })
   status: string
