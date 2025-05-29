@@ -21,4 +21,5 @@ export interface IPostService extends IBaseService<Post> {
     tagIds: string[] | number[],
     data: DeepPartial<Post>
   ): Promise<Post>
+  paginate(options: IQueryOptions<Post>): Promise<IPaginationResult<Post>>
 }

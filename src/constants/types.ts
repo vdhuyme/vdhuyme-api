@@ -13,7 +13,8 @@ const TYPES = {
   StatsService: Symbol.for('StatsService'),
   CategoryService: Symbol.for('CategoryService'),
   PostService: Symbol.for('PostService'),
-  CommentService: Symbol.for('CommentService')
+  CommentService: Symbol.for('CommentService'),
+  UserService: Symbol.for('UserService')
 }
 
 export { TYPES }

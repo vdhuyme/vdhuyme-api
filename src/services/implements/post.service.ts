@@ -10,7 +10,7 @@ import { IUserRepository } from '@repositories/contracts/user.repository.interfa
 import { IPostService } from '@services/contracts/post.service.interface'
 import BaseService from '@services/implements/base.service'
 import { inject, injectable } from 'inversify'
-import { DeepPartial, In } from 'typeorm'
+import { DeepPartial, FindOptionsWhere, ILike, In } from 'typeorm'
 
 @injectable()
 export default class PostService extends BaseService<Post> implements IPostService {
@@ -28,6 +28,18 @@ export default class PostService extends BaseService<Post> implements IPostServi
     this.tagRepository = tagRepository
     this.categoryRepository = categoryRepository
     this.userRepository = userRepository
+  }
+
+  async paginate(options: IQueryOptions<Post>): Promise<IPaginationResult<Post>> {
+    const { search, sort, ...rest } = options
+
+    const where: FindOptionsWhere<Post> | FindOptionsWhere<Post>[] | undefined = search
+      ? [{ title: ILike(`%${search}%`) }]
+      : rest.where
+    const allowedSortFields: (keyof Post)[] = ['id', 'title', 'createdAt', 'status']
+    const order = this.buildOrder(sort, allowedSortFields)
+
+    return super.findWithPagination({ ...rest, where, order })
   }
 
   async getPublishedPosts(

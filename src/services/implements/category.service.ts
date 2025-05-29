@@ -2,7 +2,7 @@ import { BASE_STATUS } from '@constants/base.status'
 import { TYPES } from '@constants/types'
 import { Category } from '@entities/category'
 import BadRequestException from '@exceptions/bad.request.exception'
-import { IQueryOptions, IPaginationResult } from '@repositories/contracts/base.repository.interface'
+import { IQueryOptions } from '@repositories/contracts/base.repository.interface'
 import { ICategoryRepository } from '@repositories/contracts/category.repository.interface'
 import { ICategoryService } from '@services/contracts/category.service.interface'
 import BaseService from '@services/implements/base.service'
@@ -22,10 +22,8 @@ export default class CategoryService extends BaseService<Category> implements IC
     return this.categoryRepository.findTrees()
   }
 
-  async getPublishedCategories(
-    options: IQueryOptions<Category>
-  ): Promise<IPaginationResult<Category>> {
-    const { search, sort, ...rest } = options
+  async getPublishedCategories(options: IQueryOptions<Category>): Promise<Category[]> {
+    const { search, sort } = options
 
     const where: FindOptionsWhere<Category> = {
       status: BASE_STATUS.PUBLISHED,
@@ -34,7 +32,7 @@ export default class CategoryService extends BaseService<Category> implements IC
     const allowedSortFields: (keyof Category)[] = ['id', 'name', 'status', 'updatedAt', 'createdAt']
     const order = this.buildOrder(sort, allowedSortFields)
 
-    return super.findWithPagination({ ...rest, where, order })
+    return super.findAll({ where, order })
   }
 
   async getPublishedCategory(

@@ -13,7 +13,7 @@ export default class TagService extends BaseService<Tag> implements ITagService 
     super(tagRepository)
   }
 
-  async findWithPagination(options: IQueryOptions<Tag>): Promise<IPaginationResult<Tag>> {
+  async paginate(options: IQueryOptions<Tag>): Promise<IPaginationResult<Tag>> {
     const { search, sort, ...rest } = options
 
     const where: FindOptionsWhere<Tag> | FindOptionsWhere<Tag>[] | undefined = search

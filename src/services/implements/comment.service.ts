@@ -67,7 +67,7 @@ export default class CommentService extends BaseService<Comment> implements ICom
     return await this.save(comment)
   }
 
-  async findWithPagination(options: IQueryOptions<Comment>): Promise<IPaginationResult<Comment>> {
+  async paginate(options: IQueryOptions<Comment>): Promise<IPaginationResult<Comment>> {
     const { search, sort, ...rest } = options
 
     const where: FindOptionsWhere<Comment> | FindOptionsWhere<Comment>[] | undefined = search

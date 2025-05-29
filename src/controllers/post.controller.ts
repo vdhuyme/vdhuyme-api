@@ -21,13 +21,14 @@ import { ID_REQUEST } from '@requests/id.request'
 import { auth } from '@decorators/authenticate'
 import { CREATE_POST_REQUEST } from '@requests/create.post.request'
 import { UPDATE_POST_REQUEST } from '@requests/update.post.request'
+import { QUERY_FILTER_PUBLISHED_POST_REQUEST } from '@requests/query.filter.published.post.request'
 
 @controller('/posts')
 export class PostController {
   constructor(@inject(TYPES.PostService) private postService: IPostService) {}
 
   @httpGet('/published-posts')
-  @validate(QUERY_FILTER_REQUEST)
+  @validate(QUERY_FILTER_PUBLISHED_POST_REQUEST)
   async getPublishedPosts(
     @request() req: Request,
     @response() res: Response,
@@ -84,7 +85,7 @@ export class PostController {
     const data = matchedData(req)
 
     try {
-      const result = await this.postService.findWithPagination(data)
+      const result = await this.postService.paginate(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)

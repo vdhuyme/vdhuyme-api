@@ -65,7 +65,7 @@ export default class CommentController {
     const data = matchedData(req)
 
     try {
-      const result = await this.commentService.findWithPagination(data)
+      const result = await this.commentService.paginate(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)

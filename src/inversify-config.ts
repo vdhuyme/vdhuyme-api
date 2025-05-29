@@ -16,6 +16,7 @@ import { IImagekitService } from '@services/contracts/imagekit.service.interface
 import { IPostService } from '@services/contracts/post.service.interface'
 import { IStatsService } from '@services/contracts/stats.service.interface'
 import { ITagService } from '@services/contracts/tag.service.interface'
+import { IUserService } from '@services/contracts/user.service.interface'
 import AuthService from '@services/implements/auth.service'
 import CategoryService from '@services/implements/category.service'
 import CommentService from '@services/implements/comment.service'
@@ -23,6 +24,7 @@ import ImagekitService from '@services/implements/imagekit.service'
 import PostService from '@services/implements/post.service'
 import StatsService from '@services/implements/stats.service'
 import TagService from '@services/implements/tag.service'
+import UserService from '@services/implements/user.service'
 import { dataSource } from 'data-source'
 import { Container } from 'inversify'
 
@@ -48,5 +50,6 @@ container.bind<IStatsService>(TYPES.StatsService).to(StatsService).inSingletonSc
 container.bind<ICategoryService>(TYPES.CategoryService).to(CategoryService).inSingletonScope()
 container.bind<IPostService>(TYPES.PostService).to(PostService).inSingletonScope()
 container.bind<ICommentService>(TYPES.CommentService).to(CommentService).inSingletonScope()
+container.bind<IUserService>(TYPES.UserService).to(UserService).inSingletonScope()
 
 export { container }

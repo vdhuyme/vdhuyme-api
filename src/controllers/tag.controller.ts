@@ -48,12 +48,13 @@ export default class TagController {
     const data = matchedData(req)
 
     try {
-      const result = await this.tagService.findWithPagination(data)
+      const result = await this.tagService.paginate(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
   }
+
   @httpPut('/:id')
   @auth()
   @validate([...UPDATE_TAG_REQUEST, ...ID_REQUEST])
