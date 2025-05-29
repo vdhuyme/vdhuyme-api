@@ -59,7 +59,7 @@ export default class CategoryService extends BaseService<Category> implements IC
   }
 
   async store(parentId: string | number, data: DeepPartial<Category>): Promise<Category> {
-    const parent = parentId ? await this.findById(parentId) : null
+    const parent = await this.getParentOrFail(parentId)
     const category = this.create({ ...data, parent })
     return await this.save(category)
   }
@@ -70,7 +70,6 @@ export default class CategoryService extends BaseService<Category> implements IC
     data: DeepPartial<Category>
   ): Promise<Category> {
     const category = await this.findById(id)
-
     if (!category) {
       throw new BadRequestException(`Not found category ${id}`)
     }
@@ -78,11 +77,23 @@ export default class CategoryService extends BaseService<Category> implements IC
     if (parentId === category.id) {
       throw new BadRequestException(`A category cannot be its own parent`)
     }
+
+    const parent = await this.getParentOrFail(parentId)
+    Object.assign(category, data, { parent })
+
+    return await this.save(category)
+  }
+
+  private async getParentOrFail(parentId: string | number): Promise<Category | null> {
+    if (!parentId) {
+      return null
+    }
+
     const parent = await this.categoryRepository.findById(parentId)
     if (!parent) {
       throw new BadRequestException(`Parent category not found ${parentId}`)
     }
 
-    return await this.save(this.create({ ...data, parent }))
+    return parent
   }
 }
