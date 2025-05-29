@@ -18,6 +18,7 @@ import {
   FindOptionsRelations
 } from 'typeorm'
 import { IBaseService } from '@services/contracts/base.service.interface'
+import ConflictException from '@exceptions/conflict.exception'
 
 export default abstract class BaseService<T extends ObjectLiteral> implements IBaseService<T> {
   protected repository: IBaseRepository<T>
@@ -50,7 +51,7 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
   async findByIdOrFail(id: string | number): Promise<T> {
     const entity = await this.repository.findById(id)
     if (!entity) {
-      throw new Error(`Entity with id ${id} not found`)
+      throw new ConflictException(`Entity with id ${id} not found`)
     }
     return entity
   }
@@ -64,7 +65,7 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
   async findOneOrFail(options: FindOneOptions<T>): Promise<T> {
     const entity = await this.repository.findOne(options)
     if (!entity) {
-      throw new Error('Entity not found')
+      throw new ConflictException('Entity not found')
     }
     return entity
   }
@@ -138,7 +139,7 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
   async updateById(id: string | number, partialEntity: DeepPartial<T>): Promise<T> {
     const updateResult = await this.repository.update(id, partialEntity)
     if (!updateResult.affected) {
-      throw new Error(`Entity with id ${id} not found`)
+      throw new ConflictException(`Entity with id ${id} not found`)
     }
     return await this.findByIdOrFail(id)
   }
@@ -157,7 +158,7 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
   async deleteById(id: string | number): Promise<boolean> {
     const deleteResult = await this.repository.delete(id)
     if (!deleteResult.affected) {
-      throw new Error(`Entity with id ${id} not found`)
+      throw new ConflictException(`Entity with id ${id} not found`)
     }
     return true
   }

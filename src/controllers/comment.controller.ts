@@ -1,12 +1,15 @@
-import { authenticate } from '@decorators/authenticate'
-import { body, query } from '@decorators/validator'
-import { ICommentService } from '@interfaces/services/comment.service.interface'
-import CreateCommentRequest from '@requests/create.comment.request'
-import QueryFilterCommentRequest from '@requests/query.filter.comment.request'
-import UpdateCommentRequest from '@requests/update.comment.request'
 import { CREATED, OK } from '@constants/http.status.code'
+import { TYPES } from '@constants/types'
+import { auth } from '@decorators/authenticate'
+import { validate } from '@decorators/validator'
+import { CREATE_COMMENT_REQUEST } from '@requests/create.comment.request'
+import { ID_REQUEST } from '@requests/id.request'
+import { QUERY_FILTER_REQUEST } from '@requests/query.filter.request'
+import { UPDATE_COMMENT_REQUEST } from '@requests/update.comment.request'
+import { ICommentService } from '@services/contracts/comment.service.interface'
 import { jsonResponse } from '@utils/json.response'
 import { NextFunction, Request, Response } from 'express'
+import { matchedData } from 'express-validator'
 import { inject } from 'inversify'
 import {
   controller,
@@ -21,20 +24,19 @@ import {
 
 @controller('/comments')
 export default class CommentController {
-  constructor(@inject('ICommentService') private commentService: ICommentService) {}
+  constructor(@inject(TYPES.CommentService) private commentService: ICommentService) {}
 
-  @httpGet('/by-post/:slug')
-  @query(QueryFilterCommentRequest)
+  @httpGet('/by-post/:id')
+  @validate([...QUERY_FILTER_REQUEST, ...ID_REQUEST])
   async getCommentsByPost(
     @request() req: Request,
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const slug = req.params.slug as string
-    const queryFilters = req.query as unknown as QueryFilterCommentRequest
+    const { id, ...rest } = matchedData(req)
 
     try {
-      const result = await this.commentService.getCommentsByPostSlug(slug, queryFilters)
+      const result = await this.commentService.getCommentsByPost(id, rest)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
@@ -42,18 +44,14 @@ export default class CommentController {
   }
 
   @httpPost('/')
-  @authenticate()
-  @body(CreateCommentRequest)
-  async createComment(
-    @request() req: Request,
-    @response() res: Response,
-    @next() next: NextFunction
-  ) {
-    const data = req.body as CreateCommentRequest
+  @auth()
+  @validate(CREATE_COMMENT_REQUEST)
+  async store(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const data = matchedData(req)
     const { userId } = req.auth
 
     try {
-      await this.commentService.createComment(data, userId)
+      await this.commentService.store(userId, data)
       return jsonResponse(res, null, CREATED, 'success')
     } catch (error) {
       next(error)
@@ -61,17 +59,13 @@ export default class CommentController {
   }
 
   @httpGet('/')
-  @authenticate()
-  @query(QueryFilterCommentRequest)
-  async getComments(
-    @request() req: Request,
-    @response() res: Response,
-    @next() next: NextFunction
-  ) {
-    const queryFilters = req.query as unknown as QueryFilterCommentRequest
+  @auth()
+  @validate(QUERY_FILTER_REQUEST)
+  async index(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const data = matchedData(req)
 
     try {
-      const result = await this.commentService.getComments(queryFilters)
+      const result = await this.commentService.findWithPagination(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
@@ -79,18 +73,13 @@ export default class CommentController {
   }
 
   @httpPut('/:id')
-  @authenticate()
-  @body(UpdateCommentRequest)
-  async updateComment(
-    @request() req: Request,
-    @response() res: Response,
-    @next() next: NextFunction
-  ) {
-    const id = parseInt(req.params.id, 10)
-    const data = req.body as UpdateCommentRequest
+  @auth()
+  @validate([...UPDATE_COMMENT_REQUEST, ...ID_REQUEST])
+  async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const { id, ...rest } = matchedData(req)
 
     try {
-      await this.commentService.updateComment(id, data)
+      await this.commentService.updateById(id, rest)
       return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
@@ -98,16 +87,13 @@ export default class CommentController {
   }
 
   @httpDelete('/:id')
-  @authenticate()
-  async deleteComment(
-    @request() req: Request,
-    @response() res: Response,
-    @next() next: NextFunction
-  ) {
-    const id = parseInt(req.params.id, 10)
+  @auth()
+  @validate(ID_REQUEST)
+  async destroy(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const { id } = matchedData(req)
 
     try {
-      await this.commentService.deleteComment(id)
+      await this.commentService.deleteById(id)
       return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)

@@ -19,7 +19,7 @@ export class Comment {
   @Column({ type: 'text' })
   content: string
 
-  @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
+  @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PENDING })
   status: string
 
   @ManyToOne(() => Post, post => post.comments, {

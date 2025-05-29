@@ -80,7 +80,7 @@ export class PostController {
   @httpGet('/')
   @auth()
   @validate(QUERY_FILTER_REQUEST)
-  async getPosts(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+  async index(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)
 
     try {
@@ -94,7 +94,7 @@ export class PostController {
   @httpGet('/:id')
   @auth()
   @validate(ID_REQUEST)
-  async getPost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+  async edit(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id } = matchedData(req)
 
     try {
@@ -108,7 +108,7 @@ export class PostController {
   @httpPost('/')
   @auth()
   @validate(CREATE_POST_REQUEST)
-  async createPost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+  async store(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { categoryId, tagIds, ...rest } = matchedData(req)
     const { userId } = req.auth
 
@@ -123,7 +123,7 @@ export class PostController {
   @httpPut('/:id')
   @auth()
   @validate([...UPDATE_POST_REQUEST, ...ID_REQUEST])
-  async updatePost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+  async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id, categoryId, tagIds, ...rest } = matchedData(req)
 
     try {
@@ -137,7 +137,7 @@ export class PostController {
   @httpDelete('/:id')
   @auth()
   @validate(ID_REQUEST)
-  async deletePost(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+  async destroy(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id } = matchedData(req)
 
     try {
