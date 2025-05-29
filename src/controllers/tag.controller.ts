@@ -48,7 +48,7 @@ export default class TagController {
     const data = matchedData(req)
 
     try {
-      const result = await this.tagService.paginate(data)
+      const result = await this.tagService.findAll(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)

@@ -10,7 +10,7 @@ import { IUserRepository } from '@repositories/contracts/user.repository.interfa
 import { IPostService } from '@services/contracts/post.service.interface'
 import BaseService from '@services/implements/base.service'
 import { inject, injectable } from 'inversify'
-import { DeepPartial, FindOptionsWhere, ILike, In } from 'typeorm'
+import { DeepPartial, In, SelectQueryBuilder } from 'typeorm'
 
 @injectable()
 export default class PostService extends BaseService<Post> implements IPostService {
@@ -30,16 +30,58 @@ export default class PostService extends BaseService<Post> implements IPostServi
     this.userRepository = userRepository
   }
 
+  private applyOrderBy(
+    queryBuilder: SelectQueryBuilder<Post>,
+    fallback: Record<string, 'ASC' | 'DESC'>,
+    order?: Partial<Record<keyof Post, 'ASC' | 'DESC'>>
+  ) {
+    const effectiveOrder = order && Object.keys(order).length ? order : fallback
+
+    for (const [field, direction] of Object.entries(effectiveOrder)) {
+      queryBuilder.addOrderBy(`post.${field}`, direction)
+    }
+  }
+
   async paginate(options: IQueryOptions<Post>): Promise<IPaginationResult<Post>> {
-    const { search, sort, ...rest } = options
+    const { page = 1, limit = 10, search, sort } = options
+    const skip = (page - 1) * limit
 
-    const where: FindOptionsWhere<Post> | FindOptionsWhere<Post>[] | undefined = search
-      ? [{ title: ILike(`%${search}%`) }]
-      : rest.where
     const allowedSortFields: (keyof Post)[] = ['id', 'title', 'createdAt', 'status']
-    const order = this.buildOrder(sort, allowedSortFields)
+    const order = this.buildOrder(sort, allowedSortFields) ?? {}
 
-    return super.findWithPagination({ ...rest, where, order })
+    const queryBuilder = this.repository
+      .createQueryBuilder('post')
+      .innerJoin('post.author', 'author')
+      .addSelect([
+        'author.id',
+        'author.name',
+        'author.email',
+        'author.phoneNumber',
+        'author.avatar'
+      ])
+      .leftJoinAndSelect('post.category', 'category')
+      .leftJoinAndSelect('post.tags', 'tags')
+
+    if (search) {
+      queryBuilder.andWhere(`(LOWER(post.title) ILIKE LOWER(:search))`, { search: `%${search}%` })
+    }
+
+    this.applyOrderBy(queryBuilder, order, { createdAt: 'DESC' })
+
+    const [items, totalItems] = await queryBuilder.skip(skip).take(limit).getManyAndCount()
+
+    const totalPages = Math.ceil(totalItems / limit)
+
+    return {
+      items,
+      meta: {
+        totalItems,
+        itemCount: items.length,
+        itemsPerPage: limit,
+        totalPages,
+        currentPage: page
+      }
+    }
   }
 
   async getPublishedPosts(
