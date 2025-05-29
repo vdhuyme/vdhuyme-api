@@ -40,7 +40,7 @@ export default class CommentService extends BaseService<Comment> implements ICom
 
     const queryBuilder = this.createQueryBuilder('comment')
       .leftJoinAndSelect('comment.user', 'user')
-      .where('comment.post = :id', { id: postId })
+      .where('comment.post = :postId', { postId })
       .orderBy('comment.createdAt', 'DESC')
 
     const skip = (page - 1) * limit

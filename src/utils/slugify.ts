@@ -1,6 +1,6 @@
 import slugify from 'slugify'
 
-export const generateSlug = (text: string) => {
+export const generate = (text: string) => {
   const slug = slugify(text, {
     lower: true,
     strict: true,

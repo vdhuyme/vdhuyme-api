@@ -47,8 +47,8 @@ export default class PostService extends BaseService<Post> implements IPostServi
         'author.avatar'
       ])
       .innerJoinAndSelect('post.category', 'category')
-      .where('category.status = :categoryStatus', { categoryStatus: BASE_STATUS.PUBLISHED })
-      .andWhere('post.status = :postStatus', { postStatus: BASE_STATUS.PUBLISHED })
+      .where('category.status = :status', { status: BASE_STATUS.PUBLISHED })
+      .andWhere('post.status = :status', { status: BASE_STATUS.PUBLISHED })
 
     if (search) {
       queryBuilder.andWhere(
@@ -94,7 +94,7 @@ export default class PostService extends BaseService<Post> implements IPostServi
       ])
       .leftJoinAndSelect('post.category', 'category')
       .leftJoinAndSelect('post.tags', 'tags')
-      .where('post.id = :id', { id })
+      .where('post.id = :postId', { postId: id })
       .andWhere('post.status = :status', { status: BASE_STATUS.PUBLISHED })
       .getOne()
 
@@ -116,7 +116,7 @@ export default class PostService extends BaseService<Post> implements IPostServi
       .leftJoinAndSelect('post.category', 'category')
       .leftJoinAndSelect('post.tags', 'tag')
       .where('post.status = :status', { status: BASE_STATUS.PUBLISHED })
-      .andWhere('post.id != :id', { id: post.id })
+      .andWhere('post.id != :postId', { postId: post.id })
       .groupBy('post.id')
       .addGroupBy('category.id')
       .addGroupBy('tag.id')
