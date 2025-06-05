@@ -6,7 +6,7 @@ import { IUserRepository } from '@repositories/contracts/user.repository.interfa
 import { IUserService } from '@services/contracts/user.service.interface'
 import BaseService from '@services/implements/base.service'
 import { inject, injectable } from 'inversify'
-import { FindOptionsWhere, ILike } from 'typeorm'
+import { ILike } from 'typeorm'
 
 @injectable()
 export default class UserService extends BaseService<User> implements IUserService {
@@ -15,15 +15,23 @@ export default class UserService extends BaseService<User> implements IUserServi
   }
 
   async paginate(options: IQueryOptions<User>): Promise<IPaginationResult<IUserResponse>> {
-    const { search, sort, ...rest } = options
+    const { page = 1, limit = 10, search, sortBy = 'createdAt', orderBy = 'DESC' } = options
 
-    const where: FindOptionsWhere<User> | FindOptionsWhere<User>[] | undefined = search
-      ? [{ name: ILike(`%${search}%`) }]
-      : rest.where
     const allowedSortFields: (keyof User)[] = ['id', 'name', 'createdAt', 'status']
-    const order = this.buildOrder(sort, allowedSortFields)
+    const sortField = allowedSortFields.includes(sortBy as keyof User) ? sortBy : 'createdAt'
 
-    const { items, meta } = await super.findWithPagination({ ...rest, where, order })
-    return { items: UserResource.collection(items) as User[], meta }
+    const findOptions: IQueryOptions<User> = {
+      page,
+      limit,
+      sortBy: sortField as keyof User,
+      orderBy,
+      where: search ? { name: ILike(`%${search}%`) } : undefined
+    }
+
+    const { items, meta } = await super.findWithPagination(findOptions)
+    return {
+      items: UserResource.collection(items) as User[],
+      meta
+    }
   }
 }

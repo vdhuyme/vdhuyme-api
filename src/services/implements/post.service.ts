@@ -10,7 +10,7 @@ import { IUserRepository } from '@repositories/contracts/user.repository.interfa
 import { IPostService } from '@services/contracts/post.service.interface'
 import BaseService from '@services/implements/base.service'
 import { inject, injectable } from 'inversify'
-import { DeepPartial, FindOptionsWhere, ILike, In } from 'typeorm'
+import { DeepPartial, ILike, In, Brackets } from 'typeorm'
 
 @injectable()
 export default class PostService extends BaseService<Post> implements IPostService {
@@ -31,22 +31,34 @@ export default class PostService extends BaseService<Post> implements IPostServi
   }
 
   async paginate(options: IQueryOptions<Post>): Promise<IPaginationResult<Post>> {
-    const { search, sort, ...rest } = options
+    const { page = 1, limit = 10, search, sortBy = 'createdAt', orderBy = 'DESC' } = options
 
-    const where: FindOptionsWhere<Post> | FindOptionsWhere<Post>[] | undefined = search
-      ? [{ title: ILike(`%${search}%`) }]
-      : rest.where
     const allowedSortFields: (keyof Post)[] = ['id', 'title', 'createdAt', 'status']
-    const order = this.buildOrder(sort, allowedSortFields)
+    const sortField = allowedSortFields.includes(sortBy as keyof Post) ? sortBy : 'createdAt'
 
-    return super.findWithPagination({ ...rest, where, order })
+    const findOptions: IQueryOptions<Post> = {
+      page,
+      limit,
+      sortBy: sortField as keyof Post,
+      orderBy,
+      where: search ? { title: ILike(`%${search}%`) } : undefined,
+      relations: ['category', 'tags', 'author']
+    }
+
+    return super.findWithPagination(findOptions)
   }
 
   async getPublishedPosts(
     options: IQueryOptions<Post> & { categoryId?: number }
   ): Promise<IPaginationResult<Post>> {
-    const { page = 1, limit = 10, search, categoryId } = options
-    const skip = (page - 1) * limit
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      categoryId,
+      sortBy = 'createdAt',
+      orderBy = 'DESC'
+    } = options
 
     const queryBuilder = this.repository
       .createQueryBuilder('post')
@@ -64,8 +76,12 @@ export default class PostService extends BaseService<Post> implements IPostServi
 
     if (search) {
       queryBuilder.andWhere(
-        `(LOWER(post.title) ILIKE LOWER(:search) OR LOWER(post.content) ILIKE LOWER(:search))`,
-        { search: `%${search}%` }
+        new Brackets(qb => {
+          qb.where('LOWER(post.title) ILIKE LOWER(:search)', { search: `%${search}%` }).orWhere(
+            'LOWER(post.content) ILIKE LOWER(:search)',
+            { search: `%${search}%` }
+          )
+        })
       )
     }
 
@@ -74,12 +90,10 @@ export default class PostService extends BaseService<Post> implements IPostServi
     }
 
     const [items, totalItems] = await queryBuilder
-      .orderBy('post.createdAt', 'DESC')
-      .skip(skip)
+      .orderBy(`post.${sortBy}`, orderBy)
+      .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount()
-
-    const totalPages = Math.ceil(totalItems / limit)
 
     return {
       items,
@@ -87,7 +101,7 @@ export default class PostService extends BaseService<Post> implements IPostServi
         totalItems,
         itemCount: items.length,
         itemsPerPage: limit,
-        totalPages,
+        totalPages: Math.ceil(totalItems / limit),
         currentPage: page
       }
     }

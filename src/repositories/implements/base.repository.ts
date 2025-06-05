@@ -20,7 +20,8 @@ import {
   QueryRunner,
   FindOptionsRelations,
   TreeRepository,
-  EntityMetadata
+  EntityMetadata,
+  FindOptionsOrder
 } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 
@@ -96,11 +97,17 @@ export default abstract class BaseRepository<T extends ObjectLiteral>
 
   /** @inheritdoc */
   async findWithPagination(options: IQueryOptions<T>): Promise<IPaginationResult<T>> {
-    const { page = 1, limit = 50, ...findOptions } = options
+    const { page = 1, limit = 50, sortBy, orderBy, ...rest } = options
     const skip = (page - 1) * limit
 
+    const orderOption: FindOptionsOrder<T> | undefined =
+      sortBy && orderBy
+        ? ({ [sortBy]: orderBy.toUpperCase() === 'ASC' ? 'ASC' : 'DESC' } as FindOptionsOrder<T>)
+        : undefined
+
     const [items, totalItems] = await this.repository.findAndCount({
-      ...findOptions,
+      ...rest,
+      order: orderOption,
       skip,
       take: limit
     })

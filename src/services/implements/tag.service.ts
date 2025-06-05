@@ -4,7 +4,7 @@ import { ITagService } from '@services/contracts/tag.service.interface'
 import { inject, injectable } from 'inversify'
 import BaseService from '@services/implements/base.service'
 import { TYPES } from '@constants/types'
-import { FindOptionsWhere, ILike } from 'typeorm'
+import { ILike } from 'typeorm'
 import { IPaginationResult, IQueryOptions } from '@repositories/contracts/base.repository.interface'
 
 @injectable()
@@ -14,14 +14,19 @@ export default class TagService extends BaseService<Tag> implements ITagService 
   }
 
   async paginate(options: IQueryOptions<Tag>): Promise<IPaginationResult<Tag>> {
-    const { search, sort, ...rest } = options
+    const { page = 1, limit = 10, search, sortBy = 'createdAt', orderBy = 'DESC' } = options
 
-    const where: FindOptionsWhere<Tag> | FindOptionsWhere<Tag>[] | undefined = search
-      ? [{ name: ILike(`%${search}%`) }]
-      : rest.where
     const allowedSortFields: (keyof Tag)[] = ['id', 'name', 'createdAt', 'status']
-    const order = this.buildOrder(sort, allowedSortFields)
+    const sortField = allowedSortFields.includes(sortBy as keyof Tag) ? sortBy : 'createdAt'
 
-    return super.findWithPagination({ ...rest, where, order })
+    const findOptions: IQueryOptions<Tag> = {
+      page,
+      limit,
+      sortBy: sortField as keyof Tag,
+      orderBy,
+      where: search ? { name: ILike(`%${search}%`) } : undefined
+    }
+
+    return super.findWithPagination(findOptions)
   }
 }

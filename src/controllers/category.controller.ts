@@ -67,7 +67,7 @@ export default class CategoryController {
     const data = matchedData(req)
 
     try {
-      const result = await this.categoryService.findAll(data)
+      const result = await this.categoryService.paginate(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)

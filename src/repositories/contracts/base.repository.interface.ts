@@ -38,7 +38,8 @@ export interface IQueryOptions<T> extends Omit<FindManyOptions<T>, 'skip' | 'tak
   page?: number
   limit?: number
   search?: string
-  sort?: Array<[keyof T, 'ASC' | 'DESC']>
+  sortBy?: keyof T
+  orderBy?: 'ASC' | 'DESC'
 }
 
 export interface IBaseRepository<T extends ObjectLiteral> {

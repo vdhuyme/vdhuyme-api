@@ -2,7 +2,7 @@ import { BASE_STATUS } from '@constants/base.status'
 import { TYPES } from '@constants/types'
 import { Category } from '@entities/category'
 import BadRequestException from '@exceptions/bad.request.exception'
-import { IQueryOptions } from '@repositories/contracts/base.repository.interface'
+import { IPaginationResult, IQueryOptions } from '@repositories/contracts/base.repository.interface'
 import { ICategoryRepository } from '@repositories/contracts/category.repository.interface'
 import { ICategoryService } from '@services/contracts/category.service.interface'
 import BaseService from '@services/implements/base.service'
@@ -17,22 +17,53 @@ export default class CategoryService extends BaseService<Category> implements IC
     super(categoryRepository)
     this.categoryRepository = categoryRepository
   }
+  paginate(options: IQueryOptions<Category>): Promise<IPaginationResult<Category>> {
+    const { page = 1, limit = 10, search, sortBy = 'createdAt', orderBy = 'DESC' } = options
+
+    const allowedSortFields: (keyof Category)[] = ['id', 'name', 'status', 'createdAt', 'updatedAt']
+    const sortField = allowedSortFields.includes(sortBy as keyof Category) ? sortBy : 'createdAt'
+
+    const findOptions: IQueryOptions<Category> = {
+      page,
+      limit,
+      sortBy: sortField as keyof Category,
+      orderBy,
+      where: search ? { name: ILike(`%${search}%`) } : undefined
+    }
+
+    return super.findWithPagination(findOptions)
+  }
 
   async getTrees(): Promise<Category[]> {
     return this.categoryRepository.findTrees()
   }
 
-  async getPublishedCategories(options: IQueryOptions<Category>): Promise<Category[]> {
-    const { search, sort } = options
+  async getPublishedCategories(
+    options: IQueryOptions<Category>
+  ): Promise<IPaginationResult<Category>> {
+    const { limit = 10, page = 1, search, sortBy = 'createdAt', orderBy = 'DESC' } = options
+
+    const allowedSortFields: (keyof Category)[] = ['id', 'name', 'createdAt', 'updatedAt', 'status']
+    const sortField = allowedSortFields.includes(sortBy as keyof Category) ? sortBy : 'createdAt'
 
     const where: FindOptionsWhere<Category> = {
-      status: BASE_STATUS.PUBLISHED,
-      ...(search && { name: ILike(`%${search}%`) })
+      status: BASE_STATUS.PUBLISHED
     }
-    const allowedSortFields: (keyof Category)[] = ['id', 'name', 'status', 'updatedAt', 'createdAt']
-    const order = this.buildOrder(sort, allowedSortFields)
 
-    return super.findAll({ where, order })
+    if (search) {
+      where.name = ILike(`%${search}%`)
+    }
+
+    const findOptions: IQueryOptions<Category> = {
+      where,
+      sortBy: sortField as keyof Category,
+      orderBy,
+      relations: ['parent'],
+      page,
+      limit
+    }
+
+    return super.findWithPagination(findOptions)
   }
 
   async getPublishedCategory(

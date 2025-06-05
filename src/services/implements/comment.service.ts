@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import BaseService from '@services/implements/base.service'
 import { ICommentService } from '@services/contracts/comment.service.interface'
 import { IPaginationResult, IQueryOptions } from '@repositories/contracts/base.repository.interface'
-import { DeepPartial, FindOptionsWhere, ILike } from 'typeorm'
+import { DeepPartial, ILike } from 'typeorm'
 import { Comment } from '@entities/comment'
 import { ICommentRepository } from '@repositories/contracts/comment.repository.interface'
 import { IUserRepository } from '@repositories/contracts/user.repository.interface'
@@ -38,14 +38,14 @@ export default class CommentService extends BaseService<Comment> implements ICom
       throw new BadRequestException(`Not found post ${postId}`)
     }
 
-    const queryBuilder = this.createQueryBuilder('comment')
+    const comments = await this.repository
+      .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.user', 'user')
       .where('comment.post = :postId', { postId })
       .orderBy('comment.createdAt', 'DESC')
-
-    const skip = (page - 1) * limit
-    queryBuilder.skip(skip).take(limit)
-    const comments = await queryBuilder.getMany()
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany()
 
     return CommentResource.collection(comments)
   }
@@ -53,12 +53,15 @@ export default class CommentService extends BaseService<Comment> implements ICom
   async store(userId: string | number, data: DeepPartial<Comment>): Promise<Comment> {
     const { id } = data
 
-    const post = await this.postRepository.findById(id!)
+    const [user, post] = await Promise.all([
+      this.userRepository.findById(userId),
+      this.postRepository.findById(id!)
+    ])
+
     if (!post || post.status !== BASE_STATUS.PUBLISHED) {
       throw new BadRequestException(`Not found post ${id}`)
     }
 
-    const user = await this.userRepository.findById(userId)
     if (!user) {
       throw new BadRequestException(`Not found user ${userId}`)
     }
@@ -68,15 +71,20 @@ export default class CommentService extends BaseService<Comment> implements ICom
   }
 
   async paginate(options: IQueryOptions<Comment>): Promise<IPaginationResult<Comment>> {
-    const { search, sort, ...rest } = options
-
-    const where: FindOptionsWhere<Comment> | FindOptionsWhere<Comment>[] | undefined = search
-      ? { content: ILike(`%${search}%`) }
-      : (rest.where ?? {})
+    const { page = 1, limit = 10, search, sortBy = 'createdAt', orderBy = 'DESC' } = options
 
     const allowedSortFields: (keyof Comment)[] = ['id', 'status', 'createdAt', 'updatedAt']
-    const order = this.buildOrder(sort, allowedSortFields)
+    const sortField = allowedSortFields.includes(sortBy as keyof Comment) ? sortBy : 'createdAt'
 
-    return super.findWithPagination({ ...rest, where, order })
+    const findOptions: IQueryOptions<Comment> = {
+      page,
+      limit,
+      sortBy: sortField as keyof Comment,
+      orderBy,
+      where: search ? { content: ILike(`%${search}%`) } : undefined,
+      relations: ['user', 'post']
+    }
+
+    return super.findWithPagination(findOptions)
   }
 }

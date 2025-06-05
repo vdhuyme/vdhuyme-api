@@ -85,25 +85,6 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
     return await this.repository.findOneBy(where)
   }
 
-  protected buildOrder(
-    sort: [keyof T, 'ASC' | 'DESC'][] | undefined,
-    allowedFields: (keyof T)[]
-  ): Partial<Record<keyof T, 'ASC' | 'DESC'>> | undefined {
-    if (!sort) {
-      return undefined
-    }
-
-    return sort.reduce(
-      (acc, [field, direction]) => {
-        if (allowedFields.includes(field)) {
-          acc[field] = direction
-        }
-        return acc
-      },
-      {} as Partial<Record<keyof T, 'ASC' | 'DESC'>>
-    )
-  }
-
   /** @inheritdoc */
   async findWithPagination(options: IQueryOptions<T>): Promise<IPaginationResult<T>> {
     return await this.repository.findWithPagination(options)
