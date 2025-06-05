@@ -1,6 +1,7 @@
 node_modules
 .qodo
 .vscode
+.idea
 
 .env
 package-lock.json
