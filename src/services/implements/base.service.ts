@@ -86,8 +86,8 @@ export default abstract class BaseService<T extends ObjectLiteral> implements IB
   }
 
   /** @inheritdoc */
-  async findWithPagination(options: IQueryOptions<T>): Promise<IPaginationResult<T>> {
-    return await this.repository.findWithPagination(options)
+  async paginate(options: IQueryOptions<T>): Promise<IPaginationResult<T>> {
+    return await this.repository.paginate(options)
   }
 
   /** @inheritdoc */

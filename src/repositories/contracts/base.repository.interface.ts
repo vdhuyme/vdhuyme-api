@@ -122,9 +122,9 @@ export interface IBaseRepository<T extends ObjectLiteral> {
    * @param {IQueryOptions<T>} options - Query and pagination options.
    * @returns {Promise<IPaginationResult<T>>} Paginated result.
    * @example
-   * const result = await repo.findWithPagination({ page: 2, limit: 10 })
+   * const result = await repo.paginate({ page: 2, limit: 10 })
    */
-  findWithPagination(options: IQueryOptions<T>): Promise<IPaginationResult<T>>
+  paginate(options: IQueryOptions<T>): Promise<IPaginationResult<T>>
 
   /**
    * Counts entities matching the options.

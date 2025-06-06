@@ -98,7 +98,7 @@ export interface IBaseService<T extends ObjectLiteral> {
    * @param {IQueryOptions<T>} options - Query and pagination options.
    * @returns {Promise<IPaginationResult<T>>} Paginated result.
    */
-  findWithPagination(options: IQueryOptions<T>): Promise<IPaginationResult<T>>
+  paginate(options: IQueryOptions<T>): Promise<IPaginationResult<T>>
 
   /**
    * Counts entities matching the options.

@@ -96,7 +96,7 @@ export default abstract class BaseRepository<T extends ObjectLiteral>
   }
 
   /** @inheritdoc */
-  async findWithPagination(options: IQueryOptions<T>): Promise<IPaginationResult<T>> {
+  async paginate(options: IQueryOptions<T>): Promise<IPaginationResult<T>> {
     const { page = 1, limit = 50, sortBy, orderBy, ...rest } = options
     const skip = (page - 1) * limit
 

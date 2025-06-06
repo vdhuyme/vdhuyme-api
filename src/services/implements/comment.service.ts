@@ -85,6 +85,6 @@ export default class CommentService extends BaseService<Comment> implements ICom
       relations: ['user', 'post']
     }
 
-    return super.findWithPagination(findOptions)
+    return super.paginate(findOptions)
   }
 }

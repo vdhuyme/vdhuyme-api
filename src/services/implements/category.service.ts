@@ -1,22 +1,29 @@
 import { BASE_STATUS } from '@constants/base.status'
 import { TYPES } from '@constants/types'
 import { Category } from '@entities/category'
+import { Post } from '@entities/post'
 import BadRequestException from '@exceptions/bad.request.exception'
 import { IPaginationResult, IQueryOptions } from '@repositories/contracts/base.repository.interface'
 import { ICategoryRepository } from '@repositories/contracts/category.repository.interface'
+import { IPostRepository } from '@repositories/contracts/post.repository.interface'
 import { ICategoryService } from '@services/contracts/category.service.interface'
 import BaseService from '@services/implements/base.service'
 import { inject, injectable } from 'inversify'
-import { DeepPartial, FindOptionsWhere, ILike } from 'typeorm'
+import { Brackets, DeepPartial, FindOptionsWhere, ILike } from 'typeorm'
 
 @injectable()
 export default class CategoryService extends BaseService<Category> implements ICategoryService {
   private readonly categoryRepository: ICategoryRepository
+  private readonly postRepository: IPostRepository
 
-  constructor(@inject(TYPES.CategoryRepository) categoryRepository: ICategoryRepository) {
+  constructor(
+    @inject(TYPES.CategoryRepository) categoryRepository: ICategoryRepository,
+    @inject(TYPES.PostRepository) postRepository: IPostRepository
+  ) {
     super(categoryRepository)
-    this.categoryRepository = categoryRepository
+    this.postRepository = postRepository
   }
+
   paginate(options: IQueryOptions<Category>): Promise<IPaginationResult<Category>> {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', orderBy = 'DESC' } = options
 
@@ -31,7 +38,7 @@ export default class CategoryService extends BaseService<Category> implements IC
       where: search ? { name: ILike(`%${search}%`) } : undefined
     }
 
-    return super.findWithPagination(findOptions)
+    return super.paginate(findOptions)
   }
 
   async getTrees(): Promise<Category[]> {
@@ -58,31 +65,47 @@ export default class CategoryService extends BaseService<Category> implements IC
       where,
       sortBy: sortField as keyof Category,
       orderBy,
-      relations: ['parent'],
       page,
       limit
     }
 
-    return super.findWithPagination(findOptions)
+    return super.paginate(findOptions)
   }
 
   async getPublishedCategory(
     id: string | number,
     options?: IQueryOptions<Category>
   ): Promise<Category> {
-    const { page = 1, limit = 50 } = options || {}
+    const { search, sortBy = 'createdAt', orderBy = 'DESC', page = 1, limit = 50 } = options || {}
+    const allowedSortFields: (keyof Post)[] = ['id', 'title', 'createdAt', 'status']
+    const sortField = allowedSortFields.includes(sortBy as keyof Post) ? sortBy : 'createdAt'
 
-    const query = this.repository
-      .createQueryBuilder('category')
-      .leftJoinAndSelect('category.posts', 'post', 'post.status = :status', { status: 'PUBLISHED' })
-      .where('category.id = :id', { id })
+    const category = await this.findByIdOrFail(id)
 
-    query.skip((page - 1) * limit).take(limit)
-    const category = await query.getOne()
+    const queryBuilder = this.postRepository
+      .createQueryBuilder('post')
+      .leftJoin('post.category', 'category')
+      .where('category.id = :categoryId', { categoryId: category.id })
+      .andWhere('post.status = :status', { status: BASE_STATUS.PUBLISHED })
 
-    if (!category) {
-      throw new BadRequestException(`Not found category ${id}`)
+    if (search) {
+      queryBuilder.andWhere(
+        new Brackets(qb => {
+          qb.where('LOWER(post.title) ILIKE LOWER(:search)', { search: `%${search}%` }).orWhere(
+            'LOWER(post.content) ILIKE LOWER(:search)',
+            { search: `%${search}%` }
+          )
+        })
+      )
     }
+
+    queryBuilder
+      .orderBy(`post.${sortField}`, orderBy.toUpperCase() === 'ASC' ? 'ASC' : 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit)
+
+    const posts = await queryBuilder.getMany()
+    category.posts = posts
 
     return category
   }

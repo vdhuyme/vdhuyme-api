@@ -4,6 +4,7 @@ import jsonwebtoken from '@config/jsonwebtoken'
 import { BASE_STATUS } from '@constants/base.status'
 import { TYPES } from '@constants/types'
 import { User } from '@entities/user'
+import BadRequestException from '@exceptions/bad.request.exception'
 import UnauthorizedException from '@exceptions/unauthorized.exception'
 import { IUserResponse, UserResource } from '@mappers/user.mapper'
 import { IUserRepository } from '@repositories/contracts/user.repository.interface'
@@ -109,5 +110,28 @@ export default class AuthService implements IAuthService {
 
       throw new UnauthorizedException(message)
     }
+  }
+
+  async changePassword(
+    userId: number | string,
+    oldPassword: string,
+    newPassword: string
+  ): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: Number(userId) } })
+    if (!user) {
+      throw new BadRequestException(`Not found user ${userId}`)
+    }
+
+    const matchedPassword = Hash.check(oldPassword, user.password!)
+    if (!matchedPassword) {
+      throw new BadRequestException('Password does not match')
+    }
+
+    if (oldPassword === newPassword) {
+      throw new BadRequestException('New password must be different from the old password')
+    }
+
+    user.password = Hash.make(newPassword)
+    return this.userRepository.save(user)
   }
 }

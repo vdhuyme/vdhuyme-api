@@ -45,7 +45,7 @@ export default class PostService extends BaseService<Post> implements IPostServi
       relations: ['category', 'tags', 'author']
     }
 
-    return super.findWithPagination(findOptions)
+    return super.paginate(findOptions)
   }
 
   async getPublishedPosts(

@@ -27,6 +27,6 @@ export default class TagService extends BaseService<Tag> implements ITagService 
       where: search ? { name: ILike(`%${search}%`) } : undefined
     }
 
-    return super.findWithPagination(findOptions)
+    return super.paginate(findOptions)
   }
 }

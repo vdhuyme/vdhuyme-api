@@ -1,6 +1,6 @@
 import { TYPES } from '@constants/types'
 import { User } from '@entities/user'
-import { IUserResponse, UserResource } from '@mappers/user.mapper'
+import { UserResource } from '@mappers/user.mapper'
 import { IPaginationResult, IQueryOptions } from '@repositories/contracts/base.repository.interface'
 import { IUserRepository } from '@repositories/contracts/user.repository.interface'
 import { IUserService } from '@services/contracts/user.service.interface'
@@ -14,7 +14,7 @@ export default class UserService extends BaseService<User> implements IUserServi
     super(userRepository)
   }
 
-  async paginate(options: IQueryOptions<User>): Promise<IPaginationResult<IUserResponse>> {
+  async paginate(options: IQueryOptions<User>): Promise<IPaginationResult<User>> {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', orderBy = 'DESC' } = options
 
     const allowedSortFields: (keyof User)[] = ['id', 'name', 'createdAt', 'status']
@@ -28,7 +28,7 @@ export default class UserService extends BaseService<User> implements IUserServi
       where: search ? { name: ILike(`%${search}%`) } : undefined
     }
 
-    const { items, meta } = await super.findWithPagination(findOptions)
+    const { items, meta } = await super.paginate(findOptions)
     return {
       items: UserResource.collection(items) as User[],
       meta

@@ -1,5 +1,13 @@
 import { NextFunction, Request, Response } from 'express'
-import { controller, httpGet, httpPost, next, request, response } from 'inversify-express-utils'
+import {
+  controller,
+  httpGet,
+  httpPatch,
+  httpPost,
+  next,
+  request,
+  response
+} from 'inversify-express-utils'
 import { OK } from '@constants/http.status.code'
 import { inject } from 'inversify'
 import { REFRESH_TOKEN_REQUEST } from '@requests/refresh.token.request'
@@ -10,6 +18,7 @@ import { matchedData } from 'express-validator'
 import { TYPES } from '@constants/types'
 import { auth } from '@decorators/authenticate'
 import { IAuthService } from '@services/contracts/auth.service.interface'
+import { CHANGE_PASSWORD_REQUEST } from '@requests/change.password.request'
 
 @controller('/auth')
 export default class AuthController {
@@ -74,6 +83,25 @@ export default class AuthController {
     try {
       const accessToken = this.authService.refreshAccessToken(refreshToken)
       return jsonResponse(res, accessToken)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  @httpPatch('/change-password')
+  @auth()
+  @validate(CHANGE_PASSWORD_REQUEST)
+  async changePassword(
+    @request() req: Request,
+    @response() res: Response,
+    @next() next: NextFunction
+  ) {
+    const { oldPassword, newPassword } = matchedData(req)
+    const { userId } = req.auth
+
+    try {
+      await this.authService.changePassword(userId, oldPassword, newPassword)
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }
