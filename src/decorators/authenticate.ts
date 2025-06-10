@@ -1,18 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-namespace */
 import jsonwebtoken from '@config/jsonwebtoken'
 import UnauthorizedException from '@exceptions/unauthorized.exception'
 import { IJwtAuthUserPayload } from 'interfaces'
 import { NextFunction, Request, Response } from 'express'
 import { BASE_STATUS } from '@constants/base.status'
-
-declare global {
-  namespace Express {
-    interface Request {
-      auth: IJwtAuthUserPayload
-    }
-  }
-}
 
 const verifyAccountAccess = (status: string): void => {
   if (!status || status !== BASE_STATUS.ACTIVATED) {

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import 'reflect-metadata'
 import { Request, Response, NextFunction } from 'express'
 import { validationResult, ValidationChain, ValidationError, Result } from 'express-validator'
 import ValidationException from '@exceptions/validation.exception'
