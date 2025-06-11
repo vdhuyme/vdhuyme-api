@@ -162,9 +162,7 @@ export default class PostService extends BaseService<Post> implements IPostServi
   }
 
   private async getTagsByIds(tagIds: string[] | number[]) {
-    const uniqueTagIds = Array.from(new Set((tagIds as (string | number)[]).map(Number))).sort(
-      (a, b) => a - b
-    )
+    const uniqueTagIds = Array.from(new Set((tagIds as (string | number)[]).map(Number)))
     return await this.tagRepository.findAll({ where: { id: In(uniqueTagIds) } })
   }
 
