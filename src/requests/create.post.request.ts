@@ -5,7 +5,7 @@ export const CREATE_POST_REQUEST = [
   body('title').isString().isLength({ min: 3, max: 1000 }),
   body('excerpt').isString().isLength({ min: 3, max: 1000 }),
   body('content').isString().isLength({ min: 10 }),
-  body('thumbnail').optional().isString(),
+  body('thumbnail').optional({ checkFalsy: true }).isString(),
   body('readTime').optional().isInt({ min: 1 }).toInt(),
   body('categoryId').isInt({ min: 1 }).toInt(),
   body('status').optional().isIn(Object.values(BASE_STATUS)),
