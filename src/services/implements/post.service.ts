@@ -71,16 +71,16 @@ export default class PostService extends BaseService<Post> implements IPostServi
         'author.avatar'
       ])
       .innerJoinAndSelect('post.category', 'category')
-      .where('category.status = :status', { status: BASE_STATUS.PUBLISHED })
-      .andWhere('post.status = :status', { status: BASE_STATUS.PUBLISHED })
+      .where('post.status = :status', { status: BASE_STATUS.PUBLISHED })
 
     if (search) {
       queryBuilder.andWhere(
         new Brackets(qb => {
-          qb.where('LOWER(post.title) ILIKE LOWER(:search)', { search: `%${search}%` }).orWhere(
-            'LOWER(post.content) ILIKE LOWER(:search)',
-            { search: `%${search}%` }
-          )
+          qb.where('unaccent(LOWER(post.title)) ILIKE unaccent(LOWER(:search))', {
+            search: `%${search}%`
+          }).orWhere('unaccent(LOWER(post.content)) ILIKE unaccent(LOWER(:search))', {
+            search: `%${search}%`
+          })
         })
       )
     }
