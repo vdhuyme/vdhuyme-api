@@ -17,6 +17,6 @@ export default class CategoryRepository
   }
 
   async getTrees(): Promise<Category[]> {
-    return await this.treeRepository.findTrees({ relations: ['children'] })
+    return await this.treeRepository.findTrees()
   }
 }
