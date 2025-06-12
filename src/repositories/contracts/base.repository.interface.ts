@@ -12,7 +12,6 @@ import {
   SelectQueryBuilder,
   QueryRunner,
   FindOptionsRelations,
-  TreeRepository,
   EntityMetadata
 } from 'typeorm'
 
@@ -364,16 +363,6 @@ export interface IBaseRepository<T extends ObjectLiteral> {
    * const users = await userRepo.find();
    */
   getRepository(): Repository<T>
-
-  /**
-   * Returns the TreeRepository for hierarchical entity operations.
-   * Only works for entities decorated with @Tree in TypeORM.
-   *
-   * @returns {TreeRepository<T>} The TreeRepository for tree-structured entities.
-   * @example
-   * const categoryTree = await repo.getTreeRepository().findTrees();
-   */
-  getTreeRepository(): TreeRepository<T>
 
   /**
    * Returns the entity metadata, which includes information such as

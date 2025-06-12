@@ -21,6 +21,7 @@ export default class CategoryService extends BaseService<Category> implements IC
     @inject(TYPES.PostRepository) postRepository: IPostRepository
   ) {
     super(categoryRepository)
+    this.categoryRepository = categoryRepository
     this.postRepository = postRepository
   }
 
@@ -42,7 +43,7 @@ export default class CategoryService extends BaseService<Category> implements IC
   }
 
   async getTrees(): Promise<Category[]> {
-    return this.categoryRepository.findTrees()
+    return await this.categoryRepository.getTrees()
   }
 
   async getPublishedCategories(

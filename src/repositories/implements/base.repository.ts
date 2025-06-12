@@ -19,7 +19,6 @@ import {
   DataSource,
   QueryRunner,
   FindOptionsRelations,
-  TreeRepository,
   EntityMetadata,
   FindOptionsOrder
 } from 'typeorm'
@@ -29,7 +28,6 @@ export default abstract class BaseRepository<T extends ObjectLiteral>
   implements IBaseRepository<T>
 {
   protected repository: Repository<T>
-  protected treeRepository: TreeRepository<T>
   protected metadata: EntityMetadata
   protected dataSource: DataSource
   protected queryRunner?: QueryRunner
@@ -51,7 +49,6 @@ export default abstract class BaseRepository<T extends ObjectLiteral>
     } else {
       this.repository = dataSource.getRepository(entity)
     }
-    this.treeRepository = dataSource.getTreeRepository(entity)
     this.metadata = dataSource.getMetadata(entity)
   }
 
@@ -299,11 +296,6 @@ export default abstract class BaseRepository<T extends ObjectLiteral>
   /** @inheritdoc */
   getRepository(): Repository<T> {
     return this.repository
-  }
-
-  /** @inheritdoc */
-  getTreeRepository(): TreeRepository<T> {
-    return this.treeRepository
   }
 
   /** @inheritdoc */
