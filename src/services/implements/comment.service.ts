@@ -10,7 +10,7 @@ import { IUserRepository } from '@repositories/contracts/user.repository.interfa
 import BadRequestException from '@exceptions/bad.request.exception'
 import { IPostRepository } from '@repositories/contracts/post.repository.interface'
 import { BASE_STATUS } from '@constants/base.status'
-import { CommentResource, ICommentResponse } from '@mappers/comment.mapper'
+import { CommentResource } from '@mappers/comment.mapper'
 
 @injectable()
 export default class CommentService extends BaseService<Comment> implements ICommentService {
@@ -30,7 +30,7 @@ export default class CommentService extends BaseService<Comment> implements ICom
   async getCommentsByPost(
     postId: string | number,
     options: IQueryOptions<Comment>
-  ): Promise<ICommentResponse[]> {
+  ): Promise<IPaginationResult<Comment>> {
     const { page = 1, limit = 10 } = options
 
     const post = await this.postRepository.findById(postId)
@@ -38,16 +38,25 @@ export default class CommentService extends BaseService<Comment> implements ICom
       throw new BadRequestException(`Not found post ${postId}`)
     }
 
-    const comments = await this.repository
+    const [items, totalItems] = await this.repository
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.user', 'user')
       .where('comment.post = :postId', { postId })
       .orderBy('comment.createdAt', 'DESC')
       .skip((page - 1) * limit)
       .take(limit)
-      .getMany()
+      .getManyAndCount()
 
-    return CommentResource.collection(comments)
+    return {
+      items: CommentResource.collection(items) as Comment[],
+      meta: {
+        totalItems,
+        itemCount: items.length,
+        itemsPerPage: limit,
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: page
+      }
+    }
   }
 
   async store(userId: string | number, data: DeepPartial<Comment>): Promise<Comment> {
