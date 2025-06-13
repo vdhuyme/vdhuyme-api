@@ -4,4 +4,5 @@ import { IBaseService } from '@services/contracts/base.service.interface'
 
 export interface IUserService extends IBaseService<User> {
   paginate(options: IQueryOptions<User>): Promise<IPaginationResult<User>>
+  updateStatus(id: number | string, status: string): Promise<User>
 }

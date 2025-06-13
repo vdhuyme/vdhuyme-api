@@ -1,5 +1,6 @@
 import { TYPES } from '@constants/types'
 import { User } from '@entities/user'
+import BadRequestException from '@exceptions/bad.request.exception'
 import { UserResource } from '@mappers/user.mapper'
 import { IPaginationResult, IQueryOptions } from '@repositories/contracts/base.repository.interface'
 import { IUserRepository } from '@repositories/contracts/user.repository.interface'
@@ -33,5 +34,15 @@ export default class UserService extends BaseService<User> implements IUserServi
       items: UserResource.collection(items) as User[],
       meta
     }
+  }
+
+  async updateStatus(id: number | string, status: string): Promise<User> {
+    const user = await this.findOneOrFail({ where: { id: Number(id) } })
+    if (user.superUser) {
+      throw new BadRequestException('Can not update status of super user')
+    }
+
+    user.status = status
+    return this.save(user)
   }
 }
