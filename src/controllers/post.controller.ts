@@ -22,6 +22,7 @@ import { auth } from '@decorators/authenticate'
 import { CREATE_POST_REQUEST } from '@requests/create.post.request'
 import { UPDATE_POST_REQUEST } from '@requests/update.post.request'
 import { QUERY_FILTER_PUBLISHED_POST_REQUEST } from '@requests/query.filter.published.post.request'
+import { permissions } from '@decorators/authorize'
 
 @controller('/posts')
 export class PostController {
@@ -80,6 +81,7 @@ export class PostController {
 
   @httpGet('/')
   @auth()
+  @permissions('post.read')
   @validate(QUERY_FILTER_REQUEST)
   async index(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)
@@ -92,22 +94,9 @@ export class PostController {
     }
   }
 
-  @httpGet('/:id')
-  @auth()
-  @validate(ID_REQUEST)
-  async edit(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const { id } = matchedData(req)
-
-    try {
-      const post = await this.postService.findById(id)
-      return jsonResponse(res, post)
-    } catch (error) {
-      next(error)
-    }
-  }
-
   @httpPost('/')
   @auth()
+  @permissions('post.create')
   @validate(CREATE_POST_REQUEST)
   async store(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { categoryId, tagIds, ...rest } = matchedData(req)
@@ -123,6 +112,7 @@ export class PostController {
 
   @httpPut('/:id')
   @auth()
+  @permissions('post.update')
   @validate([...UPDATE_POST_REQUEST, ...ID_REQUEST])
   async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id, categoryId, tagIds, ...rest } = matchedData(req)
@@ -137,6 +127,7 @@ export class PostController {
 
   @httpDelete('/:id')
   @auth()
+  @permissions('post.delete')
   @validate(ID_REQUEST)
   async destroy(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id } = matchedData(req)

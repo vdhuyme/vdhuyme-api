@@ -1,5 +1,6 @@
 import { TYPES } from '@constants/types'
 import { auth } from '@decorators/authenticate'
+import { permissions } from '@decorators/authorize'
 import { validate } from '@decorators/validator'
 import { GA4_REQUEST } from '@requests/ga4.request'
 import { IStatsService } from '@services/contracts/stats.service.interface'
@@ -15,6 +16,7 @@ export default class StatsController {
 
   @httpGet('/ga4')
   @auth()
+  @permissions('stats.ga4')
   @validate(GA4_REQUEST)
   async ga4(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { startAt, endAt } = matchedData(req)

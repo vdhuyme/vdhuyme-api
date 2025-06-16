@@ -1,5 +1,6 @@
 import { TYPES } from '@constants/types'
 import { auth } from '@decorators/authenticate'
+import { permissions } from '@decorators/authorize'
 import { IImagekitService } from '@services/contracts/imagekit.service.interface'
 import { jsonResponse } from '@utils/json.response'
 import { NextFunction, Request, Response } from 'express'
@@ -12,6 +13,7 @@ export default class ImagekitController {
 
   @httpGet('/auth')
   @auth()
+  @permissions('file.upload')
   async auth(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     try {
       const result = this.imagekitService.auth()

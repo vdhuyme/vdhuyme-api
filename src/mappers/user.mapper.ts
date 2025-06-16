@@ -5,6 +5,7 @@ export interface IUserResponse {
   name: string
   email: string
   status: string
+  superUser: number
   avatar?: string | null
   phoneNumber?: string | null
   createdAt: Date
@@ -18,6 +19,7 @@ export class UserResource {
       name: user.name,
       email: user.email,
       status: user.status,
+      superUser: user.superUser,
       avatar: user.avatar,
       phoneNumber: user.phoneNumber,
       createdAt: user.createdAt,

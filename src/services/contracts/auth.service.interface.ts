@@ -13,4 +13,5 @@ export interface IAuthService {
   redirect(): string
   callback(code: string): Promise<IAuthResponse>
   changePassword(userId: number | string, oldPassword: string, newPassword: string): Promise<User>
+  register(name: string, email: string, password: string): Promise<IAuthResponse>
 }

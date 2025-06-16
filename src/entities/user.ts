@@ -39,6 +39,9 @@ export class User {
   @Column({ name: 'super_user', type: 'boolean', default: 0 })
   superUser: number
 
+  @Column({ name: 'roles', type: 'jsonb', default: ['user'] })
+  roles: string[]
+
   @OneToMany(() => Post, post => post.author, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   posts: Post[]
 

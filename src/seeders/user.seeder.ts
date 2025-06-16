@@ -17,7 +17,8 @@ export default class UserSeeder extends Seeder {
       name: 'Vo Duc Huy',
       email: email,
       password: hashedPwd,
-      superUser: 1
+      superUser: 1,
+      roles: ['admin', 'user']
     })
   }
 }

@@ -12,7 +12,20 @@ import { IAuthResponse, IAuthService } from '@services/contracts/auth.service.in
 import { inject } from 'inversify'
 
 export default class AuthService implements IAuthService {
-  constructor(@inject(TYPES.UserRepository) private readonly userRepository: IUserRepository) {}
+  constructor(@inject(TYPES.UserRepository) private readonly userRepository: IUserRepository) {
+    this.userRepository = userRepository
+  }
+
+  async register(name: string, email: string, password: string): Promise<IAuthResponse> {
+    const existingUser = await this.userRepository.findOneBy({ email })
+    if (existingUser) {
+      throw new BadRequestException('This email has been already taken')
+    }
+    const hashedPassword = Hash.make(password)
+    const user = this.userRepository.create({ name, email, password: hashedPassword })
+    await this.userRepository.save(user)
+    return this.generateTokens(user)
+  }
 
   private generateTokens(user: User): IAuthResponse {
     const accessToken = jsonwebtoken.generate({

@@ -21,6 +21,7 @@ import { TYPES } from '@constants/types'
 import { UPDATE_CATEGORY_REQUEST } from '@requests/update.category.request'
 import { CREATE_CATEGORY_REQUEST } from '@requests/create.category.request'
 import { ID_REQUEST } from '@requests/id.request'
+import { permissions } from '@decorators/authorize'
 
 @controller('/categories')
 export default class CategoryController {
@@ -62,6 +63,7 @@ export default class CategoryController {
 
   @httpGet('/')
   @auth()
+  @permissions('category.read')
   @validate(QUERY_FILTER_REQUEST)
   async index(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)
@@ -76,6 +78,7 @@ export default class CategoryController {
 
   @httpGet('/trees')
   @auth()
+  @permissions('category.read')
   async getTrees(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     try {
       const result = await this.categoryService.getTrees()
@@ -87,6 +90,7 @@ export default class CategoryController {
 
   @httpPost('/')
   @auth()
+  @permissions('category.create')
   @validate(CREATE_CATEGORY_REQUEST)
   async store(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)
@@ -102,6 +106,7 @@ export default class CategoryController {
 
   @httpPut('/:id')
   @auth()
+  @permissions('category.update')
   @validate([...UPDATE_CATEGORY_REQUEST, ...ID_REQUEST])
   async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id, parentId, ...rest } = matchedData(req)
@@ -116,6 +121,7 @@ export default class CategoryController {
 
   @httpDelete('/:id')
   @auth()
+  @permissions('category.delete')
   async destroy(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const id = req.params.id as string
 

@@ -21,6 +21,7 @@ import {
 import { matchedData } from 'express-validator'
 import { QUERY_FILTER_REQUEST } from '@requests/query.filter.request'
 import { ID_REQUEST } from '@requests/id.request'
+import { permissions } from '@decorators/authorize'
 
 @controller('/tags')
 export default class TagController {
@@ -28,6 +29,7 @@ export default class TagController {
 
   @httpPost('/')
   @auth()
+  @permissions('tag.create')
   @validate(CREATE_TAG_REQUEST)
   async store(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)
@@ -43,6 +45,7 @@ export default class TagController {
 
   @httpGet('/')
   @auth()
+  @permissions('tag.read')
   @validate(QUERY_FILTER_REQUEST)
   async index(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)
@@ -57,6 +60,7 @@ export default class TagController {
 
   @httpPut('/:id')
   @auth()
+  @permissions('tag.update')
   @validate([...UPDATE_TAG_REQUEST, ...ID_REQUEST])
   async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id, ...rest } = matchedData(req)
@@ -71,6 +75,7 @@ export default class TagController {
 
   @httpDelete('/:id')
   @auth()
+  @permissions('tag.delete')
   @validate(ID_REQUEST)
   async destroy(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)

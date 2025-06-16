@@ -1,6 +1,7 @@
 import { CREATED, OK } from '@constants/http.status.code'
 import { TYPES } from '@constants/types'
 import { auth } from '@decorators/authenticate'
+import { permissions } from '@decorators/authorize'
 import { validate } from '@decorators/validator'
 import { CREATE_COMMENT_REQUEST } from '@requests/create.comment.request'
 import { ID_REQUEST } from '@requests/id.request'
@@ -60,6 +61,7 @@ export default class CommentController {
 
   @httpGet('/')
   @auth()
+  @permissions('comment.read')
   @validate(QUERY_FILTER_REQUEST)
   async index(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)
@@ -74,6 +76,7 @@ export default class CommentController {
 
   @httpPut('/:id')
   @auth()
+  @permissions('comment.update')
   @validate([...UPDATE_COMMENT_REQUEST, ...ID_REQUEST])
   async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id, ...rest } = matchedData(req)
@@ -88,6 +91,7 @@ export default class CommentController {
 
   @httpDelete('/:id')
   @auth()
+  @permissions('comment.delete')
   @validate(ID_REQUEST)
   async destroy(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id } = matchedData(req)

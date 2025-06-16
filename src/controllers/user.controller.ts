@@ -1,5 +1,6 @@
 import { TYPES } from '@constants/types'
 import { auth } from '@decorators/authenticate'
+import { permissions } from '@decorators/authorize'
 import { validate } from '@decorators/validator'
 import { ID_REQUEST } from '@requests/id.request'
 import { QUERY_FILTER_REQUEST } from '@requests/query.filter.request'
@@ -17,6 +18,7 @@ export default class UserController {
 
   @httpGet('/')
   @auth()
+  @permissions('user.read')
   @validate(QUERY_FILTER_REQUEST)
   async index(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const data = matchedData(req)
@@ -31,6 +33,7 @@ export default class UserController {
 
   @httpPatch('/:id')
   @auth()
+  @permissions('user.update')
   @validate([...ID_REQUEST, ...UPDATE_USER_STATUS_REQUEST])
   async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { id, status } = matchedData(req)

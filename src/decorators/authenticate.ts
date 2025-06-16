@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import jsonwebtoken from '@config/jsonwebtoken'
 import UnauthorizedException from '@exceptions/unauthorized.exception'
 import { IJwtAuthUserPayload } from 'interfaces'
@@ -26,7 +25,7 @@ const getTokenFromHeader = (req: Request): string => {
 }
 
 export function auth() {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value
 
     descriptor.value = async function (req: Request, res: Response, next: NextFunction) {

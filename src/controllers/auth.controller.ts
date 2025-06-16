@@ -19,6 +19,7 @@ import { TYPES } from '@constants/types'
 import { auth } from '@decorators/authenticate'
 import { IAuthService } from '@services/contracts/auth.service.interface'
 import { CHANGE_PASSWORD_REQUEST } from '@requests/change.password.request'
+import { REGISTER_REQUEST } from '@requests/register.request'
 
 @controller('/auth')
 export default class AuthController {
@@ -31,6 +32,19 @@ export default class AuthController {
 
     try {
       const result = await this.authService.login(email, password)
+      return jsonResponse(res, result, OK)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  @httpPost('/register')
+  @validate(REGISTER_REQUEST)
+  async register(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const { name, email, password } = matchedData(req)
+
+    try {
+      const result = await this.authService.register(name, email, password)
       return jsonResponse(res, result, OK)
     } catch (error) {
       next(error)
