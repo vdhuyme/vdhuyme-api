@@ -9,6 +9,7 @@ export interface IUserResponse {
   superUser: number
   avatar?: string | null
   phoneNumber?: string | null
+  dob?: string | null
   roles: string[]
   permissions: string[]
   createdAt: Date
@@ -24,6 +25,7 @@ export class UserResource {
       status: user.status,
       superUser: user.superUser,
       avatar: user.avatar,
+      dob: user.dob,
       phoneNumber: user.phoneNumber,
       roles: user.roles,
       permissions: Array.from(new Set(user.roles?.flatMap(role => ROLES_PERMISSIONS[role]) || [])),

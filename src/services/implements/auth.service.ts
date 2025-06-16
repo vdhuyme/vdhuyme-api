@@ -9,11 +9,24 @@ import UnauthorizedException from '@exceptions/unauthorized.exception'
 import { IUserResponse, UserResource } from '@mappers/user.mapper'
 import { IUserRepository } from '@repositories/contracts/user.repository.interface'
 import { IAuthResponse, IAuthService } from '@services/contracts/auth.service.interface'
-import { inject } from 'inversify'
+import { inject, injectable } from 'inversify'
+import { DeepPartial } from 'typeorm'
 
+@injectable()
 export default class AuthService implements IAuthService {
   constructor(@inject(TYPES.UserRepository) private readonly userRepository: IUserRepository) {
     this.userRepository = userRepository
+  }
+
+  async updateProfile(id: string | number, data: DeepPartial<User>): Promise<User> {
+    const { name, phoneNumber, dob, avatar } = data
+    const user = await this.userRepository.findById(id)
+    if (!user) {
+      throw new BadRequestException(`Not found user ${id}`)
+    }
+    Object.assign(user, { name, phoneNumber, dob, avatar })
+
+    return this.userRepository.save(user)
   }
 
   async register(name: string, email: string, password: string): Promise<IAuthResponse> {

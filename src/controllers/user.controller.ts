@@ -24,7 +24,7 @@ export default class UserController {
     const data = matchedData(req)
 
     try {
-      const result = await this.userService.paginate(data)
+      const result = await this.userService.paginateWithDTO(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)

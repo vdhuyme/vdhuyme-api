@@ -10,7 +10,7 @@ import { IUserRepository } from '@repositories/contracts/user.repository.interfa
 import BadRequestException from '@exceptions/bad.request.exception'
 import { IPostRepository } from '@repositories/contracts/post.repository.interface'
 import { BASE_STATUS } from '@constants/base.status'
-import { CommentResource } from '@mappers/comment.mapper'
+import { CommentResource, ICommentResponse } from '@mappers/comment.mapper'
 
 @injectable()
 export default class CommentService extends BaseService<Comment> implements ICommentService {
@@ -30,7 +30,7 @@ export default class CommentService extends BaseService<Comment> implements ICom
   async getCommentsByPost(
     postId: string | number,
     options: IQueryOptions<Comment>
-  ): Promise<IPaginationResult<Comment>> {
+  ): Promise<IPaginationResult<ICommentResponse>> {
     const { page = 1, limit = 10 } = options
 
     const post = await this.postRepository.findById(postId)
@@ -48,7 +48,7 @@ export default class CommentService extends BaseService<Comment> implements ICom
       .getManyAndCount()
 
     return {
-      items: CommentResource.collection(items) as Comment[],
+      items: CommentResource.collection(items),
       meta: {
         totalItems,
         itemCount: items.length,

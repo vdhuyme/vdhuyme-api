@@ -1,7 +1,7 @@
 import { TYPES } from '@constants/types'
 import { User } from '@entities/user'
 import BadRequestException from '@exceptions/bad.request.exception'
-import { UserResource } from '@mappers/user.mapper'
+import { IUserResponse, UserResource } from '@mappers/user.mapper'
 import { IPaginationResult, IQueryOptions } from '@repositories/contracts/base.repository.interface'
 import { IUserRepository } from '@repositories/contracts/user.repository.interface'
 import { IUserService } from '@services/contracts/user.service.interface'
@@ -15,7 +15,7 @@ export default class UserService extends BaseService<User> implements IUserServi
     super(userRepository)
   }
 
-  async paginate(options: IQueryOptions<User>): Promise<IPaginationResult<User>> {
+  async paginateWithDTO(options: IQueryOptions<User>): Promise<IPaginationResult<IUserResponse>> {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', orderBy = 'DESC' } = options
 
     const allowedSortFields: (keyof User)[] = ['id', 'name', 'createdAt', 'status']
@@ -31,7 +31,7 @@ export default class UserService extends BaseService<User> implements IUserServi
 
     const { items, meta } = await super.paginate(findOptions)
     return {
-      items: UserResource.collection(items) as User[],
+      items: UserResource.collection(items),
       meta
     }
   }

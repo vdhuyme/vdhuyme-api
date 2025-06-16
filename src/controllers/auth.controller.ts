@@ -4,6 +4,7 @@ import {
   httpGet,
   httpPatch,
   httpPost,
+  httpPut,
   next,
   request,
   response
@@ -20,6 +21,7 @@ import { auth } from '@decorators/authenticate'
 import { IAuthService } from '@services/contracts/auth.service.interface'
 import { CHANGE_PASSWORD_REQUEST } from '@requests/change.password.request'
 import { REGISTER_REQUEST } from '@requests/register.request'
+import { UPDATE_PROFILE_REQUEST } from '@requests/update.profile.request'
 
 @controller('/auth')
 export default class AuthController {
@@ -115,6 +117,25 @@ export default class AuthController {
 
     try {
       await this.authService.changePassword(userId, oldPassword, newPassword)
+      return jsonResponse(res, null, OK, 'success')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  @httpPut('/profile')
+  @auth()
+  @validate(UPDATE_PROFILE_REQUEST)
+  async updateProfile(
+    @request() req: Request,
+    @response() res: Response,
+    @next() next: NextFunction
+  ) {
+    const data = matchedData(req)
+    const { userId } = req.auth
+
+    try {
+      await this.authService.updateProfile(userId, data)
       return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
