@@ -1,3 +1,4 @@
+import { ROLES_PERMISSIONS } from '@config/permissions'
 import { User } from '@entities/user'
 
 export interface IUserResponse {
@@ -8,6 +9,8 @@ export interface IUserResponse {
   superUser: number
   avatar?: string | null
   phoneNumber?: string | null
+  roles: string[]
+  permissions: string[]
   createdAt: Date
   updatedAt: Date
 }
@@ -22,6 +25,8 @@ export class UserResource {
       superUser: user.superUser,
       avatar: user.avatar,
       phoneNumber: user.phoneNumber,
+      roles: user.roles,
+      permissions: Array.from(new Set(user.roles?.flatMap(role => ROLES_PERMISSIONS[role]) || [])),
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     }
