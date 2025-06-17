@@ -1,11 +1,10 @@
-import { authenticate } from '@decorators/authenticate'
-import { body } from '@decorators/validate.body.decorator'
-import { query } from '@decorators/validate.query.decorator'
-import { ITagService } from '@interfaces/services/tag.service.interface'
-import CreateTagRequest from '@requests/create.tag.request'
-import QueryFilterRequest from '@requests/query.filter.request'
-import UpdateTagRequest from '@requests/update.tag.request'
-import { CREATED, OK } from '@utils/http.status.code'
+import { TYPES } from '@constants/types'
+import { auth } from '@decorators/authenticate'
+import { validate } from '@decorators/validator'
+import { CREATE_TAG_REQUEST } from '@requests/create.tag.request'
+import { UPDATE_TAG_REQUEST } from '@requests/update.tag.request'
+import { ITagService } from '@services/contracts/tag.service.interface'
+import { CREATED } from '@constants/http.status.code'
 import { jsonResponse } from '@utils/json.response'
 import { NextFunction, Request, Response } from 'express'
 import { inject } from 'inversify'
@@ -19,62 +18,71 @@ import {
   request,
   response
 } from 'inversify-express-utils'
+import { matchedData } from 'express-validator'
+import { QUERY_FILTER_REQUEST } from '@requests/query.filter.request'
+import { ID_REQUEST } from '@requests/id.request'
+import { permissions } from '@decorators/authorize'
 
 @controller('/tags')
 export default class TagController {
-  constructor(@inject('ITagService') private tagService: ITagService) {}
+  constructor(@inject(TYPES.TagService) private tagService: ITagService) {}
 
   @httpPost('/')
-  @authenticate()
-  @body(CreateTagRequest)
-  async createTag(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = req.validated as CreateTagRequest
+  @auth()
+  @permissions('tag.create')
+  @validate(CREATE_TAG_REQUEST)
+  async store(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const data = matchedData(req)
 
     try {
-      await this.tagService.createTag(data)
-      return jsonResponse(res, null, CREATED, 'success')
+      const tag = this.tagService.create(data)
+      await this.tagService.save(tag)
+      return jsonResponse(res, 'ok', CREATED)
     } catch (error) {
       next(error)
     }
   }
 
   @httpGet('/')
-  @authenticate()
-  @query(QueryFilterRequest)
-  async getTags(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const queryFilter = req.validated as QueryFilterRequest
+  @auth()
+  @permissions('tag.read')
+  @validate(QUERY_FILTER_REQUEST)
+  async index(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const data = matchedData(req)
 
     try {
-      const result = await this.tagService.getTags(queryFilter)
+      const result = await this.tagService.paginate(data)
       return jsonResponse(res, result)
     } catch (error) {
       next(error)
     }
   }
 
-  @httpPut('/:slug')
-  @authenticate()
-  @body(UpdateTagRequest)
-  async updateTag(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const slug = req.params.slug
-    const data = req.validated as UpdateTagRequest
+  @httpPut('/:id')
+  @auth()
+  @permissions('tag.update')
+  @validate([...UPDATE_TAG_REQUEST, ...ID_REQUEST])
+  async update(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const { id, ...rest } = matchedData(req)
 
     try {
-      await this.tagService.updateTag(slug, data)
-      return jsonResponse(res, null, OK, 'success')
+      await this.tagService.updateById(id, rest)
+      return jsonResponse(res, 'ok')
     } catch (error) {
       next(error)
     }
   }
 
-  @httpDelete('/:slug')
-  @authenticate()
-  async deleteTag(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const slug = req.params.slug
+  @httpDelete('/:id')
+  @auth()
+  @permissions('tag.delete')
+  @validate(ID_REQUEST)
+  async destroy(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const data = matchedData(req)
 
     try {
-      await this.tagService.deleteTag(slug)
-      return jsonResponse(res, null, OK, 'success')
+      await this.tagService.deleteById(data.id)
+      return jsonResponse(res, 'ok')
     } catch (error) {
       next(error)
     }

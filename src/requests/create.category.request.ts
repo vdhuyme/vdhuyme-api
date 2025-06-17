@@ -1,25 +1,11 @@
-import { Type } from 'class-transformer'
-import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator'
+import { body } from 'express-validator'
+import { BASE_STATUS } from '@constants/base.status'
 
-export default class CreateCategoryRequest {
-  @IsString()
-  @IsNotEmpty({ message: 'Name is required' })
-  name: string
-
-  @IsOptional()
-  @IsString()
-  description?: string
-
-  @IsOptional()
-  @IsString()
-  thumbnail?: string
-
-  @IsOptional()
-  @IsString()
-  icon?: string
-
-  @IsOptional()
-  @IsNumber({}, { message: 'Parent ID must be a number' })
-  @Type(() => Number)
-  parentId?: number
-}
+export const CREATE_CATEGORY_REQUEST = [
+  body('name').isString().notEmpty(),
+  body('description').optional().isString(),
+  body('thumbnail').optional({ checkFalsy: true }).isString(),
+  body('icon').optional().isString(),
+  body('parentId').optional({ checkFalsy: true }).isNumeric().toInt(),
+  body('status').optional().isIn(Object.values(BASE_STATUS))
+]

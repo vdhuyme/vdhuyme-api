@@ -1,12 +1,6 @@
-import { IsNotEmpty, IsString, Length } from 'class-validator'
+import { body } from 'express-validator'
 
-export default class CreateCommentRequest {
-  @IsNotEmpty({ message: 'Content is required' })
-  @IsString({ message: 'Content must be a string' })
-  @Length(3, 1000, { message: 'Content must be between 3 and 1000 characters' })
-  content!: string
-
-  @IsNotEmpty({ message: 'Post slug is required' })
-  @IsString({ message: 'Post slug must be a string' })
-  postSlug!: string
-}
+export const CREATE_COMMENT_REQUEST = [
+  body('id').notEmpty().isInt().toInt(),
+  body('content').notEmpty().isString().isLength({ min: 3, max: 1000 })
+]

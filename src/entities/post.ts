@@ -52,11 +52,11 @@ export class Post {
   @JoinColumn({ name: 'category_id' })
   category: Category
 
-  @ManyToOne(() => User, user => user.posts, { cascade: true })
+  @ManyToOne(() => User, user => user.posts, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'auth_id' })
   author: User
 
-  @ManyToMany(() => Tag, tag => tag.posts, { cascade: true })
+  @ManyToMany(() => Tag, tag => tag.posts, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinTable({
     name: 'post_tag',
     joinColumn: { name: 'post_id', referencedColumnName: 'id' },
@@ -64,7 +64,7 @@ export class Post {
   })
   tags: Tag[]
 
-  @OneToMany(() => Comment, comment => comment.post)
+  @OneToMany(() => Comment, comment => comment.post, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   comments: Comment[]
 
   @CreateDateColumn({ name: 'created_at' })

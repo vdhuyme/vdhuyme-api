@@ -23,7 +23,7 @@ export class Tag {
   @Column({ name: 'status', type: 'varchar', length: 50, default: BASE_STATUS.PUBLISHED })
   status: string
 
-  @ManyToMany(() => Post, post => post.tags)
+  @ManyToMany(() => Post, post => post.tags, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   posts: Post[]
 
   @CreateDateColumn({ name: 'created_at' })

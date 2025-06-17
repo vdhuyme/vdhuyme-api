@@ -1,13 +1,32 @@
 {
-  "name": "vdhuyme_api",
+  "name": "codient",
   "version": "1.0.0",
   "main": "index.js",
+  "keywords": [
+    "codient",
+    "blog",
+    "backend",
+    "express",
+    "nodejs",
+    "typescript",
+    "typeorm",
+    "api",
+    "rest-api",
+    "auth"
+  ],
+  "author": "Vo Duc Huy",
+  "license": "MIT",
+  "description": "Codient is a TypeScript-based backend boilerplate for blogs and developer portfolios.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vdhuy/codient"
+  },
   "scripts": {
     "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
-    "production:first": "npm run build && npm run migration:up && npm run seed:up && npm start",
-    "production": "npm run build && npm start",
     "dev": "ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
+    "production": "npm run build && npm start",
+    "production:first": "npm run build && npm run migration:up && npm run seed:up && npm start",
     "typeorm": "node -r ts-node/register -r tsconfig-paths/register ./typeorm-cli.js",
     "migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
     "migration:up": "npm run typeorm -- migration:run -d src/data-source.ts",
@@ -18,25 +37,16 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },
-  "keywords": [
-    "vdhuyme_api",
-    "VDH",
-    "Vo Duc Huy"
-  ],
-  "author": "Vo Duc Huy",
-  "license": "ISC",
-  "description": "VDH BE Portfolio",
   "dependencies": {
     "@google-analytics/data": "^5.1.0",
     "@jorgebodega/typeorm-seeding": "^7.1.0",
     "bcryptjs": "^3.0.2",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.2",
     "compression": "^1.8.0",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
+    "express-validator": "^7.2.1",
     "google-auth-library": "^9.15.1",
     "helmet": "^8.1.0",
     "imagekit": "^6.0.0",

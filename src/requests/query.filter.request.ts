@@ -1,34 +1,9 @@
-import { Transform } from 'class-transformer'
-import { IsDate, IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator'
+import { query } from 'express-validator'
 
-export default class QueryFilterRequest {
-  @IsOptional()
-  @IsString()
-  query?: string
-
-  @Transform(({ value }) => parseInt(value, 10))
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  page: number = 1
-
-  @Transform(({ value }) => parseInt(value, 10))
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  limit: number = 50
-
-  @IsOptional()
-  @IsIn(['DESC', 'ASC'])
-  sort: 'DESC' | 'ASC' = 'DESC'
-
-  @Transform(({ value }) => new Date(value))
-  @IsOptional()
-  @IsDate()
-  startDate: Date
-
-  @Transform(({ value }) => new Date(value))
-  @IsOptional()
-  @IsDate()
-  endDate: Date
-}
+export const QUERY_FILTER_REQUEST = [
+  query('page').optional().isInt({ min: 1 }).toInt(),
+  query('limit').optional().isInt({ min: 1 }).toInt(),
+  query('search').optional().isString().isLength({ max: 100 }),
+  query('sortBy').optional().isString().isLength({ max: 50 }),
+  query('orderBy').optional().isString().isIn(['ASC', 'asc', 'DESC', 'desc']).toUpperCase()
+]

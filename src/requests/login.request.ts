@@ -1,11 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+import { body } from 'express-validator'
 
-export default class LoginRequest {
-  @IsNotEmpty({ message: 'Email is required' })
-  @IsEmail({}, { message: 'Invalid email format' })
-  email!: string
-
-  @IsNotEmpty({ message: 'Password is required' })
-  @IsString({ message: 'Password must be a string' })
-  password!: string
-}
+export const LOGIN_REQUEST = [
+  body('email').notEmpty().isEmail().trim().normalizeEmail(),
+  body('password').notEmpty().isLength({ max: 50 })
+]

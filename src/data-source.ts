@@ -53,11 +53,11 @@ const databaseConfig: Record<NodeEnvironment, DataSourceOptions> = {
   }
 }
 
-export const ds = new DataSource(databaseConfig[env])
+export const dataSource = new DataSource(databaseConfig[env])
 
 export const database = async (): Promise<void> => {
   try {
-    await ds.initialize()
+    await dataSource.initialize()
     logger.info(
       `📂 [${env.toUpperCase()}] Connected to ${config.database.connection.toUpperCase()} → ${databaseConfig[env].database}`
     )

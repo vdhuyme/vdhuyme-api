@@ -1,25 +1,52 @@
 import { NextFunction, Request, Response } from 'express'
-import { controller, httpGet, httpPost, next, request, response } from 'inversify-express-utils'
-import { OK } from '@utils/http.status.code'
-import { body } from '@decorators/validate.body.decorator'
-import LoginRequest from '@requests/login.request'
+import {
+  controller,
+  httpGet,
+  httpPatch,
+  httpPost,
+  httpPut,
+  next,
+  request,
+  response
+} from 'inversify-express-utils'
+import { OK } from '@constants/http.status.code'
 import { inject } from 'inversify'
-import { IAuthService } from '@interfaces/services/auth.service.interface'
-import { authenticate } from '@decorators/authenticate'
-import RefreshTokenRequest from '@requests/refresh.token.request'
+import { REFRESH_TOKEN_REQUEST } from '@requests/refresh.token.request'
 import { jsonResponse } from '@utils/json.response'
+import { validate } from '@decorators/validator'
+import { LOGIN_REQUEST } from '@requests/login.request'
+import { matchedData } from 'express-validator'
+import { TYPES } from '@constants/types'
+import { auth } from '@decorators/authenticate'
+import { IAuthService } from '@services/contracts/auth.service.interface'
+import { CHANGE_PASSWORD_REQUEST } from '@requests/change.password.request'
+import { REGISTER_REQUEST } from '@requests/register.request'
+import { UPDATE_PROFILE_REQUEST } from '@requests/update.profile.request'
 
 @controller('/auth')
 export default class AuthController {
-  constructor(@inject('IAuthService') private authService: IAuthService) {}
+  constructor(@inject(TYPES.AuthService) private authService: IAuthService) {}
 
   @httpPost('/login')
-  @body(LoginRequest)
+  @validate(LOGIN_REQUEST)
   async login(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
-    const data = req.validated as LoginRequest
+    const { email, password } = matchedData(req)
 
     try {
-      const result = await this.authService.login(data)
+      const result = await this.authService.login(email, password)
+      return jsonResponse(res, result, OK)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  @httpPost('/register')
+  @validate(REGISTER_REQUEST)
+  async register(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
+    const { name, email, password } = matchedData(req)
+
+    try {
+      const result = await this.authService.register(name, email, password)
       return jsonResponse(res, result, OK)
     } catch (error) {
       next(error)
@@ -27,7 +54,7 @@ export default class AuthController {
   }
 
   @httpGet('/me')
-  @authenticate()
+  @auth()
   async me(@request() req: Request, @response() res: Response, @next() next: NextFunction) {
     const { userId } = req.auth
 
@@ -62,16 +89,54 @@ export default class AuthController {
   }
 
   @httpPost('/refresh-token')
-  @body(RefreshTokenRequest)
+  @validate(REFRESH_TOKEN_REQUEST)
   async refreshAccessToken(
     @request() req: Request,
     @response() res: Response,
     @next() next: NextFunction
   ) {
-    const { refreshToken } = req.validated as RefreshTokenRequest
+    const { refreshToken } = matchedData(req)
     try {
       const accessToken = this.authService.refreshAccessToken(refreshToken)
       return jsonResponse(res, accessToken)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  @httpPatch('/change-password')
+  @auth()
+  @validate(CHANGE_PASSWORD_REQUEST)
+  async changePassword(
+    @request() req: Request,
+    @response() res: Response,
+    @next() next: NextFunction
+  ) {
+    const { oldPassword, newPassword } = matchedData(req)
+    const { userId } = req.auth
+
+    try {
+      await this.authService.changePassword(userId, oldPassword, newPassword)
+      return jsonResponse(res, null, OK, 'success')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  @httpPut('/profile')
+  @auth()
+  @validate(UPDATE_PROFILE_REQUEST)
+  async updateProfile(
+    @request() req: Request,
+    @response() res: Response,
+    @next() next: NextFunction
+  ) {
+    const data = matchedData(req)
+    const { userId } = req.auth
+
+    try {
+      await this.authService.updateProfile(userId, data)
+      return jsonResponse(res, null, OK, 'success')
     } catch (error) {
       next(error)
     }

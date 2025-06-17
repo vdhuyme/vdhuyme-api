@@ -1,9 +1,7 @@
-import QueryFilterRequest from '@requests/query.filter.request'
-import { IsNumber, IsOptional, Min } from 'class-validator'
+import { query, ValidationChain } from 'express-validator'
+import { QUERY_FILTER_REQUEST } from '@requests/query.filter.request'
 
-export default class QueryFilterPublishedPostRequest extends QueryFilterRequest {
-  @IsOptional()
-  @IsNumber({}, { message: 'Category ID must be a number' })
-  @Min(1, { message: 'Category ID must be at least 1' })
-  categoryId!: number
-}
+export const QUERY_FILTER_PUBLISHED_POST_REQUEST: ValidationChain[] = [
+  ...QUERY_FILTER_REQUEST,
+  query('categoryId').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt()
+]

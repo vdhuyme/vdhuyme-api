@@ -1,7 +1,7 @@
 import { EventSubscriber, EntitySubscriberInterface, InsertEvent } from 'typeorm'
 import { Post } from '@entities/post'
 import { nanoid } from 'nanoid'
-import { generateSlug } from '@utils/slugify'
+import { generate } from '@utils/slugify'
 
 @EventSubscriber()
 export class PostSubscriber implements EntitySubscriberInterface<Post> {
@@ -10,8 +10,8 @@ export class PostSubscriber implements EntitySubscriberInterface<Post> {
   }
 
   beforeInsert(event: InsertEvent<Post>) {
-    if (!event.entity.slug && event.entity.title) {
-      const slugBase = generateSlug(event.entity.title)
+    if (event.entity.title) {
+      const slugBase = generate(event.entity.title)
       const randomId = nanoid(10)
       event.entity.slug = `${slugBase}-${randomId}`
     }

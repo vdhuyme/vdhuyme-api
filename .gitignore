@@ -1,6 +1,7 @@
 node_modules
 .qodo
 .vscode
+.idea
 
 .env
 package-lock.json
@@ -12,3 +13,5 @@ src/storage/logs/*
 !src/storage/logs/.gitkeep
 
 src/storage/data/*
+!src/storage/data/.gitkeep
+!src/storage/data/roles-permissions.json

@@ -1,11 +1,7 @@
-import { IsString, Length, IsOptional } from 'class-validator'
+import { BASE_STATUS } from '@constants/base.status'
+import { body, ValidationChain } from 'express-validator'
 
-export default class CreateTagRequest {
-  @IsString()
-  @Length(1, 255)
-  name: string
-
-  @IsOptional()
-  @IsString()
-  status?: string
-}
+export const CREATE_TAG_REQUEST: ValidationChain[] = [
+  body('name').notEmpty().isLength({ max: 50 }),
+  body('status').optional().isIn(Object.values(BASE_STATUS))
+]
