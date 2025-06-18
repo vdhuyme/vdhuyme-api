@@ -3,3 +3,8 @@ export interface IGA4CountryStatResponse {
   activeUsers: number
   pageViews: number
 }
+
+export interface GA4DateRange {
+  start: Date
+  end: Date
+}
