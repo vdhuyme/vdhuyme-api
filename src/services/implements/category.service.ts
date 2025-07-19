@@ -128,7 +128,7 @@ export default class CategoryService extends BaseService<Category> implements IC
     }
 
     if (parentId === category.id) {
-      throw new BadRequestException(`A category cannot be its own parent`)
+      throw new BadRequestException('A category cannot be its own parent')
     }
 
     const parent = await this.getParentOrFail(parentId)
