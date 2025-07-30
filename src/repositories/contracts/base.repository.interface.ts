@@ -20,17 +20,21 @@ export interface IPaginationOptions {
   limit: number
 }
 
-export interface IPaginationMeta {
+export interface PaginationMeta {
   totalItems: number
   itemCount: number
   itemsPerPage: number
   totalPages: number
   currentPage: number
+  from: number
+  to: number
+  nextPage: boolean
+  previousPage: boolean
 }
 
 export interface IPaginationResult<T> {
   items: T[]
-  meta: IPaginationMeta
+  meta: PaginationMeta
 }
 
 export interface IQueryOptions<T> extends Omit<FindManyOptions<T>, 'skip' | 'take'> {

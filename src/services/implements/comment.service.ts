@@ -47,6 +47,8 @@ export default class CommentService extends BaseService<Comment> implements ICom
       .take(limit)
       .getManyAndCount()
 
+    const skip = (page - 1) * limit
+
     return {
       items: CommentResource.collection(items),
       meta: {
@@ -54,7 +56,11 @@ export default class CommentService extends BaseService<Comment> implements ICom
         itemCount: items.length,
         itemsPerPage: limit,
         totalPages: Math.ceil(totalItems / limit),
-        currentPage: page
+        currentPage: page,
+        from: totalItems === 0 ? 0 : skip + 1,
+        to: Math.min(skip + items.length, totalItems),
+        nextPage: page < Math.ceil(totalItems / limit),
+        previousPage: page > 1
       }
     }
   }

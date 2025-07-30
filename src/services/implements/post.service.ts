@@ -95,14 +95,21 @@ export default class PostService extends BaseService<Post> implements IPostServi
       .take(limit)
       .getManyAndCount()
 
+    const skip = (page - 1) * limit
+    const totalPages = Math.ceil(totalItems / limit)
+
     return {
       items,
       meta: {
         totalItems,
         itemCount: items.length,
         itemsPerPage: limit,
-        totalPages: Math.ceil(totalItems / limit),
-        currentPage: page
+        totalPages,
+        currentPage: page,
+        from: totalItems === 0 ? 0 : skip + 1,
+        to: Math.min(skip + items.length, totalItems),
+        nextPage: page < totalPages,
+        previousPage: page > 1
       }
     }
   }
