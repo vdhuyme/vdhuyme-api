@@ -118,7 +118,11 @@ export default abstract class BaseRepository<T extends ObjectLiteral>
         itemCount: items.length,
         itemsPerPage: limit,
         totalPages,
-        currentPage: page
+        currentPage: page,
+        from: totalItems === 0 ? 0 : skip + 1,
+        to: Math.min(skip + items.length, totalItems),
+        nextPage: page < totalPages,
+        previousPage: page > 1
       }
     }
   }
