@@ -1,4 +1,4 @@
-import { IJwtAuthUserPayload } from '../../interfaces/index'
+import { IJwtAuthUserPayload } from '@interfaces/index'
 
 declare global {
   namespace Express {
